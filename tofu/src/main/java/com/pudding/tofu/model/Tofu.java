@@ -1,8 +1,10 @@
 package com.pudding.tofu.model;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.lzy.okgo.OkGo;
@@ -15,6 +17,8 @@ import net.tsz.afinal.FinalDb;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import butterknife.ButterKnife;
 
 /**
  * Created by wxl on 2018/5/14 0014.
@@ -139,7 +143,34 @@ public class Tofu {
      * @return
      */
     public static void bind(@NonNull Object target) {
+        if(target instanceof Activity ){
+            ButterKnife.bind((Activity) target);
+        }
+
+        if(target instanceof android.app.Fragment){
+            android.app.Fragment fragment = (android.app.Fragment) target;
+            ButterKnife.bind(fragment,fragment.getView());
+        }
+
+        if(target instanceof Fragment){
+            Fragment fragment = (Fragment) target;
+            ButterKnife.bind(fragment,fragment.getView());
+        }
+
         TofuBus.get().findSubscribe(target);
+    }
+
+    /**
+     * 刷新
+     * @return
+     */
+    public static SmartBuilder smart(){
+        SmartFactory factory = (SmartFactory) builders.get("smart");
+        if(factory == null){
+            factory = SmartFactory.get();
+            builders.put("smart",factory);
+        }
+        return factory.build();
     }
 
 
