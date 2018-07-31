@@ -4,14 +4,10 @@ import android.text.TextUtils;
 
 import com.pudding.tofu.retention.loadError;
 import com.pudding.tofu.retention.loadFile;
-import com.pudding.tofu.retention.loadMore;
-import com.pudding.tofu.retention.loadMoreFailed;
 import com.pudding.tofu.retention.loadProgress;
 import com.pudding.tofu.retention.photoPick;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
-import com.pudding.tofu.retention.refresh;
-import com.pudding.tofu.retention.refreshFailed;
 import com.pudding.tofu.retention.subscribe;
 import com.pudding.tofu.retention.upload;
 import com.pudding.tofu.retention.uploadError;
@@ -101,25 +97,7 @@ public class TofuBus {
      */
     private HashMap<String, List<TofuMethod>> pickerMethods = new HashMap<>();
 
-    /**
-     * 刷新
-     */
-    private HashMap<String, List<TofuMethod>> refreshMethods = new HashMap<>();
 
-    /**
-     * 刷新失败
-     */
-    private HashMap<String, List<TofuMethod>> refreshFailedMethods = new HashMap<>();
-
-    /**
-     * 加载更多
-     */
-    private HashMap<String, List<TofuMethod>> loadMoreMethods = new HashMap<>();
-
-    /**
-     * 加载更多失败
-     */
-    private HashMap<String, List<TofuMethod>> loadMoreFailedMethods = new HashMap<>();
 
     /**
      * 取target的介质集合
@@ -140,8 +118,7 @@ public class TofuBus {
         newTofuIfEmptyMethodList(key, cachePostMethods, postErrorMethods,
                 loadFileMethods, loadFileErrorMethods, loadFileProgressMethods,
                 upLoadFileMethods, upLoadFileErrorMethods,
-                upLoadFileProgressMethods, subscribeMethods, pickerMethods,
-                refreshMethods, refreshFailedMethods, loadMoreMethods, loadMoreFailedMethods);
+                upLoadFileProgressMethods, subscribeMethods, pickerMethods);
 
         List<TofuMethod> postMethods = cachePostMethods.get(key);
         List<TofuMethod> tofuErrorMethods = postErrorMethods.get(key);
@@ -153,10 +130,7 @@ public class TofuBus {
         List<TofuMethod> tofuUpLoadFileProgressMethods = upLoadFileProgressMethods.get(key);
         List<TofuMethod> tofuSimpleMethods = subscribeMethods.get(key);
         List<TofuMethod> tofuPickerMethods = pickerMethods.get(key);
-        List<TofuMethod> tofuRefreshMethods = refreshMethods.get(key);
-        List<TofuMethod> tofuRefreshFailedMethods = refreshFailedMethods.get(key);
-        List<TofuMethod> tofuLoadMoreMethods = loadMoreMethods.get(key);
-        List<TofuMethod> tofuLoadMoreFailedMethods = loadMoreFailedMethods.get(key);
+
 
         Method[] declaredMethods = target.getClass().getDeclaredMethods();
         for (Method method : declaredMethods) {
@@ -170,10 +144,7 @@ public class TofuBus {
             findUploadProgressSubscribe(tofuUpLoadFileProgressMethods, method, target);
             findSimpleSubscribe(tofuSimpleMethods, method, target);
             findPickerSubscribe(tofuPickerMethods, method, target);
-            findRefreshSubscribe(tofuRefreshMethods, method, target);
-            findLoadMoreFailedSubscribe(tofuLoadMoreFailedMethods,method,target);
-            findLoadMoreSubscribe(tofuLoadMoreMethods,method,target);
-            findRefreshFailedSubscribe(tofuRefreshFailedMethods,method,target);
+
         }
     }
 
@@ -208,69 +179,6 @@ public class TofuBus {
             fullyTofuMethod(values, simpleMethods, method, target);
         }
         subscribeMethods.put(target.getClass().getName(), simpleMethods);
-    }
-
-
-    /**
-     * 加载更多失败
-     * @param methods
-     * @param method
-     * @param target
-     */
-    private void findLoadMoreFailedSubscribe(List<TofuMethod> methods, Method method, Object target){
-        loadMoreFailed failed = method.getAnnotation(loadMoreFailed.class);
-        if(failed != null){
-            String[] value = failed.value();
-            fullyTofuMethod(value, methods, method, target);
-        }
-        loadMoreFailedMethods.put(target.getClass().getName(),methods);
-    }
-
-    /**
-     * 加载更多
-     * @param methods
-     * @param method
-     * @param target
-     */
-    private void findLoadMoreSubscribe(List<TofuMethod> methods, Method method, Object target){
-        loadMore more = method.getAnnotation(loadMore.class);
-        if(more != null){
-            String[] value = more.value();
-            fullyTofuMethod(value, methods, method, target);
-        }
-        loadMoreMethods.put(target.getClass().getName(),methods);
-    }
-
-
-    /**
-     * 刷新失败
-     * @param methods
-     * @param method
-     * @param target
-     */
-    private void findRefreshFailedSubscribe(List<TofuMethod> methods, Method method, Object target) {
-        refreshFailed failed = method.getAnnotation(refreshFailed.class);
-        if (failed != null) {
-            String[] value = failed.value();
-            fullyTofuMethod(value, methods, method, target);
-        }
-        refreshFailedMethods.put(target.getClass().getName(),methods);
-    }
-
-    /**
-     * 刷新回调
-     *
-     * @param refreshMethods
-     * @param method
-     * @param target
-     */
-    private void findRefreshSubscribe(List<TofuMethod> refreshMethods, Method method, Object target) {
-        refresh re = method.getAnnotation(refresh.class);
-        if (re != null) {
-            String[] value = re.value();
-            fullyTofuMethod(value, refreshMethods, method, target);
-        }
-        this.refreshMethods.put(target.getClass().getName(), refreshMethods);
     }
 
 
@@ -587,65 +495,6 @@ public class TofuBus {
 
         fullyUpGTargetSingleMethod(targetMethods, method);
 
-        fullyRefreshTargetSingleMethod(targetMethods,method);
-
-        fullyRefreshFailedTargetSingleMethod(targetMethods,method);
-
-        fullyLoadMoreTargetSingleMethod(targetMethods,method);
-
-        fullyLoadMoreFailedTargetSingleMethod(targetMethods,method);
-    }
-
-    /**
-     * 加载更多失败
-     * @param targetMethods
-     * @param method
-     */
-    private void fullyLoadMoreFailedTargetSingleMethod(HashMap<String, Method> targetMethods, Method method){
-        loadMoreFailed failed = method.getAnnotation(loadMoreFailed.class);
-        if(failed != null){
-            String[] value = failed.value();
-            fullyTargetSingleMethod(value, targetMethods, method);
-        }
-    }
-
-    /**
-     * 加载更多
-     * @param targetMethods
-     * @param method
-     */
-    private void fullyLoadMoreTargetSingleMethod(HashMap<String, Method> targetMethods, Method method){
-        loadMore more = method.getAnnotation(loadMore.class);
-        if(more != null){
-            String[] value = more.value();
-            fullyTargetSingleMethod(value, targetMethods, method);
-        }
-    }
-
-    /**
-     * 填充刷新失败
-     * @param targetMethods
-     * @param method
-     */
-    private void fullyRefreshFailedTargetSingleMethod(HashMap<String, Method> targetMethods, Method method){
-        refreshFailed failed = method.getAnnotation(refreshFailed.class);
-        if(failed != null){
-            String[] value = failed.value();
-            fullyTargetSingleMethod(value, targetMethods, method);
-        }
-    }
-
-    /**
-     * 添加刷新
-     * @param targetMethods
-     * @param method
-     */
-    private void fullyRefreshTargetSingleMethod(HashMap<String, Method> targetMethods, Method method){
-        refresh r = method.getAnnotation(refresh.class);
-        if(r != null){
-            String[] value = r.value();
-            fullyTargetSingleMethod(value, targetMethods, method);
-        }
     }
 
 
@@ -837,46 +686,6 @@ public class TofuBus {
         execute(label, postErrorMethods, results);
     }
 
-    /**
-     * 刷新
-     * @param label
-     * @param results
-     * @param <Result>
-     */
-    protected  <Result> void executeRefreshMethod(final String label, final Result... results){
-        execute(label,refreshMethods,results);
-    }
-
-
-    /**
-     * 刷新失败
-     * @param label
-     * @param results
-     * @param <Result>
-     */
-    protected <Result> void executeRefreshFailedMethod(String label,Result... results){
-        execute(label,refreshFailedMethods,results);
-    }
-
-    /**
-     * 加载更多
-     * @param label
-     * @param results
-     * @param <Result>
-     */
-    protected <Result> void executeLoadMoreMethod(String label,Result... results){
-        execute(label,loadMoreMethods,results);
-    }
-
-    /**
-     * 加载更多失败
-     * @param label
-     * @param results
-     * @param <Result>
-     */
-    protected <Result> void executeLoadMoreFailedMethod(String label,Result... results){
-        execute(label,loadMoreFailedMethods,results);
-    }
 
 
     /**
@@ -1268,10 +1077,6 @@ public class TofuBus {
         clear(upLoadFileMethods.remove(name));
         clear(upLoadFileProgressMethods.remove(name));
         clear(upLoadFileErrorMethods.remove(name));
-        clear(refreshMethods.remove(name));
-        clear(refreshFailedMethods.remove(name));
-        clear(loadMoreMethods.remove(name));
-        clear(loadMoreFailedMethods.remove(name));
         keys.remove(name);
     }
 

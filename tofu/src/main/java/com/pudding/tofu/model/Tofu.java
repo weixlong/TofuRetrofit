@@ -39,18 +39,6 @@ public class Tofu {
         TofuBus.get().findSubscribe(target);
     }
 
-    /**
-     * 刷新
-     * @return
-     */
-    public static SmartBuilder smart(){
-        SmartFactory factory = (SmartFactory) builders.get("smart");
-        if(factory == null){
-            factory = SmartFactory.get();
-            builders.put("smart",factory);
-        }
-        return factory.build();
-    }
 
 
     /**
