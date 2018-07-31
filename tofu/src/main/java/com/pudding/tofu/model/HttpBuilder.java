@@ -15,6 +15,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created by wxl on 2018/6/22 0022.
  * 邮箱：632716169@qq.com
@@ -91,6 +98,16 @@ public class HttpBuilder<Result> implements UnBind {
      */
     public HttpBuilder put(@NonNull String key, @NonNull String param) {
         params.put(key, param);
+        return this;
+    }
+
+    /**
+     * 添加参数
+     * @param params
+     * @return
+     */
+    public HttpBuilder put(@NonNull Map<String,String> params){
+        this.params.put(params);
         return this;
     }
 
@@ -172,20 +189,46 @@ public class HttpBuilder<Result> implements UnBind {
      * <p>
      * 回调到注解 post 或 postError中
      */
-    public void execute() {
+    public synchronized void execute() {
         checkExecuteAvailable();
+        Observable.create(new ObservableOnSubscribe<PostInterface>() {
+            @Override
+            public synchronized void subscribe(ObservableEmitter<PostInterface> e) throws Exception {
+                obtainHttp(e);
+            }
+        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<PostInterface>() {
+                    @Override
+                    public synchronized void accept(PostInterface http) throws Exception {
+                        realExecute(http);
+                    }
+                });
+    }
+
+    /**
+     * 获取请求句柄
+     * @param e
+     */
+    private synchronized void obtainHttp(ObservableEmitter<PostInterface> e){
         if (http == null) {
             http = new HttpImpl(params, url, resultClass,label);
         } else {
             ((HttpImpl) http).setHttpImpl(params, url, resultClass,label);
         }
+        e.onNext(http);
+    }
+
+    /**
+     * 执行请求
+     * @param http
+     */
+    private synchronized void realExecute(PostInterface http){
         if (isShowDialog) {
             http.showDialog(context);
         }
         http.execute();
         unBinds.add(http);
     }
-
 
     /**
      * 参数检查
@@ -231,7 +274,7 @@ public class HttpBuilder<Result> implements UnBind {
          * @param value
          * @return
          */
-        public CacheBuilder put(@NonNull String key, @NonNull String value){
+        public CacheBuilder put(@NonNull String key,@NonNull String value){
             cache.get(cacheKey).put(key,value);
             return this;
         }
@@ -286,7 +329,7 @@ public class HttpBuilder<Result> implements UnBind {
          *     key为全类名
          * </p>
          */
-        public void clear(){
+        public CacheBuilder clear(){
             if(TextUtils.isEmpty(cacheKey)){
                 cacheKey = "cache";
             }
@@ -294,6 +337,7 @@ public class HttpBuilder<Result> implements UnBind {
             if(!CollectUtil.isEmpty(map)){
                 map.clear();
             }
+            return this;
         }
     }
 

@@ -158,7 +158,7 @@ public class OrmBuilder implements UnBind {
     private void checkParamAvailable() {
 
         if(orm == null){
-            throw new IllegalArgumentException("your need initialize tofu before initialize FinalDb ,please call initialize(Context,String) !!");
+            throw new IllegalArgumentException("your need initialize tofu before initialize FinalDb ,please call TofuKnife.initialize(Context,String) !!");
         }
 
         if (clazz == null) {

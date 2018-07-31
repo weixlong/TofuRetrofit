@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
                         .put("user_id","23")
                         .put("sex","0")
                         .execute();
+
             }
         });
 
@@ -43,9 +44,12 @@ public class MainActivity extends BaseActivity {
     public void p(String m){
         System.out.println(m);
     }
+
     @post("789")
     protected void post(String m){
-        System.out.println(m);
+        System.out.println("post: "+m);
+        Text o = Tofu.orm().table(Text.class).queryFirst();
+        System.out.println(o.textId);
     }
 
 

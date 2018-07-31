@@ -191,12 +191,34 @@ public class SmartBuilder<Result> implements UnBind {
 
 
     /**
+     * 停止刷新和加载更多
+     */
+    public void stopRefreshMoreLoad(){
+        if(layout != null){
+            layout.finishLoadmore();
+            layout.finishRefresh();
+        }
+    }
+
+
+    /**
+     * 自动刷新
+     */
+    public void autoRefresh(){
+        if (layout != null) {
+            layout.autoRefresh();
+        }
+    }
+
+
+    /**
      * 清除参数
      */
-    public void clear(){
+    public SmartBuilder clear(){
         if (smart != null) {
             smart.clear();
         }
+        return this;
     }
 
 

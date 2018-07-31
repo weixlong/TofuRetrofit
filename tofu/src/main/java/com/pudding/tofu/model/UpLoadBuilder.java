@@ -82,7 +82,7 @@ public class UpLoadBuilder<Result> implements UnBind{
     /**
      * 开始上传
      */
-    public void start(){
+    public synchronized void start(){
         checkParamsAvailable();
         Tofu.ask().with((Activity) context).on(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(upLoad == null){

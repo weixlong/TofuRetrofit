@@ -10,8 +10,9 @@ import com.pudding.tofu.model.SmartBuilder;
 public interface OnSmartRefreshBefore {
 
     /**
-     * 刷新拦截
+     * 刷新拦截,返回false则继续，返回true则不往下
+     *
      */
-    void onRefreshBefore(SmartBuilder builder);
+    boolean onRefreshBefore(SmartBuilder builder);
 
 }

@@ -69,7 +69,7 @@ public class LoadFileBuilder implements UnBind{
     /**
      * 开始下载
      */
-    public void start(){
+    public synchronized void start(){
         checkParamsAvailable();
         Tofu.ask().with((Activity) context).on(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(impl == null){
