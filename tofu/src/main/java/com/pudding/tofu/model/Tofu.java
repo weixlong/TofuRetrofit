@@ -64,17 +64,15 @@ public class Tofu {
 
     /**
      * xml数据存储
-     *
-     * @param context
      * @return
      */
-    public static XmlOrmBuilder xml(@NonNull Context context) {
+    public static XmlOrmBuilder xml() {
         XmlOrmFactory factory = (XmlOrmFactory) builders.get("XmlOrmFactory");
         if (factory == null) {
             factory = XmlOrmFactory.get();
             builders.put("XmlOrmFactory", factory);
         }
-        return factory.build().onBindContext(context);
+        return factory.build().onBindContext(TofuKnife.app);
     }
 
 

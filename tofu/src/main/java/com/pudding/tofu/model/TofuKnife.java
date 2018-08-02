@@ -23,6 +23,8 @@ public class TofuKnife {
 
     protected static FinalDb orm;
 
+    protected static Application app;
+
     /**
      * 初始化
      *
@@ -39,6 +41,7 @@ public class TofuKnife {
      * @param context
      */
     public static void initialize(@NonNull Application context, boolean debug) {
+        app = context;
         OkGo.init(context);
         OkGo.getInstance().debug("Tofu", debug);
         TofuConfig.debug(debug);

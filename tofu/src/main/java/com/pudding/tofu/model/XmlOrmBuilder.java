@@ -1,7 +1,5 @@
 package com.pudding.tofu.model;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -27,7 +25,6 @@ public class XmlOrmBuilder implements UnBind {
     }
 
     protected XmlOrmBuilder onBindContext(Context c){
-        Tofu.ask().with((Activity) context).on(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         context = c;
         return this;
     }
@@ -37,6 +34,7 @@ public class XmlOrmBuilder implements UnBind {
      * @return
      */
     public XmlBuilder getXml(){
+        checkParamAvailable();
         toFuShare = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
         editor = toFuShare.edit();
         if(builder == null){
@@ -54,6 +52,7 @@ public class XmlOrmBuilder implements UnBind {
      * @return
      */
     public XmlBuilder getXml(@NonNull String name){
+        checkParamAvailable();
         toFuShare = context.getSharedPreferences(name,Context.MODE_PRIVATE);
         editor = toFuShare.edit();
         if(builder == null){
@@ -63,6 +62,12 @@ public class XmlOrmBuilder implements UnBind {
             builder.setXmlShare(toFuShare);
         }
         return builder;
+    }
+
+
+
+    private void checkParamAvailable(){
+        if(context == null)throw new IllegalArgumentException("your context is null , please call TofuKnife initialize . ");
     }
 
 
