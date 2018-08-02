@@ -169,7 +169,6 @@ public class XmlOrmBuilder implements UnBind {
 
     @Override
     public void unbind() {
-        context = null;
         editor = null;
         toFuShare = null;
         builder = null;
