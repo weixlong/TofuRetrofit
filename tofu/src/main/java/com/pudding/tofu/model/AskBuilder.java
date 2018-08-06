@@ -27,7 +27,9 @@ public class AskBuilder implements UnBind {
 
     private android.support.v4.app.Fragment supF;
 
-    public static int request_permission_code = 1789 >> 89;
+    public static final int request_permission_default_code = 1452635;
+
+    private int request_permission_code = request_permission_default_code;
 
     private RationaleListener mRationaleListener;
 
