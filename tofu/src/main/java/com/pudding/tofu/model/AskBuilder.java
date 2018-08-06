@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.PermissionListener;
 import com.yanzhenjie.permission.Rationale;
 import com.yanzhenjie.permission.RationaleListener;
+
+import java.util.List;
 
 /**
  * Created by wxl on 2018/7/17 0017.
@@ -23,9 +27,9 @@ public class AskBuilder implements UnBind {
 
     private android.support.v4.app.Fragment supF;
 
-    private Context context;
+    public static int request_permission_code = 1789 >> 89;
 
-    private int request_permission_code = 1789 >> 89;
+    private RationaleListener mRationaleListener;
 
     /**
      * 权限集合
@@ -38,13 +42,11 @@ public class AskBuilder implements UnBind {
 
     public AskBuilder with(@NonNull android.app.Fragment fragment) {
         appF = fragment;
-        context = fragment.getActivity();
         return this;
     }
 
     public AskBuilder with(@NonNull android.support.v4.app.Fragment fragment) {
         supF = fragment;
-        context = fragment.getActivity();
         return this;
     }
 
@@ -56,7 +58,6 @@ public class AskBuilder implements UnBind {
      */
     public AskBuilder with(@NonNull Activity act) {
         appActivity = act;
-        context = act;
         return this;
     }
 
@@ -69,6 +70,57 @@ public class AskBuilder implements UnBind {
     public AskBuilder on(@NonNull String... permissions) {
         this.permissions = permissions;
         return this;
+    }
+
+
+    /**
+     * 设置用户选择回调
+     *
+     * @param listener
+     * @return
+     */
+    public AskBuilder setRationaleListener(RationaleListener listener) {
+        mRationaleListener = listener;
+        return this;
+    }
+
+    /**
+     * 请求码
+     *
+     * @param requestCode
+     * @return
+     */
+    public AskBuilder code(int requestCode) {
+        request_permission_code = requestCode;
+        return this;
+    }
+
+
+    /**
+     * 设置权限获取回调结果
+     *
+     * @param grantResults
+     * @param permissionListener
+     */
+    public void onRequestPermissionsResult(int[] grantResults, PermissionListener permissionListener) {
+        AndPermission.onRequestPermissionsResult(request_permission_code, permissions, grantResults, permissionListener);
+    }
+
+    /**
+     * 注解方式回调权限请求结果
+     *
+     * @param grantResults
+     */
+    public void onRequestPermissionsResult(int[] grantResults) {
+        if (appActivity != null) {
+            AndPermission.onRequestPermissionsResult(appActivity, request_permission_code, permissions, grantResults);
+        } else if (supF != null) {
+            AndPermission.onRequestPermissionsResult(supF, request_permission_code, permissions, grantResults);
+        } else if (appF != null) {
+            AndPermission.onRequestPermissionsResult(appF, request_permission_code, permissions, grantResults);
+        } else {
+            System.err.println("Tofu : Not find your call object , please with it !");
+        }
     }
 
 
@@ -89,28 +141,7 @@ public class AskBuilder implements UnBind {
         }
         with.permission(permissions)
                 .requestCode(request_permission_code)
-                .rationale(new RationaleListener() {
-                    @Override
-                    public void showRequestPermissionRationale(int requestCode, final Rationale rationale) {
-                        if(requestCode == request_permission_code) {
-                            new AlertDialog.Builder(context)
-                                    .setTitle("权限提醒")
-                                    .setMessage("您已拒绝该权限，拒绝该权限将会影响部分功能的使用，建议您开启权限")
-                                    .setPositiveButton("允许", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            rationale.resume();
-                                        }
-                                    })
-                                    .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            rationale.cancel();
-                                        }
-                                    }).show();
-                        }
-                    }
-                }).send();
+                .rationale(mRationaleListener).send();
     }
 
     /**
@@ -130,6 +161,5 @@ public class AskBuilder implements UnBind {
         appActivity = null;
         appF = null;
         supF = null;
-        context = null;
     }
 }

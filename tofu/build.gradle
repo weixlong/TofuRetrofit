@@ -39,7 +39,7 @@ dependencies {
     compile 'com.zxy.android:recovery:0.1.2'
     compile 'com.zxy.android:tiny:0.0.6'
     compile 'me.iwf.photopicker:PhotoPicker:0.9.5'
-    compile 'com.yanzhenjie:permission:1.0.3'
+    compile 'com.yanzhenjie:permission:1.0.5'
     compile files('libs/afinal_0.5.1_bin.jar')
     compile 'com.makeramen:roundedimageview:2.3.0'
 }
