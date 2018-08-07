@@ -74,6 +74,9 @@ public class LoadImpl implements PostInterface, LoadFileCallback {
     @Override
     public void unBind() {
         closeDialog();
+        if(load != null){
+            load.cancelLoad();
+        }
     }
 
     @Override

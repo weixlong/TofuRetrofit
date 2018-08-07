@@ -80,7 +80,10 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
     @Override
     public void unBind() {
         closeDialog();
-        impl = null;
+        if(impl != null) {
+            impl.cancelPost(url);
+            impl = null;
+        }
     }
 
     @Override

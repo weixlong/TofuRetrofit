@@ -80,4 +80,8 @@ public class Upload {
         });
 
     }
+
+    protected void cencalUpLoad(){
+        OkGo.getInstance().cancelTag("upLoadFile");
+    }
 }

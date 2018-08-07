@@ -53,4 +53,11 @@ public class Load {
             }
         });
     }
+
+    /**
+     * 取消下载任务
+     */
+    protected void cancelLoad(){
+        OkGo.getInstance().cancelTag("loadFile");
+    }
 }

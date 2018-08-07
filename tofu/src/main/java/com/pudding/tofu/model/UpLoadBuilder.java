@@ -21,7 +21,7 @@ import java.util.Map;
  * 邮箱：632716169@qq.com
  */
 
-public class UpLoadBuilder<Result> implements UnBind{
+public class UpLoadBuilder<Result> implements UnBind {
 
     /**
      * 上传路径
@@ -70,6 +70,7 @@ public class UpLoadBuilder<Result> implements UnBind{
      */
     private boolean isCompress = false;
 
+
     /***
      * 上下文
      */
@@ -83,9 +84,9 @@ public class UpLoadBuilder<Result> implements UnBind{
     /**
      * 开始上传
      */
-    public synchronized void start(){
+    public synchronized void start() {
         checkParamsAvailable();
-        if(AndPermission.hasPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (AndPermission.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (upLoad == null) {
                 upLoad = new UpLoadImpl(url, params, heads, uploadFiles, aClass, isCompress, context, label);
             } else {
@@ -108,6 +109,7 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 设置tag，如果没有设置或为空，则回调url注解方法
+     *
      * @param label
      * @return
      */
@@ -119,17 +121,19 @@ public class UpLoadBuilder<Result> implements UnBind{
     /**
      * 参数检查
      */
-    private void checkParamsAvailable(){
-        if(TextUtils.isEmpty(url))throw  new NullPointerException("your url is null !!");
-        if(CollectUtil.isEmpty(uploadFiles))throw  new NullPointerException("your upload file is null !!");
+    private void checkParamsAvailable() {
+        if (TextUtils.isEmpty(url)) throw new NullPointerException("your url is null !!");
+        if (CollectUtil.isEmpty(uploadFiles))
+            throw new NullPointerException("your upload file is null !!");
     }
 
     /**
      * 添加上传文件
+     *
      * @param file
      * @return
      */
-    public UpLoadBuilder addFile(@NonNull File file){
+    public UpLoadBuilder addFile(@NonNull File file) {
         UploadFile uploadFile = new UploadFile();
         uploadFile.key = file.getName();
         uploadFile.path = file.getAbsolutePath();
@@ -139,17 +143,21 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 是否压缩之后再上传
+     *
      * @param
      * @return
      */
     public UpLoadBuilder asCompress(@NonNull Context context) {
         isCompress = true;
-        this.context  =context;
+        this.context = context;
         return this;
     }
 
+
+
     /**
      * 设置返回结果参数
+     *
      * @param aClass
      */
     public UpLoadBuilder setClass(@NonNull Class<Result> aClass) {
@@ -159,11 +167,12 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 添加上传文件
+     *
      * @param key
      * @param file
      * @return
      */
-    public UpLoadBuilder addFile(@NonNull String key, @NonNull File file){
+    public UpLoadBuilder addFile(@NonNull String key, @NonNull File file) {
         UploadFile uploadFile = new UploadFile();
         uploadFile.key = key;
         uploadFile.path = file.getAbsolutePath();
@@ -173,11 +182,12 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 添加上传文件
+     *
      * @param
      * @param path
      * @return
      */
-    public UpLoadBuilder addFile(@NonNull String path){
+    public UpLoadBuilder addFile(@NonNull String path) {
         File file = new File(path);
         UploadFile uploadFile = new UploadFile();
         uploadFile.key = file.getName();
@@ -188,11 +198,12 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 添加上传文件
+     *
      * @param key
      * @param path
      * @return
      */
-    public UpLoadBuilder addFile(@NonNull String key, @NonNull String path){
+    public UpLoadBuilder addFile(@NonNull String key, @NonNull String path) {
         File file = new File(path);
         UploadFile uploadFile = new UploadFile();
         uploadFile.key = key;
@@ -204,32 +215,33 @@ public class UpLoadBuilder<Result> implements UnBind{
 
     /**
      * 添加上传头
+     *
      * @param key
      * @param head
      * @return
      */
-    public UpLoadBuilder addHead(@NonNull String key, @NonNull String head){
-        heads.put(key,head);
+    public UpLoadBuilder addHead(@NonNull String key, @NonNull String head) {
+        heads.put(key, head);
         return this;
     }
 
     /**
      * 添加上传参数
+     *
      * @param key
      * @param value
      * @return
      */
-    public UpLoadBuilder addParam(@NonNull String key, @NonNull String value){
-        params.put(key,value);
+    public UpLoadBuilder addParam(@NonNull String key, @NonNull String value) {
+        params.put(key, value);
         return this;
     }
-
-
 
 
     /**
      * 上传路径
      * 如果没有设置label ,则label为url
+     *
      * @param url
      */
     public UpLoadBuilder setUrl(@NonNull String url) {
@@ -260,7 +272,7 @@ public class UpLoadBuilder<Result> implements UnBind{
     /**
      * 清除缓存
      */
-    protected void clear(){
+    protected void clear() {
         params.clear();
         heads.clear();
         uploadFiles.clear();

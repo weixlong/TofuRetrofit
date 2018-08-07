@@ -95,5 +95,6 @@ public class EventBuilder<Result> implements UnBind {
     public void unbind() {
         view = null;
         setClick = false;
+        setLClick = false;
     }
 }

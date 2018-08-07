@@ -18,7 +18,7 @@ import okhttp3.Response;
 public class PostImpl {
 
     protected synchronized <Result> void post(final Class<Result> resultClass, final String url, HttpParams params, final PostResultCallback callback) {
-        OkGo.post(url).params(params).execute(new StringCallback() {
+        OkGo.post(url).tag(url).params(params).execute(new StringCallback() {
             @Override
             public void onSuccess(String s, Call call, Response response) {
                 if (response.isSuccessful()) {
@@ -59,5 +59,13 @@ public class PostImpl {
             }
 
         });
+    }
+
+    /**
+     * 取消请求
+     * @param tag
+     */
+    public void cancelPost(String tag){
+        OkGo.getInstance().cancelTag(tag);
     }
 }

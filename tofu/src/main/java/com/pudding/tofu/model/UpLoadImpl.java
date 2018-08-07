@@ -82,6 +82,11 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
 
     private String label;
 
+    /**
+     * 当页面关闭的时候是否需要在后台继续上传
+     */
+    private boolean isBackgroundRun = false;
+
 
     protected UpLoadImpl() {
     }
@@ -130,6 +135,9 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
     @Override
     public void unBind() {
         closeDialog();
+        if(upload != null){
+            upload.cencalUpLoad();
+        }
         upload = null;
     }
 
