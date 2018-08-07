@@ -863,7 +863,7 @@ public class TofuBus {
      */
     private <Result> void findSimpleMethodWithParam(Object[] realParams, Class[] paramterClass, Result... results) {
         for (int j = 0; j < realParams.length; j++) {
-            if (results.length <= realParams.length && j< results.length && paramterClass[j].isInstance(results[j])) {
+            if (j< results.length && paramterClass[j].isInstance(results[j])) {
                 realParams[j] = results[j];
             } else {
                 realParams[j] = null;
