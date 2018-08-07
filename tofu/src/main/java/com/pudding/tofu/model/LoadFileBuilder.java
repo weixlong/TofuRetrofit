@@ -71,7 +71,6 @@ public class LoadFileBuilder implements UnBind{
      */
     public synchronized void start(){
         checkParamsAvailable();
-        Tofu.ask().with((Activity) context).on(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(impl == null){
             impl = new LoadImpl(url,destPath,params,label);
         } else {

@@ -1,8 +1,8 @@
 package com.pudding.tofu;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 
 import com.pudding.tofu.model.Tofu;
 
@@ -11,7 +11,7 @@ import com.pudding.tofu.model.Tofu;
  * 邮箱：632716169@qq.com
  */
 
-public class BaseActivity extends Activity {
+public class BaseActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -84,7 +84,6 @@ public class UpLoadBuilder<Result> implements UnBind{
      */
     public synchronized void start(){
         checkParamsAvailable();
-        Tofu.ask().with((Activity) context).on(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(upLoad == null){
             upLoad = new UpLoadImpl(url,params,heads,uploadFiles,aClass,isCompress,context,label);
         } else {

@@ -181,6 +181,20 @@ public class Tofu {
 
 
     /**
+     * 事件管理
+     * @return
+     */
+    public static EventBuilder event(){
+        EventFactory factory = (EventFactory) builders.get("event");
+        if(factory == null){
+            factory = EventFactory.get();
+            builders.put("event",factory);
+        }
+        return factory.build();
+    }
+
+
+    /**
      * 解绑
      *
      * @param target
