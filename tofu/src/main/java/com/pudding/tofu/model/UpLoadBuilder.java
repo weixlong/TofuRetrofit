@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.pudding.tofu.callback.BaseInterface;
 import com.pudding.tofu.widget.CollectUtil;
+import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -84,21 +85,25 @@ public class UpLoadBuilder<Result> implements UnBind{
      */
     public synchronized void start(){
         checkParamsAvailable();
-        if(upLoad == null){
-            upLoad = new UpLoadImpl(url,params,heads,uploadFiles,aClass,isCompress,context,label);
-        } else {
-            upLoad.setUpLoadImpl(url,params,heads,uploadFiles,aClass,isCompress,context,label);
-        }
-
-        if(isShowDialog){
-            if(context != null){
-                upLoad.showDialog(context);
+        if(AndPermission.hasPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (upLoad == null) {
+                upLoad = new UpLoadImpl(url, params, heads, uploadFiles, aClass, isCompress, context, label);
+            } else {
+                upLoad.setUpLoadImpl(url, params, heads, uploadFiles, aClass, isCompress, context, label);
             }
+
+            if (isShowDialog) {
+                if (context != null) {
+                    upLoad.showDialog(context);
+                }
+            }
+
+            upLoad.execute();
+
+            unBinds.add(upLoad);
+        } else {
+            System.out.println("Tofu : Are you sure has storage permission ? ");
         }
-
-        upLoad.execute();
-
-        unBinds.add(upLoad);
     }
 
     /**

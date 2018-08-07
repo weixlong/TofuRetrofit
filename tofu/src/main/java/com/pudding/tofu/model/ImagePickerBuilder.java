@@ -2,9 +2,12 @@ package com.pudding.tofu.model;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import com.yanzhenjie.permission.AndPermission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +97,14 @@ public class ImagePickerBuilder implements UnBind {
      */
     public void start(@NonNull Activity context, @NonNull String label) {
         checkParamsAvailable(context,label);
-        Tofu.ask().with(context).on(Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE).ask();
         if (photoPickerBuilder != null) {
-            if (PermissionsUtils.checkReadStoragePermission(context)) {
+            if (AndPermission.hasPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA)) {
                 context.startActivityForResult(photoPickerBuilder.getIntent(context)
                                 .setClassName(context,PhotoPickerActivity2.class.getName())
                         .putExtra("label",label),
                         REQUEST_CODE);
+            } else {
+                System.out.println("Tofu : Are you sure has storage and camera permission ? ");
             }
         }
     }
@@ -110,7 +114,7 @@ public class ImagePickerBuilder implements UnBind {
      * @param context
      * @param label
      */
-    private void checkParamsAvailable(Activity context,String label){
+    private void checkParamsAvailable(Context context,String label){
         if(context == null){
             throw new NullPointerException("your context is null , please set context is availabel .");
         }

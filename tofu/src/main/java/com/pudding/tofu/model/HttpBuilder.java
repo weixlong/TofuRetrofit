@@ -1,5 +1,6 @@
 package com.pudding.tofu.model;
 
+import android.Manifest;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -8,6 +9,7 @@ import com.lzy.okgo.model.HttpParams;
 import com.pudding.tofu.callback.BaseInterface;
 import com.pudding.tofu.callback.PostInterface;
 import com.pudding.tofu.widget.CollectUtil;
+import com.yanzhenjie.permission.AndPermission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,11 +225,15 @@ public class HttpBuilder<Result> implements UnBind {
      * @param http
      */
     private synchronized void realExecute(PostInterface http){
-        if (isShowDialog) {
-            http.showDialog(context);
+        if(AndPermission.hasPermission(context, Manifest.permission.INTERNET)) {
+            if (isShowDialog) {
+                http.showDialog(context);
+            }
+            http.execute();
+            unBinds.add(http);
+        } else {
+            System.out.println("Tofu : Are you sure has internet permission ? ");
         }
-        http.execute();
-        unBinds.add(http);
     }
 
     /**

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.pudding.tofu.callback.BaseInterface;
+import com.yanzhenjie.permission.AndPermission;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,21 +72,25 @@ public class LoadFileBuilder implements UnBind{
      */
     public synchronized void start(){
         checkParamsAvailable();
-        if(impl == null){
-            impl = new LoadImpl(url,destPath,params,label);
-        } else {
-            impl.setLoadImpl(url,destPath,params,label);
-        }
-
-        if(isShowDialog) {
-            if(context != null){
-                impl.showDialog(context);
+        if(AndPermission.hasPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (impl == null) {
+                impl = new LoadImpl(url, destPath, params, label);
             } else {
-                System.err.print("Tofu : your context is null cannot show dialog !");
+                impl.setLoadImpl(url, destPath, params, label);
             }
+
+            if (isShowDialog) {
+                if (context != null) {
+                    impl.showDialog(context);
+                } else {
+                    System.err.print("Tofu : your context is null cannot show dialog !");
+                }
+            }
+            unBinds.add(impl);
+            impl.execute();
+        } else {
+            System.out.println("Tofu : Are you sure has storage permission ? ");
         }
-        unBinds.add(impl);
-        impl.execute();
     }
 
     /**

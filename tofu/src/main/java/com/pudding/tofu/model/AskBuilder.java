@@ -125,6 +125,32 @@ public class AskBuilder implements UnBind {
         }
     }
 
+    /**
+     * 是否已经有权限
+     * @param permissions
+     * @return
+     */
+    public boolean hasPermission(@NonNull String ... permissions){
+        return AndPermission.hasPermission(checkHasPermissionParam(permissions),permissions);
+    }
+
+    /**
+     * 权限检查
+     * @param permissions
+     * @return
+     */
+    private Context checkHasPermissionParam(String ... permissions){
+        if (appActivity == null && appF == null && supF == null) {
+            throw new NullPointerException("your activity is null !");
+        }
+        if(permissions==null)new NullPointerException("your check permissions is null !");
+
+        if(appActivity != null)return appActivity;
+        if(appF != null) return appF.getActivity();
+        if(supF != null)return supF.getActivity();
+        return null;
+    }
+
 
     /**
      * 请求权限
