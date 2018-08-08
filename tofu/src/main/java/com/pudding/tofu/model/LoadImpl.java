@@ -3,6 +3,7 @@ package com.pudding.tofu.model;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.lzy.okgo.model.HttpHeaders;
 import com.pudding.tofu.R;
 import com.pudding.tofu.callback.LoadFileCallback;
 import com.pudding.tofu.callback.PostInterface;
@@ -10,7 +11,10 @@ import com.pudding.tofu.widget.LoadDialog;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import okhttp3.Cookie;
 
 /**
  * Created by wxl on 2018/6/24 0024.
@@ -49,17 +53,25 @@ public class LoadImpl implements PostInterface, LoadFileCallback {
 
     private String label;
 
-    protected LoadImpl(String url, String destPath, Map<String, String> params, String label) {
+    private HttpHeaders heads;
+
+    protected List<Cookie> cookies;
+
+    protected LoadImpl(String url, String destPath,List<Cookie> cookies,HttpHeaders heads, Map<String, String> params, String label) {
         this.url = url;
         this.destPath = destPath;
         this.params = params;
         this.label = label;
+        this.cookies = cookies;
+        this.heads = heads;
     }
 
-    protected void setLoadImpl(String url, String destPath, Map<String, String> params, String label) {
+    protected void setLoadImpl(String url, String destPath,List<Cookie> cookies,HttpHeaders heads, Map<String, String> params, String label) {
         this.url = url;
         this.destPath = destPath;
         this.params = params;
+        this.cookies = cookies;
+        this.heads = heads;
         this.label = label;
     }
 
@@ -68,7 +80,7 @@ public class LoadImpl implements PostInterface, LoadFileCallback {
         if(load == null){
             load = new Load();
         }
-        load.onLoad(url,destPath,this,params);
+        load.onLoad(url,destPath,this,cookies,heads,params);
     }
 
     @Override

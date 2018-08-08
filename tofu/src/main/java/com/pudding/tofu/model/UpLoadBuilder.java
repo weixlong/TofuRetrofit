@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.lzy.okgo.model.HttpHeaders;
 import com.pudding.tofu.callback.BaseInterface;
 import com.pudding.tofu.widget.CollectUtil;
 import com.yanzhenjie.permission.AndPermission;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Cookie;
 
 /**
  * Created by wxl on 2018/6/25 0025.
@@ -47,7 +50,12 @@ public class UpLoadBuilder<Result> implements UnBind {
     /**
      * 参数
      */
-    private Map<String, String> heads = new HashMap<>();
+    private HttpHeaders heads = new HttpHeaders();
+
+    /**
+     * Cookie
+     */
+    private List<Cookie> cookies = new ArrayList<>();
 
     /**
      * 上传文件集合
@@ -88,9 +96,9 @@ public class UpLoadBuilder<Result> implements UnBind {
         checkParamsAvailable();
         if (AndPermission.hasPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (upLoad == null) {
-                upLoad = new UpLoadImpl(url, params, heads, uploadFiles, aClass, isCompress, context, label);
+                upLoad = new UpLoadImpl(url, params, heads,cookies, uploadFiles, aClass, isCompress, context, label);
             } else {
-                upLoad.setUpLoadImpl(url, params, heads, uploadFiles, aClass, isCompress, context, label);
+                upLoad.setUpLoadImpl(url, params, heads,cookies, uploadFiles, aClass, isCompress, context, label);
             }
 
             if (isShowDialog) {
@@ -183,6 +191,40 @@ public class UpLoadBuilder<Result> implements UnBind {
     /**
      * 添加上传文件
      *
+     * @return
+     */
+    public UpLoadBuilder addFiles(List<String> paths) {
+        if(CollectUtil.isEmpty(paths))return this;
+        for (String path : paths) {
+            File file = new File(path);
+            UploadFile uploadFile = new UploadFile();
+            uploadFile.key = file.getName();
+            uploadFile.path = file.getAbsolutePath();
+            uploadFiles.add(uploadFile);
+        }
+        return this;
+    }
+
+
+    /**
+     * 添加上传文件
+     *
+     * @return
+     */
+    public UpLoadBuilder addFile(List<File> files) {
+        if(CollectUtil.isEmpty(files))return this;
+        for (File file : files) {
+            UploadFile uploadFile = new UploadFile();
+            uploadFile.key = file.getName();
+            uploadFile.path = file.getAbsolutePath();
+            uploadFiles.add(uploadFile);
+        }
+        return this;
+    }
+
+    /**
+     * 添加上传文件
+     *
      * @param
      * @param path
      * @return
@@ -212,6 +254,37 @@ public class UpLoadBuilder<Result> implements UnBind {
         return this;
     }
 
+    /***
+     * 添加Cookie
+     * @param cookie
+     * @return
+     */
+    public UpLoadBuilder addCookie(@NonNull Cookie cookie){
+        cookies.add(cookie);
+        return this;
+    }
+
+    /***
+     * 添加Cookies
+     * @param cookies
+     * @return
+     */
+    public UpLoadBuilder addCookie(@NonNull List<Cookie> cookies){
+        this.cookies.addAll(cookies);
+        return this;
+    }
+
+    /***
+     * 添加Cookie
+     * @param
+     * @return
+     */
+    public UpLoadBuilder addCookie(@NonNull String name,@NonNull String value){
+        Cookie.Builder builder = new Cookie.Builder();
+        Cookie cookie = builder.name(name).value(value).domain(name).build();
+        cookies.add(cookie);
+        return this;
+    }
 
     /**
      * 添加上传头
@@ -275,6 +348,7 @@ public class UpLoadBuilder<Result> implements UnBind {
     protected void clear() {
         params.clear();
         heads.clear();
+        cookies.clear();
         uploadFiles.clear();
         isShowDialog = false;
         isCompress = false;

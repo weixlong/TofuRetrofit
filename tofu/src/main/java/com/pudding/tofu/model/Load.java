@@ -2,12 +2,16 @@ package com.pudding.tofu.model;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
+import com.lzy.okgo.model.HttpHeaders;
 import com.pudding.tofu.callback.LoadFileCallback;
+import com.pudding.tofu.widget.CollectUtil;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Cookie;
 import okhttp3.Response;
 
 /**
@@ -22,9 +26,9 @@ public class Load {
      * @param destPath
      * @param loadFileCallback
      */
-    protected synchronized void onLoad(String url, String destPath, final LoadFileCallback loadFileCallback,Map<String, String> params){
+    protected synchronized void onLoad(String url, String destPath, final LoadFileCallback loadFileCallback, List<Cookie> cookies, HttpHeaders heads, Map<String, String> params){
         final File file = new File(destPath);
-        OkGo.post(url).tag("loadFile").params(params).execute(new FileCallback(file.getParent(), file.getName()) {
+        OkGo.post(url).tag("loadFile").addCookies(cookies).headers(heads).params(params).execute(new FileCallback(file.getParent(), file.getName()) {
             @Override
             public void onSuccess(File file, Call call, Response response) {
                 if(response.isSuccessful()) {

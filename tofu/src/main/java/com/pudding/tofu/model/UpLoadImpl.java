@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.lzy.okgo.model.HttpHeaders;
 import com.pudding.tofu.R;
 import com.pudding.tofu.callback.PostInterface;
 import com.pudding.tofu.callback.UploadCallback;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Cookie;
 
 /**
  * Created by wxl on 2018/6/25 0025.
@@ -52,7 +55,7 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
     /**
      * 参数
      */
-    private Map<String, String> heads = new HashMap<>();
+    private HttpHeaders heads = new HttpHeaders();
 
     /**
      * 上传文件集合
@@ -82,16 +85,12 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
 
     private String label;
 
-    /**
-     * 当页面关闭的时候是否需要在后台继续上传
-     */
-    private boolean isBackgroundRun = false;
-
+   private List<Cookie> cookies;
 
     protected UpLoadImpl() {
     }
 
-    protected UpLoadImpl(String url, Map<String, String> params, Map<String, String> heads,
+    protected UpLoadImpl(String url, Map<String, String> params, HttpHeaders heads,List<Cookie> cookies,
                          List<UpLoadBuilder.UploadFile> uploadFiles,
                          Class<Result> aClass, boolean compress, Context context,
                          String label) {
@@ -102,10 +101,11 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
         this.aClass = aClass;
         this.compress = compress;
         this.context = context;
+        this.cookies = cookies;
         this.label = label;
     }
 
-    protected void setUpLoadImpl(String url, Map<String, String> params, Map<String, String> heads,
+    protected void setUpLoadImpl(String url, Map<String, String> params, HttpHeaders heads,List<Cookie> cookies,
                                  List<UpLoadBuilder.UploadFile> uploadFiles,
                                  Class<Result> aClass, boolean compress,
                                  Context context, String label) {
@@ -117,6 +117,7 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
         this.compress = compress;
         this.context = context;
         this.label = label;
+        this.cookies  = cookies;
     }
 
 
@@ -128,7 +129,7 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
         if(compress){
             compress();
         } else {
-            upload.upload(url, uploadFiles, heads, params, this);
+            upload.upload(url, uploadFiles, heads,cookies, params, this);
         }
     }
 
@@ -190,7 +191,7 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
                         }
                         uploadFiles.get(i).path = outfile[i];
                     }
-                    upload.upload(url, uploadFiles, heads, params, UpLoadImpl.this);
+                    upload.upload(url, uploadFiles, heads,cookies, params, UpLoadImpl.this);
                 }
             }
         });

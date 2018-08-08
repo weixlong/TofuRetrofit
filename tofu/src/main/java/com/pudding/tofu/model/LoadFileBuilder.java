@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.lzy.okgo.model.HttpHeaders;
 import com.pudding.tofu.callback.BaseInterface;
 import com.yanzhenjie.permission.AndPermission;
 
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Cookie;
 
 /**
  * Created by wxl on 2018/6/24 0024.
@@ -57,6 +60,16 @@ public class LoadFileBuilder implements UnBind{
     private Map<String, String> params = new HashMap<>();
 
     /**
+     * 头
+     */
+    private HttpHeaders heads = new HttpHeaders();
+
+    /**
+     * 用户自己添加的Cookie
+     */
+    protected List<Cookie> userCookies = new ArrayList<>();
+
+    /**
      * 上下文
      */
     private Context context;
@@ -74,9 +87,9 @@ public class LoadFileBuilder implements UnBind{
         checkParamsAvailable();
         if(AndPermission.hasPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (impl == null) {
-                impl = new LoadImpl(url, destPath, params, label);
+                impl = new LoadImpl(url, destPath, userCookies,heads,params, label);
             } else {
-                impl.setLoadImpl(url, destPath, params, label);
+                impl.setLoadImpl(url, destPath,userCookies,heads, params, label);
             }
 
             if (isShowDialog) {
@@ -134,6 +147,69 @@ public class LoadFileBuilder implements UnBind{
     }
 
     /**
+     * 移除参数
+     * @param key
+     * @return
+     */
+    public LoadFileBuilder remove(@NonNull String key){
+        params.remove(key);
+        return this;
+    }
+
+    /**
+     * 移除请求头
+     * @param key
+     * @return
+     */
+    public LoadFileBuilder removeHead(@NonNull String key){
+        heads.remove(key);
+        return this;
+    }
+
+    /**
+     * 请求头
+     * @param key
+     * @param head
+     * @return
+     */
+    public LoadFileBuilder putHead(@NonNull String key, @NonNull String head){
+        heads.put(key,head);
+        return this;
+    }
+
+    /***
+     * 添加Cookie
+     * @param cookie
+     * @return
+     */
+    public LoadFileBuilder addCookie(@NonNull Cookie cookie){
+        userCookies.add(cookie);
+        return this;
+    }
+
+    /***
+     * 添加Cookies
+     * @param cookies
+     * @return
+     */
+    public LoadFileBuilder addCookie(@NonNull List<Cookie> cookies){
+        userCookies.addAll(cookies);
+        return this;
+    }
+
+    /***
+     * 添加Cookie
+     * @param
+     * @return
+     */
+    public LoadFileBuilder addCookie(@NonNull String name,@NonNull String value){
+        Cookie.Builder builder = new Cookie.Builder();
+        Cookie cookie = builder.name(name).value(value).domain(name).build();
+        userCookies.add(cookie);
+        return this;
+    }
+
+    /**
      * 下载存入文件地址
      * @param destPath
      * @return
@@ -183,6 +259,8 @@ public class LoadFileBuilder implements UnBind{
         this.destPath = "";
         this.url = "";
         params.clear();
+        heads.clear();
+        userCookies.clear();
         context = null;
     }
 }

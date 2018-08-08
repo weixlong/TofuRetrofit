@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Cookie;
 import okhttp3.Response;
 
 /**
@@ -31,17 +32,13 @@ public class Upload {
      * @param params
      * @param uploadCallback
      */
-    protected void upload(String url, List<UpLoadBuilder.UploadFile> uploadFiles, Map<String, String> headers,
+    protected void upload(String url, List<UpLoadBuilder.UploadFile> uploadFiles, HttpHeaders headers,List<Cookie> cookies,
                           Map<String, String> params, final UploadCallback uploadCallback) {
         if (url == null || CollectUtil.isEmpty(uploadFiles)) return;
 
         PostRequest upLoadFile = OkGo.post(url).tag("upLoadFile");
-        if (!CollectUtil.isEmpty(headers)) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            headers.putAll(headers);
-            upLoadFile.headers(httpHeaders);
-        }
-
+        upLoadFile.headers(headers);
+        upLoadFile.addCookies(cookies);
         if (!CollectUtil.isEmpty(params)) {
             upLoadFile.params(params);
         }

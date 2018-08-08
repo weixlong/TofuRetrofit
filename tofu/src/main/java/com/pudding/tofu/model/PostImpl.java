@@ -4,10 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.pudding.tofu.callback.PostResultCallback;
 
+import java.util.List;
+
 import okhttp3.Call;
+import okhttp3.Cookie;
 import okhttp3.Response;
 
 /**
@@ -17,8 +21,8 @@ import okhttp3.Response;
 
 public class PostImpl {
 
-    protected synchronized <Result> void post(final Class<Result> resultClass, final String url, HttpParams params, final PostResultCallback callback) {
-        OkGo.post(url).tag(url).params(params).execute(new StringCallback() {
+    protected synchronized <Result> void post(final Class<Result> resultClass, final String url,  List<Cookie> cookies, HttpParams params, HttpHeaders headers, final PostResultCallback callback) {
+        OkGo.post(url).tag(url).params(params).addCookies(cookies).headers(headers).execute(new StringCallback() {
             @Override
             public void onSuccess(String s, Call call, Response response) {
                 if (response.isSuccessful()) {

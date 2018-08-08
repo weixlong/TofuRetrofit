@@ -4,11 +4,16 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.pudding.tofu.R;
 import com.pudding.tofu.callback.PostInterface;
 import com.pudding.tofu.callback.PostResultCallback;
 import com.pudding.tofu.widget.LoadDialog;
+
+import java.util.List;
+
+import okhttp3.Cookie;
 
 /**
  * Created by wxl on 2018/6/22 0022.
@@ -48,21 +53,29 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
 
     private String label;
 
+    private HttpHeaders headers;
+
+    private List<Cookie> cookies;
+
     protected HttpImpl() {
     }
 
-    protected HttpImpl(HttpParams params, String url, Class<Result> resultClass,String label) {
+    protected HttpImpl(List<Cookie> cookies,HttpHeaders headers,HttpParams params, String url, Class<Result> resultClass,String label) {
         this.params = params;
         this.url = url;
         this.resultClass = resultClass;
         this.label = label;
+        this.headers = headers;
+        this.cookies  = cookies;
     }
 
-    protected void setHttpImpl(HttpParams params, String url, Class<Result> resultClass,String label) {
+    protected void setHttpImpl(List<Cookie> cookies,HttpHeaders headers,HttpParams params, String url, Class<Result> resultClass,String label) {
         this.params = params;
         this.url = url;
         this.resultClass = resultClass;
         this.label = label;
+        this.headers = headers;
+        this.cookies = cookies;
     }
 
     @Override
@@ -71,7 +84,7 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
         if (impl == null) {
             impl = new PostImpl();
         }
-        impl.post(resultClass, url, params, this);
+        impl.post(resultClass, url, cookies,params,headers, this);
         if (TofuConfig.isDebug()) {
             print();
         }
