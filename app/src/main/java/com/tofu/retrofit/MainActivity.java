@@ -3,7 +3,7 @@ package com.tofu.retrofit;
 import android.os.Bundle;
 import android.view.View;
 
-import com.pudding.tofu.BaseActivity;
+import com.pudding.tofu.TofuSupportActivity;
 import com.pudding.tofu.model.Tofu;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
@@ -11,7 +11,7 @@ import com.pudding.tofu.retention.subscribe;
 import com.tofu.retrofit.orm.Text;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends TofuSupportActivity {
 
     public static final String update_sex_url = "http://www.kangyu.com/api/user/modify_sex";
 

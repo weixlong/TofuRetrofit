@@ -374,7 +374,7 @@ public class TofuBus {
             public void subscribe(ObservableEmitter<SingleTarget> e) throws Exception {
                 onFindTargetSingleMethod(e, target, label, results);
             }
-        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.newThread()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<SingleTarget>() {
                     @Override
                     public void accept(SingleTarget singleTarget) throws Exception {
@@ -769,7 +769,7 @@ public class TofuBus {
             public void subscribe(ObservableEmitter<Post> e) throws Exception {
                 onExecuteSimpleInterceptorMethod(e, label, maps, results);
             }
-        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.newThread()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Post>() {
                     @Override
                     public void accept(Post post) throws Exception {
@@ -898,7 +898,7 @@ public class TofuBus {
             public void subscribe(ObservableEmitter<Post> e) throws Exception {
                 executeInterceptorMethod(e, label, maps, results);
             }
-        }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.newThread()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Post>() {
                     @Override
                     public void accept(Post post) throws Exception {
