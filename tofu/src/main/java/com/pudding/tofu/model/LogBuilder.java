@@ -202,6 +202,56 @@ public class LogBuilder implements UnBind {
             return this;
         }
 
+        public pBuilder pln(@NonNull String msg){
+            ps.append(msg+" \n");
+            return this;
+        }
+
+        public pBuilder pln(@NonNull int msg){
+            ps.append(msg+" \n");
+            return this;
+        }
+
+        public pBuilder pln(@NonNull float msg){
+            ps.append(msg+" \n");
+            return this;
+        }
+
+        public pBuilder pln(@NonNull long msg){
+            ps.append(msg+" \n");
+            return this;
+        }
+
+        public pBuilder pln(@NonNull double msg){
+            ps.append(msg+" \n");
+            return this;
+        }
+
+        public pBuilder peq(@NonNull String msg){
+            ps.append(msg+" = ");
+            return this;
+        }
+
+        public pBuilder peq(@NonNull int msg){
+            ps.append(msg+" = ");
+            return this;
+        }
+
+        public pBuilder peq(@NonNull float msg){
+            ps.append(msg+" = ");
+            return this;
+        }
+
+        public pBuilder peq(@NonNull long msg){
+            ps.append(msg+" = ");
+            return this;
+        }
+
+        public pBuilder peq(@NonNull double msg){
+            ps.append(msg+" = ");
+            return this;
+        }
+
         public void v(){
             if(TofuConfig.isDebug()) {
                 Log.v(TAG, ps.toString());

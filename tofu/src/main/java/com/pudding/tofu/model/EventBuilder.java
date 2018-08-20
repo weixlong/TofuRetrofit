@@ -81,6 +81,23 @@ public class EventBuilder<Result> implements UnBind {
         }
     }
 
+    /**
+     * 取消点击事件
+     */
+    public void unClick(){
+        checkAvailableParam();
+        setClick = false;
+        view.setOnClickListener(null);
+    }
+
+    /**
+     * 取消长按事件
+     */
+    public void unLongClick(){
+        checkAvailableParam();
+        setLClick = false;
+        view.setOnLongClickListener(null);
+    }
 
 
     /**
