@@ -192,6 +192,32 @@ public class Tofu {
         return factory.build();
     }
 
+    /**
+     * Toast
+     * @return
+     */
+    public static ToastBuilder ast(){
+        ToastFactory factory = (ToastFactory) builders.get("toast");
+        if(factory == null){
+            factory = ToastFactory.get();
+            builders.put("toast",factory);
+        }
+        return factory.build();
+    }
+
+    /**
+     * LOG
+     * @return
+     */
+    public static LogBuilder log(){
+        LogFactory factory = (LogFactory) builders.get("log");
+        if(factory == null){
+            factory = LogFactory.get();
+            builders.put("log",factory);
+        }
+        return factory.build();
+    }
+
 
     /**
      * 解绑
