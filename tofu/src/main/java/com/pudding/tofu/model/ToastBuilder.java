@@ -19,7 +19,7 @@ public class ToastBuilder implements UnBind {
      *
      * @param text
      */
-    public void brief(@NonNull String text) {
+    public void tell(@NonNull String text) {
         try {
             Toast.makeText(TofuKnife.app, text, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {

@@ -178,27 +178,67 @@ public class LogBuilder implements UnBind {
         }
 
         public pBuilder p(@NonNull String msg){
-            ps.append(msg+" ");
+            ps.append(msg);
             return this;
         }
 
         public pBuilder p(@NonNull int msg){
-            ps.append(msg+" ");
+            ps.append(msg);
             return this;
         }
 
         public pBuilder p(@NonNull float msg){
-            ps.append(msg+" ");
+            ps.append(msg);
             return this;
         }
 
         public pBuilder p(@NonNull long msg){
-            ps.append(msg+" ");
+            ps.append(msg);
             return this;
         }
 
         public pBuilder p(@NonNull double msg){
+            ps.append(msg);
+            return this;
+        }
+
+        public pBuilder ps(@NonNull String msg){
             ps.append(msg+" ");
+            return this;
+        }
+
+        public pBuilder ps(@NonNull int msg){
+            ps.append(msg+" ");
+            return this;
+        }
+
+        public pBuilder ps(@NonNull float msg){
+            ps.append(msg+" ");
+            return this;
+        }
+
+        public pBuilder ps(@NonNull long msg){
+            ps.append(msg+" ");
+            return this;
+        }
+
+        public pBuilder ps(@NonNull double msg){
+            ps.append(msg+" ");
+            return this;
+        }
+
+        public pBuilder ps(){
+            ps.append(" ");
+            return this;
+        }
+
+        public pBuilder pln(){
+            ps.append("\n");
+            return this;
+        }
+
+        public pBuilder pon(){
+            ps.append(" : ");
             return this;
         }
 
