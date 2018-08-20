@@ -33,83 +33,123 @@ public class LogBuilder implements UnBind {
     }
 
     public void v(@NonNull String msg) {
-        Log.v(TAG, msg);
+        if(TofuConfig.isDebug()) {
+            Log.v(TAG, msg);
+        }
     }
 
     public void d(@NonNull String msg) {
-        Log.d(TAG, msg);
+        if(TofuConfig.isDebug()) {
+            Log.d(TAG, msg);
+        }
     }
 
     public void i(@NonNull String msg) {
-        Log.i(TAG, msg);
+        if(TofuConfig.isDebug()) {
+            Log.i(TAG, msg);
+        }
     }
 
     public void e(@NonNull String msg) {
-        Log.e(TAG, msg);
+        if(TofuConfig.isDebug()) {
+            Log.e(TAG, msg);
+        }
     }
 
     public void v(@NonNull int msg) {
-        Log.v(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.v(TAG, String.valueOf(msg));
+        }
     }
 
     public void d(@NonNull int msg) {
-        Log.d(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.d(TAG, String.valueOf(msg));
+        }
     }
 
     public void i(@NonNull int msg) {
-        Log.i(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.i(TAG, String.valueOf(msg));
+        }
     }
 
     public void e(@NonNull int msg) {
-        Log.e(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.e(TAG, String.valueOf(msg));
+        }
     }
 
     public void v(@NonNull long msg) {
-        Log.v(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.v(TAG, String.valueOf(msg));
+        }
     }
 
     public void d(@NonNull long msg) {
-        Log.d(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.d(TAG, String.valueOf(msg));
+        }
     }
 
     public void i(@NonNull long msg) {
-        Log.i(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.i(TAG, String.valueOf(msg));
+        }
     }
 
     public void e(@NonNull long msg) {
-        Log.e(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.e(TAG, String.valueOf(msg));
+        }
     }
 
     public void v(@NonNull float msg) {
-        Log.v(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.v(TAG, String.valueOf(msg));
+        }
     }
 
     public void d(@NonNull float msg) {
-        Log.d(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.d(TAG, String.valueOf(msg));
+        }
     }
 
     public void i(@NonNull float msg) {
-        Log.i(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.i(TAG, String.valueOf(msg));
+        }
     }
 
     public void e(@NonNull float msg) {
-        Log.e(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.e(TAG, String.valueOf(msg));
+        }
     }
 
     public void v(@NonNull double msg) {
-        Log.v(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.v(TAG, String.valueOf(msg));
+        }
     }
 
     public void d(@NonNull double msg) {
-        Log.d(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.d(TAG, String.valueOf(msg));
+        }
     }
 
     public void i(@NonNull double msg) {
-        Log.i(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.i(TAG, String.valueOf(msg));
+        }
     }
 
     public void e(@NonNull double msg) {
-        Log.e(TAG, String.valueOf(msg));
+        if(TofuConfig.isDebug()) {
+            Log.e(TAG, String.valueOf(msg));
+        }
     }
 
 
@@ -163,19 +203,27 @@ public class LogBuilder implements UnBind {
         }
 
         public void v(){
-            Log.v(TAG,ps.toString());
+            if(TofuConfig.isDebug()) {
+                Log.v(TAG, ps.toString());
+            }
         }
 
         public void d(){
-            Log.d(TAG,ps.toString());
+            if(TofuConfig.isDebug()) {
+                Log.d(TAG, ps.toString());
+            }
         }
 
         public void i(){
-            Log.i(TAG,ps.toString());
+            if(TofuConfig.isDebug()) {
+                Log.i(TAG, ps.toString());
+            }
         }
 
         public void e(){
-            Log.e(TAG,ps.toString());
+            if(TofuConfig.isDebug()) {
+                Log.e(TAG, ps.toString());
+            }
         }
     }
 
