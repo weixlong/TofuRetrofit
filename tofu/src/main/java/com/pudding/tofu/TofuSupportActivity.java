@@ -18,29 +18,46 @@ import indi.yume.tools.fragmentmanager.BaseManagerFragment;
 
 public abstract class TofuSupportActivity extends BaseFragmentManagerActivity {
 
+    private Map<String, Class<? extends BaseManagerFragment>> map = new HashMap<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Tofu.bind(this);
         //StartBuilder.builder(new Intent()).withEnableAnimation(true);
        // SwipeBackUtil.enableSwipeBackAtActivity(this); 侧滑返回
-
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Tofu.unBind(this);
     }
 
     @Override
     public int fragmentViewId() {
-        return 0;
+        return onFragmentContainerViewId();
     }
 
     @Override
     public Map<String, Class<? extends BaseManagerFragment>> baseFragmentWithTag() {
-        return new HashMap<>();
+        onBindFragmentIntoMap(map);
+        return map;
+    }
+
+
+    /**
+     * fragment的容器布局id
+     * @return
+     */
+    protected int onFragmentContainerViewId(){
+        return 0;
+    }
+
+    /**
+     * 把fragment 放入缓存
+     * @param map
+     */
+    protected void onBindFragmentIntoMap(Map<String, Class<? extends BaseManagerFragment>> map){
+
     }
 }

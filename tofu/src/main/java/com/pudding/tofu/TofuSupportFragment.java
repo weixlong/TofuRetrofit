@@ -18,18 +18,8 @@ public abstract class TofuSupportFragment extends BaseManagerFragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Tofu.bind(this);
         //StartBuilder.builder(new Intent()).withEnableAnimation(true);
         // SwipeBackUtil.enableSwipeBackAtActivity(this); 侧滑返回
 
     }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Tofu.unBind(this);
-    }
-
-
 }
