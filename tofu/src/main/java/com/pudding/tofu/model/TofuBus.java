@@ -809,9 +809,9 @@ public class TofuBus {
         for (int i = keys.size() - 1; i >= 0; i--) {
             List<TofuMethod> tofuMethods = maps.get(keys.get(i));
             if (CollectUtil.isEmpty(tofuMethods)) continue;
-            for (TofuMethod tofuMethod : tofuMethods) {
-                if (TextUtils.equals(label, tofuMethod.getlabel())) {
-                    executeSimpleMethod(e, tofuMethod, results);
+            for (int i1 = tofuMethods.size() - 1; i1 >= 0; i1--) {
+                if (TextUtils.equals(label, tofuMethods.get(i1).getlabel())) {
+                    executeSimpleMethod(e, tofuMethods.get(i1), results);
                     return;
                 }
             }
@@ -920,11 +920,10 @@ public class TofuBus {
     private <Result> void executeInterceptorMethod(ObservableEmitter<Post> e, String label, HashMap<String, List<TofuMethod>> maps, Result... results) {
         for (int i = keys.size() - 1; i >= 0; i--) {
             List<TofuMethod> tofuMethods = maps.get(keys.get(i));
-
             if (CollectUtil.isEmpty(tofuMethods)) continue;
-            for (TofuMethod tofuMethod : tofuMethods) {
-                if (TextUtils.equals(label, tofuMethod.getlabel())) {
-                    executeParamsMethod(e, tofuMethod, label, results);
+            for (int i1 = tofuMethods.size() - 1; i1 >= 0; i1--) {
+                if (TextUtils.equals(label, tofuMethods.get(i1).getlabel())) {
+                    executeParamsMethod(e, tofuMethods.get(i1), label, results);
                     return;
                 }
             }

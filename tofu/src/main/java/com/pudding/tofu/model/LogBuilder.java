@@ -425,6 +425,11 @@ public class LogBuilder implements UnBind {
             return this;
         }
 
+        public pBuilder pon(@NonNull String msg){
+            ps.append(msg+" : ");
+            return this;
+        }
+
         public pBuilder pon(@NonNull int msg){
             ps.append(msg+" : ");
             return this;
