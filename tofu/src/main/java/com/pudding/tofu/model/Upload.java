@@ -9,6 +9,7 @@ import com.pudding.tofu.callback.UploadCallback;
 import com.pudding.tofu.widget.CollectUtil;
 
 import java.io.File;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class Upload {
                     if(response.isSuccessful()) {
                         uploadCallback.onResponse(s);
                     } else {
-                        uploadCallback.onError(response.request().url().toString());
+                        uploadCallback.onError(response.request().url().toString(),false);
                     }
                 }
             }
@@ -71,7 +72,7 @@ public class Upload {
             @Override
             public void onError(Call call, Response response, Exception e) {
                 if (uploadCallback != null) {
-                    uploadCallback.onError(response.request().url().toString());
+                    uploadCallback.onError(response.request().url().toString(),e instanceof SocketTimeoutException);
                 }
             }
         });

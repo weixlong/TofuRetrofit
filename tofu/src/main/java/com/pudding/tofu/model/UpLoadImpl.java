@@ -216,12 +216,12 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
     }
 
     @Override
-    public void onError(String url) {
+    public void onError(String url,boolean isOutTime) {
         closeDialog();
         if(TextUtils.isEmpty(label)) {
-            TofuBus.get().executeUploadErrorMethod(url, url);
+            TofuBus.get().executeUploadErrorMethod(url, url,isOutTime);
         } else {
-            TofuBus.get().executeUploadErrorMethod(label, url);
+            TofuBus.get().executeUploadErrorMethod(label, url,isOutTime);
         }
     }
 

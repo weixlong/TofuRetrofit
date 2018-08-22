@@ -8,6 +8,6 @@ package com.pudding.tofu.callback;
 public interface UploadCallback {
 
     void inProgress(long currentSize, long totalSize, float progress, long networkSpeed);
-    void onError(String url);
+    void onError(String url,boolean isOutTime);
     void onResponse(String response);
 }

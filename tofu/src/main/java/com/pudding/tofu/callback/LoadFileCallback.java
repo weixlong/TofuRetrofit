@@ -9,6 +9,6 @@ import java.io.File;
 
 public interface LoadFileCallback {
     void inProgress(long currentSize, long totalSize, float progress, long networkSpeed);
-    void onError(String url);
+    void onError(String url,boolean isOutTime);
     void onResponse(File file);
 }

@@ -8,7 +8,11 @@ import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 import com.pudding.tofu.callback.PostResultCallback;
 
+import org.apache.http.conn.ConnectTimeoutException;
+
+import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import okhttp3.Call;
 import okhttp3.Cookie;
@@ -41,12 +45,12 @@ public class PostImpl {
                             System.err.println("Tofu : "+response.request().url().toString()+"   "+e);
                         }
                         if (callback != null) {
-                            callback.onFailed(response.request().url().toString());
+                            callback.onFailed(response.request().url().toString(),false);
                         }
                     }
                 } else {
                     if (callback != null) {
-                        callback.onFailed(response.request().url().toString());
+                        callback.onFailed(response.request().url().toString(),false);
                     }
                 }
             }
@@ -55,9 +59,9 @@ public class PostImpl {
             public void onError(Call call, Response response, Exception e) {
                 if (callback != null ) {
                     if(response != null && response.request() != null) {
-                        callback.onFailed(response.request().url().toString());
+                        callback.onFailed(response.request().url().toString(),e instanceof SocketTimeoutException);
                     } else {
-                        callback.onFailed(url);
+                        callback.onFailed(url,e instanceof SocketTimeoutException);
                     }
                 }
             }

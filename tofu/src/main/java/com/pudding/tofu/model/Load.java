@@ -7,6 +7,7 @@ import com.pudding.tofu.callback.LoadFileCallback;
 import com.pudding.tofu.widget.CollectUtil;
 
 import java.io.File;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class Load {
                     }
                 } else {
                     if (loadFileCallback != null) {
-                        loadFileCallback.onError(response.request().url().toString());
+                        loadFileCallback.onError(response.request().url().toString(),false);
                     }
                 }
             }
@@ -52,7 +53,7 @@ public class Load {
             @Override
             public void onError(Call call, Response response, Exception e) {
                 if (loadFileCallback != null) {
-                    loadFileCallback.onError(response.request().url().toString());
+                    loadFileCallback.onError(response.request().url().toString(),e instanceof SocketTimeoutException);
                 }
             }
         });

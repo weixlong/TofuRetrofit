@@ -56,6 +56,18 @@ public class OrmBuilder implements UnBind {
         return list;
     }
 
+    /**
+     * 查询某一条数据
+     * @param id
+     * @param <Bean>
+     * @return
+     */
+    public <Bean> Bean query(Object id){
+        checkParamAvailable();
+        Bean bean = (Bean) orm.findById(id, clazz);
+        this.clazz = null;
+        return bean;
+    }
 
     /**
      * 查询第一条
@@ -97,6 +109,16 @@ public class OrmBuilder implements UnBind {
         this.clazz = null;
     }
 
+    /**
+     * 条件删除
+     * @param id
+     */
+    public void deleteById(Object id){
+        checkParamAvailable();
+        orm.deleteById(clazz,id);
+        this.clazz = null;
+    }
+
 
     /**
      * 清除全部
@@ -117,6 +139,17 @@ public class OrmBuilder implements UnBind {
         checkParamAvailable();
         orm.save(bean);
         this.clazz = null;
+    }
+
+    /**
+     * 数据库中只保存这一条数据
+     * @param bean
+     * @param <Bean>
+     */
+    public <Bean> void saveOnly(Bean bean){
+        checkParamAvailable();
+        orm.deleteAll(clazz);
+        save(bean);
     }
 
     /**

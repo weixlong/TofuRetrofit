@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * <p>
  * 返回值可以是不同类型的参数，如果返回类型相同则会被覆盖
  * <p>
- * 如果返回值大于1，且返回值的第一个是String类型，则第一个返回值是label
+ * 如果返回值大于1，且返回值的第一个是String类型，则第一个返回值是label,响应参数String label,Boolean isOutTime
  * <p>
  *     如果lable相同则只响应最近绑定这个lable的这个对象
  * </p>
