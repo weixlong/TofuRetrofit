@@ -142,7 +142,7 @@ public class OrmBuilder implements UnBind {
     }
 
     /**
-     * 数据库中只保存这一条数据
+     * 表中只保存这一条数据
      * @param bean
      * @param <Bean>
      */

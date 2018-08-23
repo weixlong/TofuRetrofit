@@ -169,7 +169,7 @@ public class Tofu {
      *
      * @return
      */
-    public static AskBuilder ask() {
+    public static AskBuilder tu() {
         AskFactory factory = (AskFactory) builders.get("AskFactory");
         if (factory == null) {
             factory = AskFactory.get();
