@@ -169,7 +169,7 @@ public class Tofu {
      *
      * @return
      */
-    public static AskBuilder tu() {
+    public static AskBuilder ask() {
         AskFactory factory = (AskFactory) builders.get("AskFactory");
         if (factory == null) {
             factory = AskFactory.get();
@@ -196,7 +196,7 @@ public class Tofu {
      * Toast
      * @return
      */
-    public static ToastBuilder ast(){
+    public static ToastBuilder tu(){
         ToastFactory factory = (ToastFactory) builders.get("toast");
         if(factory == null){
             factory = ToastFactory.get();
