@@ -105,6 +105,9 @@ public class TofuBus {
     private List<String> keys = new ArrayList<>();
 
 
+    private HashMap<String,Object> keyMap = new HashMap<>();
+
+
     private HashMap<String, HashMap<String, Method>> singleMethods = new HashMap<>();
 
     /**
@@ -113,8 +116,10 @@ public class TofuBus {
      * @param target
      */
     protected void findSubscribe(Object target) {
-        String key = target.getClass().getName();
+//        String key = target.getClass().getName();
+        String key = Long.toString(System.currentTimeMillis());
         keys.add(key);
+        keyMap.put(key,target);
         newTofuIfEmptyMethodList(key, cachePostMethods, postErrorMethods,
                 loadFileMethods, loadFileErrorMethods, loadFileProgressMethods,
                 upLoadFileMethods, upLoadFileErrorMethods,
@@ -134,16 +139,16 @@ public class TofuBus {
 
         Method[] declaredMethods = target.getClass().getDeclaredMethods();
         for (Method method : declaredMethods) {
-            findPostSubscribe(postMethods, method, target);
-            findPostErrorSubscribe(tofuErrorMethods, method, target);
-            findLoadFileSubscribe(tofuLoadFileMethods, method, target);
-            findLoadFileErrorSubscribe(tofuLoadFileErrorMethods, method, target);
-            findLoadFileProgressSubscribe(tofuLoadFileProgressMethods, method, target);
-            findUploadSubscribe(tofuUpLoadFileMethods, method, target);
-            findUpLoadErrorSubscribe(tofuUpLoadFileErrorMethods, method, target);
-            findUploadProgressSubscribe(tofuUpLoadFileProgressMethods, method, target);
-            findSimpleSubscribe(tofuSimpleMethods, method, target);
-            findPickerSubscribe(tofuPickerMethods, method, target);
+            findPostSubscribe(key,postMethods, method, target);
+            findPostErrorSubscribe(key,tofuErrorMethods, method, target);
+            findLoadFileSubscribe(key,tofuLoadFileMethods, method, target);
+            findLoadFileErrorSubscribe(key,tofuLoadFileErrorMethods, method, target);
+            findLoadFileProgressSubscribe(key,tofuLoadFileProgressMethods, method, target);
+            findUploadSubscribe(key,tofuUpLoadFileMethods, method, target);
+            findUpLoadErrorSubscribe(key,tofuUpLoadFileErrorMethods, method, target);
+            findUploadProgressSubscribe(key,tofuUpLoadFileProgressMethods, method, target);
+            findSimpleSubscribe(key,tofuSimpleMethods, method, target);
+            findPickerSubscribe(key,tofuPickerMethods, method, target);
 
         }
     }
@@ -172,13 +177,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findSimpleSubscribe(List<TofuMethod> simpleMethods, Method method, Object target) {
+    private void findSimpleSubscribe(String key,List<TofuMethod> simpleMethods, Method method, Object target) {
         subscribe sub = method.getAnnotation(subscribe.class);
         if (null != sub) {
             String[] values = sub.value();
             fullyTofuMethod(values, simpleMethods, method, target);
         }
-        subscribeMethods.put(target.getClass().getName(), simpleMethods);
+        subscribeMethods.put(key, simpleMethods);
     }
 
 
@@ -189,13 +194,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findPickerSubscribe(List<TofuMethod> pickMethods, Method method, Object target) {
+    private void findPickerSubscribe(String key,List<TofuMethod> pickMethods, Method method, Object target) {
         photoPick pick = method.getAnnotation(photoPick.class);
         if (null != pick) {
             String[] value = pick.value();
             fullyTofuMethod(value, pickMethods, method, target);
         }
-        pickerMethods.put(target.getClass().getName(), pickMethods);
+        pickerMethods.put(key, pickMethods);
     }
 
     /**
@@ -203,13 +208,13 @@ public class TofuBus {
      *
      * @param method
      */
-    private void findPostErrorSubscribe(List<TofuMethod> postMethods, Method method, Object target) {
+    private void findPostErrorSubscribe(String key,List<TofuMethod> postMethods, Method method, Object target) {
         postError post = method.getAnnotation(postError.class);
         if (null != post) {
             String[] value = post.value();
             fullyTofuMethod(value, postMethods, method, target);
         }
-        postErrorMethods.put(target.getClass().getName(), postMethods);
+        postErrorMethods.put(key, postMethods);
     }
 
     /**
@@ -217,13 +222,13 @@ public class TofuBus {
      *
      * @param
      */
-    private void findPostSubscribe(List<TofuMethod> postMethods, Method method, Object target) {
+    private void findPostSubscribe(String key,List<TofuMethod> postMethods, Method method, Object target) {
         post post = method.getAnnotation(com.pudding.tofu.retention.post.class);
         if (null != post) {
             String[] labels = post.value();
             fullyTofuMethod(labels, postMethods, method, target);
         }
-        cachePostMethods.put(target.getClass().getName(), postMethods);
+        cachePostMethods.put(key, postMethods);
     }
 
 
@@ -235,13 +240,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findLoadFileSubscribe(List<TofuMethod> postMethods, Method method, Object target) {
+    private void findLoadFileSubscribe(String key,List<TofuMethod> postMethods, Method method, Object target) {
         loadFile load = method.getAnnotation(loadFile.class);
         if (load != null) {
             String[] labels = load.value();
             fullyTofuMethod(labels, postMethods, method, target);
         }
-        loadFileMethods.put(target.getClass().getName(), postMethods);
+        loadFileMethods.put(key, postMethods);
     }
 
 
@@ -253,13 +258,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findLoadFileErrorSubscribe(List<TofuMethod> loadFileErrorMethod, Method method, Object target) {
+    private void findLoadFileErrorSubscribe(String key,List<TofuMethod> loadFileErrorMethod, Method method, Object target) {
         loadError error = method.getAnnotation(loadError.class);
         if (null != error) {
             String[] labels = error.value();
             fullyTofuMethod(labels, loadFileErrorMethod, method, target);
         }
-        loadFileErrorMethods.put(target.getClass().getName(), loadFileErrorMethod);
+        loadFileErrorMethods.put(key, loadFileErrorMethod);
     }
 
     /**
@@ -270,13 +275,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findLoadFileProgressSubscribe(List<TofuMethod> loadProgressMethods, Method method, Object target) {
+    private void findLoadFileProgressSubscribe(String key,List<TofuMethod> loadProgressMethods, Method method, Object target) {
         loadProgress progress = method.getAnnotation(loadProgress.class);
         if (null != progress) {
             String[] labels = progress.value();
             fullyTofuMethod(labels, loadProgressMethods, method, target);
         }
-        loadFileProgressMethods.put(target.getClass().getName(), loadProgressMethods);
+        loadFileProgressMethods.put(key, loadProgressMethods);
     }
 
 
@@ -288,13 +293,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findUploadSubscribe(List<TofuMethod> upLoadMethod, Method method, Object target) {
+    private void findUploadSubscribe(String key,List<TofuMethod> upLoadMethod, Method method, Object target) {
         upload up = method.getAnnotation(upload.class);
         if (null != up) {
             String[] labels = up.value();
             fullyTofuMethod(labels, upLoadMethod, method, target);
         }
-        upLoadFileMethods.put(target.getClass().getName(), upLoadMethod);
+        upLoadFileMethods.put(key, upLoadMethod);
     }
 
     /**
@@ -305,13 +310,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findUpLoadErrorSubscribe(List<TofuMethod> upLoadMethod, Method method, Object target) {
+    private void findUpLoadErrorSubscribe(String key,List<TofuMethod> upLoadMethod, Method method, Object target) {
         uploadError error = method.getAnnotation(uploadError.class);
         if (null != error) {
             String[] labels = error.value();
             fullyTofuMethod(labels, upLoadMethod, method, target);
         }
-        upLoadFileErrorMethods.put(target.getClass().getName(), upLoadMethod);
+        upLoadFileErrorMethods.put(key, upLoadMethod);
     }
 
     /**
@@ -320,13 +325,13 @@ public class TofuBus {
      * @param method
      * @param target
      */
-    private void findUploadProgressSubscribe(List<TofuMethod> upLoadProgressMethod, Method method, Object target) {
+    private void findUploadProgressSubscribe(String key,List<TofuMethod> upLoadProgressMethod, Method method, Object target) {
         uploadProgress progress = method.getAnnotation(uploadProgress.class);
         if (null != progress) {
             String[] labels = progress.value();
             fullyTofuMethod(labels, upLoadProgressMethod, method, target);
         }
-        upLoadFileProgressMethods.put(target.getClass().getName(), upLoadProgressMethod);
+        upLoadFileProgressMethods.put(key, upLoadProgressMethod);
     }
 
     /**
@@ -1064,19 +1069,32 @@ public class TofuBus {
      * 解绑
      */
     protected void unBindTarget(Object target) {
-        String name = target.getClass().getName();
-        clear(singleMethods.remove(name));
-        clear(cachePostMethods.remove(name));
-        clear(postErrorMethods.remove(name));
-        clear(loadFileMethods.remove(name));
-        clear(loadFileErrorMethods.remove(name));
-        clear(loadFileProgressMethods.remove(name));
-        clear(subscribeMethods.remove(name));
-        clear(pickerMethods.remove(name));
-        clear(upLoadFileMethods.remove(name));
-        clear(upLoadFileProgressMethods.remove(name));
-        clear(upLoadFileErrorMethods.remove(name));
-        keys.remove(name);
+        String key = findKeyByTarget(target);
+        clear(singleMethods.remove(target.getClass().getName()));
+        if(!TextUtils.isEmpty(key)) {
+            clear(cachePostMethods.remove(key));
+            clear(postErrorMethods.remove(key));
+            clear(loadFileMethods.remove(key));
+            clear(loadFileErrorMethods.remove(key));
+            clear(loadFileProgressMethods.remove(key));
+            clear(subscribeMethods.remove(key));
+            clear(pickerMethods.remove(key));
+            clear(upLoadFileMethods.remove(key));
+            clear(upLoadFileProgressMethods.remove(key));
+            clear(upLoadFileErrorMethods.remove(key));
+            keyMap.remove(key);
+            keys.remove(key);
+        }
+    }
+
+
+    private String findKeyByTarget(Object target){
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            if(TextUtils.equals(target.getClass().getName(),keyMap.get(keys.get(i)).getClass().getName())){
+                return keys.get(i);
+            }
+        }
+        return null;
     }
 
     private void clear(Map map) {
