@@ -1091,8 +1091,11 @@ public class TofuBus {
 
     private String findKeyByTarget(Object target) {
         for (int i = keys.size() - 1; i >= 0; i--) {
-            if (TextUtils.equals(target.getClass().getName(), keyMap.get(keys.get(i)).getClass().getName())) {
-                return keys.get(i);
+            Object o = keyMap.get(keys.get(i));
+            if(o != null) {
+                if (TextUtils.equals(target.getClass().getName(), o.getClass().getName())) {
+                    return keys.get(i);
+                }
             }
         }
         return null;
