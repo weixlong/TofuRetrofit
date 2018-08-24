@@ -1362,10 +1362,9 @@ public class AnimBuilder implements UnBind {
          * @param y
          */
         public MoveBuilder moveTo(float x, float y) {
-            sx = x;
-            sy = y;
+            ex = x;
+            ey = y;
             return this;
-
         }
 
         /**
