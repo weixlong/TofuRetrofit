@@ -274,6 +274,15 @@ public class HttpBuilder<Result> implements UnBind {
         return this;
     }
 
+    /**
+     * 停止当前请求
+     */
+    public void stopPost(){
+        if(http != null){
+            ((HttpImpl) http).stopPost();
+        }
+    }
+
 
     /**
      * 获取一个参数缓存

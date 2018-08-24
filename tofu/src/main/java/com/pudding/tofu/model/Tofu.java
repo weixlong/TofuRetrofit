@@ -220,6 +220,19 @@ public class Tofu {
 
 
     /**
+     * 动画
+     * @return
+     */
+    public static AnimBuilder anim(){
+        AnimFactory factory = (AnimFactory) builders.get("anim");
+        if(factory == null){
+            factory = AnimFactory.get();
+            builders.put("anim",factory);
+        }
+        return factory.build();
+    }
+
+    /**
      * 解绑
      *
      * @param target

@@ -99,6 +99,13 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
         }
     }
 
+    protected void stopPost(){
+        closeDialog();
+        if(impl != null) {
+            impl.cancelPost(url);
+        }
+    }
+
     @Override
     public <Result> void onSuccess(String url, Result result) {
         if(TextUtils.isEmpty(label)) {
