@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static android.animation.ValueAnimator.RESTART;
-import static android.animation.ValueAnimator.REVERSE;
 
 /**
  * Created by wxl on 2018/8/24 0024.
@@ -57,9 +55,11 @@ public class AnimBuilder implements UnBind {
 
     private AlphaBuilder alphaBuilder;
 
-    private RotateBuilder rotateBuilder;
+    private AlwaysRotateBuilder alwaysRotateBuilder;
 
     private TogetherBuilder togetherBuilder;
+
+    private RotateBuilder rotateBuilder;
 
     private ValueAnimator.AnimatorUpdateListener updateListener;
 
@@ -249,6 +249,18 @@ public class AnimBuilder implements UnBind {
     }
 
     /**
+     * 旋转动画
+     * @return
+     */
+    public RotateBuilder rotate(){
+        checkViewAvailable();
+        if(rotateBuilder == null){
+            rotateBuilder = new RotateBuilder();
+        }
+        return rotateBuilder;
+    }
+
+    /**
      * 二阶贝塞尔曲线
      *
      * @return
@@ -292,12 +304,12 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public RotateBuilder rotate() {
+    public AlwaysRotateBuilder alwaysRotate() {
         checkViewAvailable();
-        if (rotateBuilder == null) {
-            rotateBuilder = new RotateBuilder();
+        if (alwaysRotateBuilder == null) {
+            alwaysRotateBuilder = new AlwaysRotateBuilder();
         }
-        return rotateBuilder;
+        return alwaysRotateBuilder;
     }
 
 
@@ -334,9 +346,15 @@ public class AnimBuilder implements UnBind {
         ObjectAnimator animator = ObjectAnimator.ofObject(this, "move", typeEvaluator, startPoint, endPoint);
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);
-        animator.addUpdateListener(updateListener);
-        animator.addPauseListener(pauseListener);
-        animator.addListener(animatorListener);
+        if (updateListener != null) {
+            animator.addUpdateListener(updateListener);
+        }
+        if (pauseListener != null) {
+            animator.addPauseListener(pauseListener);
+        }
+        if (animatorListener != null) {
+            animator.addListener(animatorListener);
+        }
         return animator;
     }
 
@@ -373,7 +391,7 @@ public class AnimBuilder implements UnBind {
          * @param builder
          * @return
          */
-        public TogetherBuilder rotate(@NonNull RotateBuilder builder) {
+        public TogetherBuilder rotate(@NonNull AlwaysRotateBuilder builder) {
             if (builder != null) {
                 animations.add(builder.getRotationXYZAnim());
             }
@@ -446,6 +464,18 @@ public class AnimBuilder implements UnBind {
         }
 
         /**
+         * 旋转动画
+         * @param builder
+         * @return
+         */
+        public TogetherBuilder rotate(@NonNull RotateBuilder builder){
+            if(builder != null){
+                valueAnimators.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
          * 执行动画
          */
         public void start() {
@@ -464,66 +494,23 @@ public class AnimBuilder implements UnBind {
             pauseListener = null;
             animatorListener = null;
             for (Animation animation : animations) {
-                ((UnBind)animation).unbind();
+                ((UnBind) animation).unbind();
             }
             for (Animator valueAnimator : valueAnimators) {
-                ((UnBind)valueAnimator).unbind();
+                ((UnBind) valueAnimator).unbind();
             }
             animations.clear();
             valueAnimators.clear();
         }
     }
 
-    /**
-     * 旋转动画
-     */
+
     public class RotateBuilder implements UnBind {
-        private Animation.AnimationListener mListener;
-        private boolean rotateX, rotateY, rotateZ;
         private int count = 0, mode = RESTART;
+        private boolean rotateX, rotateY, rotateZ;
+        private float[] values;
 
         private RotateBuilder() {
-        }
-
-        /**
-         * 绕X轴转动
-         *
-         * @return
-         */
-        public RotateBuilder rotateX() {
-            rotateX = true;
-            return this;
-        }
-
-        /**
-         * 绕Y轴转动
-         *
-         * @return
-         */
-        public RotateBuilder rotateY() {
-            rotateY = true;
-            return this;
-        }
-
-        /**
-         * 绕Z轴转动
-         *
-         * @return
-         */
-        public RotateBuilder rotateZ() {
-            rotateZ = true;
-            return this;
-        }
-
-        /**
-         * 动画执行监听
-         *
-         * @param callBack
-         * @return
-         */
-        public RotateBuilder setCallBack(Animation.AnimationListener callBack) {
-            mListener = callBack;
-            return this;
         }
 
         /**
@@ -562,6 +549,195 @@ public class AnimBuilder implements UnBind {
             return this;
         }
 
+
+        /**
+         * 绕X轴转动,三种转动互斥
+         *
+         * @return
+         */
+        public RotateBuilder rotateX() {
+            rotateX = true;
+            rotateY = false;
+            rotateZ = false;
+            return this;
+        }
+
+        /**
+         * 绕Y轴转动,三种转动互斥
+         *
+         * @return
+         */
+        public RotateBuilder rotateY() {
+            rotateX = false;
+            rotateY = true;
+            rotateZ = false;
+            return this;
+        }
+
+        /**
+         * 绕Z轴转动,三种转动互斥
+         *
+         * @return
+         */
+        public RotateBuilder rotateZ() {
+            rotateZ = true;
+            rotateY = false;
+            rotateX = false;
+            return this;
+        }
+
+        /**
+         * 设置值
+         *
+         * @param values
+         * @return
+         */
+        public RotateBuilder values(float... values) {
+            this.values = values;
+            return this;
+        }
+
+        /***
+         * 开始动画
+         */
+        public void start(){
+            getAnim().start();
+            unbind();
+        }
+
+        /**
+         * 获取动画
+         * @return
+         */
+        private ObjectAnimator getAnim() {
+            String propertyName = "rotation";
+            if (rotateX) {
+                propertyName = "rotationX";
+            }
+            if (rotateY) {
+                propertyName = "rotationY";
+            }
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(target, propertyName, values);
+            objectAnimator.setDuration(duration);
+            objectAnimator.setRepeatCount(count);
+            objectAnimator.setRepeatMode(mode);
+            if (updateListener != null) {
+                objectAnimator.addUpdateListener(updateListener);
+            }
+            if (pauseListener != null) {
+                objectAnimator.addPauseListener(pauseListener);
+            }
+            if (animatorListener != null) {
+                objectAnimator.addListener(animatorListener);
+            }
+            objectAnimator.setInterpolator(interpolator);
+            return objectAnimator;
+        }
+
+
+        @Override
+        public void unbind() {
+            count = 0;
+            mode = RESTART;
+            duration = 500;
+            rotateX = rotateY = rotateZ = false;
+            target = null;
+            updateListener = null;
+            pauseListener = null;
+            animatorListener = null;
+            values = null;
+        }
+    }
+
+
+    /**
+     * 旋转动画
+     */
+    public class AlwaysRotateBuilder implements UnBind {
+        private Animation.AnimationListener mListener;
+        private boolean rotateX, rotateY, rotateZ;
+        private int count = 0, mode = RESTART;
+
+        private AlwaysRotateBuilder() {
+        }
+
+        /**
+         * 绕X轴转动
+         *
+         * @return
+         */
+        public AlwaysRotateBuilder rotateX() {
+            rotateX = true;
+            return this;
+        }
+
+        /**
+         * 绕Y轴转动
+         *
+         * @return
+         */
+        public AlwaysRotateBuilder rotateY() {
+            rotateY = true;
+            return this;
+        }
+
+        /**
+         * 绕Z轴转动
+         *
+         * @return
+         */
+        public AlwaysRotateBuilder rotateZ() {
+            rotateZ = true;
+            return this;
+        }
+
+        /**
+         * 动画执行监听
+         *
+         * @param callBack
+         * @return
+         */
+        public AlwaysRotateBuilder setCallBack(Animation.AnimationListener callBack) {
+            mListener = callBack;
+            return this;
+        }
+
+        /**
+         * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+         * or a positive value, the animation restarts from the beginning.
+         * <p>
+         * public static final int RESTART = 1;
+         * <p>
+         * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+         * or a positive value, the animation reverses direction on every iteration.
+         * <p>
+         * public static final int REVERSE = 2;
+         * <p>
+         * This value used used with the {@link #setRepeatCount(int)} property to repeat
+         * the animation indefinitely.
+         * <p>
+         * public static final int INFINITE = -1;
+         *
+         * @param count
+         * @return
+         */
+        public AlwaysRotateBuilder setRepeatCount(int count) {
+            this.count = count;
+            return this;
+        }
+
+        /**
+         * Defines what this animation should do when it reaches the end. This
+         * setting is applied only when the repeat count is either greater than
+         * 0 or {@link # INFINITE}. Defaults to {@link # RESTART}.
+         *
+         * @param mode {@link # RESTART} or {@link # REVERSE}
+         */
+        public AlwaysRotateBuilder setRepeatMode(@RepeatMode int mode) {
+            this.mode = mode;
+            return this;
+        }
+
         /**
          * 开始动画
          */
@@ -579,7 +755,9 @@ public class AnimBuilder implements UnBind {
             RotationXYZAnimation anim = new RotationXYZAnimation();
             anim.setRepeatCount(count);
             anim.setRepeatMode(mode);
-            anim.setAnimationListener(mListener);
+            if (mListener != null) {
+                anim.setAnimationListener(mListener);
+            }
             return anim;
         }
 
@@ -655,6 +833,7 @@ public class AnimBuilder implements UnBind {
 
         private float fromAlphaValue, toAlphaValue;
         private int count = 0, mode = RESTART;
+        private float[] values;
 
         private AlphaBuilder() {
         }
@@ -710,6 +889,17 @@ public class AnimBuilder implements UnBind {
         }
 
         /**
+         * 设置缩放值，与alphaValue不可重用
+         *
+         * @param values
+         * @return
+         */
+        public AlphaBuilder alphaValues(float... values) {
+            this.values = values;
+            return this;
+        }
+
+        /**
          * 开始动画
          */
         public void start() {
@@ -723,13 +913,24 @@ public class AnimBuilder implements UnBind {
          * @return
          */
         private ObjectAnimator getAlphaAnimation() {
-            ObjectAnimator alphaAnimation = ObjectAnimator.ofFloat(target, "alpha", fromAlphaValue, toAlphaValue);
+            ObjectAnimator alphaAnimation;
+            if (values != null && values.length > 0) {
+                alphaAnimation = ObjectAnimator.ofFloat(target, "alpha", values);
+            } else {
+                alphaAnimation = ObjectAnimator.ofFloat(target, "alpha", fromAlphaValue, toAlphaValue);
+            }
             alphaAnimation.setDuration(duration);
             alphaAnimation.setRepeatCount(count);
             alphaAnimation.setRepeatMode(mode);
-            alphaAnimation.addListener(animatorListener);
-            alphaAnimation.addPauseListener(pauseListener);
-            alphaAnimation.addUpdateListener(updateListener);
+            if (updateListener != null) {
+                alphaAnimation.addUpdateListener(updateListener);
+            }
+            if (pauseListener != null) {
+                alphaAnimation.addPauseListener(pauseListener);
+            }
+            if (animatorListener != null) {
+                alphaAnimation.addListener(animatorListener);
+            }
             alphaAnimation.setInterpolator(interpolator);
             return alphaAnimation;
         }
@@ -742,6 +943,7 @@ public class AnimBuilder implements UnBind {
             target = null;
             updateListener = null;
             pauseListener = null;
+            values = null;
             animatorListener = null;
         }
     }
@@ -750,6 +952,21 @@ public class AnimBuilder implements UnBind {
     @Retention(RetentionPolicy.SOURCE)
     public @interface RepeatMode {
     }
+    /**
+     * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+     * or a positive value, the animation restarts from the beginning.
+     */
+    public static final int RESTART = 1;
+    /**
+     * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+     * or a positive value, the animation reverses direction on every iteration.
+     */
+    public static final int REVERSE = 2;
+    /**
+     * This value used used with the {@link # setRepeatCount(int)} property to repeat
+     * the animation indefinitely.
+     */
+    public static final int INFINITE = -1;
 
     /**
      * 缩放动画
@@ -759,6 +976,7 @@ public class AnimBuilder implements UnBind {
         private float fromXValue, toXValue, fromYValue, toYValue;
         private AnimatorSet animationSet = new AnimatorSet();
         private boolean scaleX, scaleY;
+        private float[] values;
 
         private ScaleBuilder() {
         }
@@ -844,13 +1062,47 @@ public class AnimBuilder implements UnBind {
             return this;
         }
 
+        /**
+         * 设置缩放值，与scaleValue，scaleXValue，scaleYValue不可重用
+         *
+         * @param values
+         * @return
+         */
+        public ScaleBuilder scaleValues(float... values) {
+            this.values = values;
+            return this;
+        }
+
+        /**
+         * 执行X轴缩放
+         *
+         * @return
+         */
+        public ScaleBuilder scaleX() {
+            this.scaleX = true;
+            return this;
+        }
+
+        /**
+         * 执行Y轴缩放
+         *
+         * @return
+         */
+        public ScaleBuilder scaleY() {
+            this.scaleY = true;
+            return this;
+        }
 
         /**
          * 开始动画
          */
         public void start() {
-            animationSet.addListener(animatorListener);
-            animationSet.addPauseListener(pauseListener);
+            if (pauseListener != null) {
+                animationSet.addPauseListener(pauseListener);
+            }
+            if (animatorListener != null) {
+                animationSet.addListener(animatorListener);
+            }
             animationSet.playTogether(getScaleAnimation());
             animationSet.start();
             unbind();
@@ -864,8 +1116,14 @@ public class AnimBuilder implements UnBind {
          */
         private Collection<Animator> getScaleAnimation() {
             List<Animator> animators = new ArrayList<>();
+
             if (scaleX) {
-                ObjectAnimator sx = ObjectAnimator.ofFloat(target, "scaleX", fromXValue, toXValue);
+                ObjectAnimator sx;
+                if (values != null && values.length > 0) {
+                    sx = ObjectAnimator.ofFloat(target, "scaleX", values);
+                } else {
+                    sx = ObjectAnimator.ofFloat(target, "scaleX", fromXValue, toXValue);
+                }
                 sx.setRepeatCount(count);
                 sx.setRepeatMode(mode);
                 sx.setDuration(duration);
@@ -874,7 +1132,12 @@ public class AnimBuilder implements UnBind {
             }
 
             if (scaleY) {
-                ObjectAnimator sy = ObjectAnimator.ofFloat(target, "scaleY", fromYValue, toYValue);
+                ObjectAnimator sy;
+                if (values != null && values.length > 0) {
+                    sy = ObjectAnimator.ofFloat(target, "scaleY", values);
+                } else {
+                    sy = ObjectAnimator.ofFloat(target, "scaleY", fromYValue, toYValue);
+                }
                 sy.setRepeatCount(count);
                 sy.setRepeatMode(mode);
                 sy.setDuration(duration);
@@ -894,6 +1157,7 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            values = null;
         }
     }
 
@@ -1124,7 +1388,9 @@ public class AnimBuilder implements UnBind {
          * 开始动画
          */
         public void start() {
-            getAnim().start();
+            if (getAnim() != null) {
+                getAnim().start();
+            }
             unbind();
         }
 
