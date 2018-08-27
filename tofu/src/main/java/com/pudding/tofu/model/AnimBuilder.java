@@ -485,6 +485,7 @@ public class AnimBuilder implements UnBind {
             for (Animation animation : animations) {
                 animation.start();
             }
+            unbind();
         }
 
         @Override
@@ -1426,9 +1427,6 @@ public class AnimBuilder implements UnBind {
 
     @Override
     public void unbind() {
-        if(togetherBuilder != null){
-            togetherBuilder.unbind();
-        }
         duration = 500;
         target = null;
         updateListener = null;
