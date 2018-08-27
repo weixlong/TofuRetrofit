@@ -62,6 +62,8 @@ public class AnimBuilder implements UnBind {
 
     private RotateBuilder rotateBuilder;
 
+    private List<UnBind> unBinds = new ArrayList<>();
+
     private ValueAnimator.AnimatorUpdateListener updateListener;
 
     private Animator.AnimatorPauseListener pauseListener;
@@ -232,6 +234,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (moveBuilder == null) {
             moveBuilder = new MoveBuilder();
+            unBinds.add(moveBuilder);
         }
         return moveBuilder;
     }
@@ -245,6 +248,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (quadBuilder == null) {
             quadBuilder = new QuadBuilder();
+            unBinds.add(quadBuilder);
         }
         return quadBuilder;
     }
@@ -257,6 +261,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if(rotateBuilder == null){
             rotateBuilder = new RotateBuilder();
+            unBinds.add(rotateBuilder);
         }
         return rotateBuilder;
     }
@@ -270,6 +275,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (cubicBuilder == null) {
             cubicBuilder = new CubicBuilder();
+            unBinds.add(cubicBuilder);
         }
         return cubicBuilder;
     }
@@ -283,6 +289,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (scaleBuilder == null) {
             scaleBuilder = new ScaleBuilder();
+            unBinds.add(scaleBuilder);
         }
         return scaleBuilder;
     }
@@ -296,6 +303,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (alphaBuilder == null) {
             alphaBuilder = new AlphaBuilder();
+            unBinds.add(alphaBuilder);
         }
         return alphaBuilder;
     }
@@ -309,6 +317,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (alwaysRotateBuilder == null) {
             alwaysRotateBuilder = new AlwaysRotateBuilder();
+            unBinds.add(alwaysRotateBuilder);
         }
         return alwaysRotateBuilder;
     }
@@ -323,6 +332,7 @@ public class AnimBuilder implements UnBind {
         checkViewAvailable();
         if (togetherBuilder == null) {
             togetherBuilder = new TogetherBuilder();
+            unBinds.add(togetherBuilder);
         }
         return togetherBuilder;
     }
@@ -485,7 +495,6 @@ public class AnimBuilder implements UnBind {
             for (Animation animation : animations) {
                 animation.start();
             }
-            unbind();
         }
 
         @Override
@@ -604,7 +613,6 @@ public class AnimBuilder implements UnBind {
          */
         public void start(){
             getAnim().start();
-            unbind();
         }
 
         /**
@@ -746,7 +754,6 @@ public class AnimBuilder implements UnBind {
          */
         public void start() {
             getRotationXYZAnim().start();
-            unbind();
         }
 
         /**
@@ -907,7 +914,6 @@ public class AnimBuilder implements UnBind {
          */
         public void start() {
             getAlphaAnimation().start();
-            unbind();
         }
 
         /**
@@ -1109,7 +1115,6 @@ public class AnimBuilder implements UnBind {
             }
             animationSet.playTogether(getScaleAnimation());
             animationSet.start();
-            unbind();
         }
 
 
@@ -1222,7 +1227,6 @@ public class AnimBuilder implements UnBind {
          */
         public void start() {
             getAnim().start();
-            unbind();
         }
 
         private ObjectAnimator getAnim() {
@@ -1316,7 +1320,6 @@ public class AnimBuilder implements UnBind {
          */
         public void start() {
             getAnim().start();
-            unbind();
         }
 
         private ObjectAnimator getAnim() {
@@ -1395,7 +1398,6 @@ public class AnimBuilder implements UnBind {
             if (getAnim() != null) {
                 getAnim().start();
             }
-            unbind();
         }
 
         private ObjectAnimator getAnim() {
@@ -1427,6 +1429,11 @@ public class AnimBuilder implements UnBind {
 
     @Override
     public void unbind() {
+        if(!CollectUtil.isEmpty(unBinds)){
+            for (UnBind unBind : unBinds) {
+                unBind.unbind();
+            }
+        }
         duration = 500;
         target = null;
         updateListener = null;

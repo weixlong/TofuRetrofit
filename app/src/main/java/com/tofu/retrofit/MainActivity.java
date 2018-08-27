@@ -43,7 +43,8 @@ public class MainActivity extends TofuSupportActivity {
 
             }
         });
-        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();
+        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();
+//        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();
     }
 
     @subscribe("789")
