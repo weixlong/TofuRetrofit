@@ -487,7 +487,7 @@ public class AnimBuilder implements UnBind {
          */
         public PlayOnBuilder scale(@NonNull ScaleBuilder builder) {
             if (builder != null) {
-                anims.add(builder.getScaleAnimation());
+                anims.addAll(builder.getScaleAnimation());
             }
             return this;
         }
