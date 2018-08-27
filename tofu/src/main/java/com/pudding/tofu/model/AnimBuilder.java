@@ -46,6 +46,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -187,6 +198,7 @@ public class AnimBuilder implements UnBind {
             togetherBuilder = new TogetherBuilder();
             unBinds.add(togetherBuilder);
         }
+        togetherBuilder.clearAnim();
         return togetherBuilder;
     }
 
@@ -226,6 +238,7 @@ public class AnimBuilder implements UnBind {
             colorBuilder = new ColorBuilder();
             unBinds.add(colorBuilder);
         }
+        colorBuilder.colors.clear();
         return colorBuilder;
     }
 
@@ -588,6 +601,20 @@ public class AnimBuilder implements UnBind {
             return this;
         }
 
+
+        /**
+         * together动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder together(@NonNull TogetherBuilder builder) {
+            if (builder != null) {
+                anims.add(builder);
+            }
+            return this;
+        }
+
         /**
          * 播放,将会覆盖所有动画监听
          */
@@ -639,6 +666,17 @@ public class AnimBuilder implements UnBind {
                         }
                     });
                     anim.start();
+                } else if (o instanceof TogetherBuilder) {
+                    final TogetherBuilder builder = (TogetherBuilder) o;
+                    builder.setListener(new TogetherAnimEndListener() {
+                        @Override
+                        public void onTogetherAnimEnd() {
+                            anims.remove(o);
+                            builder.setListener(null);
+                            start();
+                        }
+                    });
+                    builder.start();
                 }
             }
         }
@@ -663,6 +701,7 @@ public class AnimBuilder implements UnBind {
         List<Animation> animations = new ArrayList<>();
         List<Animator> valueAnimators = new ArrayList<>();
         private AnimatorSet animationSet = new AnimatorSet();
+        private long duration_max;
 
         private TogetherBuilder() {
         }
@@ -676,6 +715,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder rotate(@NonNull AlwaysRotateBuilder builder) {
             if (builder != null) {
                 animations.add(builder.getRotationXYZAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -689,6 +731,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder alpha(@NonNull AlphaBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAlphaAnimation());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -702,6 +747,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder cubic(@NonNull CubicBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -715,6 +763,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder quad(@NonNull QuadBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -728,6 +779,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder move(@NonNull MoveBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -741,6 +795,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder scale(@NonNull ScaleBuilder builder) {
             if (builder != null) {
                 valueAnimators.addAll(builder.getScaleAnimation());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -754,6 +811,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder rotate(@NonNull RotateBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -767,6 +827,9 @@ public class AnimBuilder implements UnBind {
         public TogetherBuilder color(@NonNull ColorBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
+                if (duration_max < builder.duration) {
+                    duration_max = builder.duration;
+                }
             }
             return this;
         }
@@ -775,11 +838,54 @@ public class AnimBuilder implements UnBind {
          * 执行动画
          */
         public void start() {
-            animationSet.playTogether(valueAnimators);
-            animationSet.start();
-            for (Animation animation : animations) {
-                animation.start();
+            AnimatorSet clone = animationSet.clone();
+            if(!CollectUtil.isEmpty(valueAnimators)) {
+                clone.playTogether(new ArrayList<>(valueAnimators));
+                clone.start();
             }
+            if(!CollectUtil.isEmpty(animations)) {
+                for (Animation animation : animations) {
+                    animation.start();
+                }
+            }
+            if (listener == null) return;
+            Observable.interval(0, 1, TimeUnit.MILLISECONDS,Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .map(new Function<Long, Long>() {
+                        @Override
+                        public Long apply(Long aLong) throws Exception {
+                            return duration_max - aLong.intValue();
+                        }
+                    }).take(duration_max + 1).subscribe(new Observer<Long>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(Long aLong) {
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onComplete() {
+                    if (listener != null) {
+                        listener.onTogetherAnimEnd();
+                    }
+                }
+            });
+
+        }
+
+
+        private void clearAnim(){
+            animations.clear();
+            valueAnimators.clear();
         }
 
         @Override
@@ -798,8 +904,18 @@ public class AnimBuilder implements UnBind {
             animations.clear();
             valueAnimators.clear();
         }
+
+        private TogetherAnimEndListener listener;
+
+        private void setListener(TogetherAnimEndListener listener) {
+            this.listener = listener;
+        }
     }
 
+
+    private interface TogetherAnimEndListener {
+        void onTogetherAnimEnd();
+    }
 
     public class RotateBuilder extends BaseAnim<RotateBuilder> implements UnBind {
         private int count = 0, mode = RESTART;
@@ -1404,8 +1520,9 @@ public class AnimBuilder implements UnBind {
             if (animatorListener != null) {
                 animationSet.addListener(animatorListener);
             }
-            animationSet.playTogether(getScaleAnimation());
-            animationSet.start();
+            AnimatorSet clone = animationSet.clone();
+            clone.playTogether(getScaleAnimation());
+            clone.start();
         }
 
 
