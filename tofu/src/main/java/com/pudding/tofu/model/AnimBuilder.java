@@ -80,15 +80,17 @@ public class AnimBuilder implements UnBind {
         UnBind unBind;
         View target;
         String clazzName;
-        public ViewBind(UnBind unBind, View target,String clazzName) {
+
+        public ViewBind(UnBind unBind, View target, String clazzName) {
             this.unBind = unBind;
             this.target = target;
             this.clazzName = clazzName;
         }
 
-        private boolean equals(@NonNull View target,String clazzName) {
-            if(this.target == null || target == null)return false;
-            if(TextUtils.isEmpty(this.clazzName) || !TextUtils.equals(this.clazzName,clazzName))return false;
+        private boolean equals(@NonNull View target, String clazzName) {
+            if (this.target == null || target == null) return false;
+            if (TextUtils.isEmpty(this.clazzName) || !TextUtils.equals(this.clazzName, clazzName))
+                return false;
             return this.target.getId() == target.getId();
         }
     }
@@ -104,22 +106,23 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public MoveBuilder move(@NonNull View target) {
-        return build(MoveBuilder.class,target);
+        return build(MoveBuilder.class, target);
     }
 
 
     /**
      * 构建一个builder
+     *
      * @param clazz
      * @param target
      * @param <Builder>
      * @return
      */
-    private <Builder> Builder build(Class<Builder> clazz,View target){
+    private <Builder> Builder build(Class<Builder> clazz, View target) {
         try {
-            if(!CollectUtil.isEmpty(unBinds)) {
+            if (!CollectUtil.isEmpty(unBinds)) {
                 for (ViewBind unBind : unBinds) {
-                    if (unBind.equals(target,clazz.getName())) {
+                    if (unBind.equals(target, clazz.getName())) {
                         return (Builder) unBind.unBind;
                     }
                 }
@@ -129,7 +132,7 @@ public class AnimBuilder implements UnBind {
             Object obj2 = con2.newInstance(this);
             BaseAnim baseAnim = (BaseAnim) obj2;
             baseAnim.target = target;
-            unBinds.add(new ViewBind((UnBind) baseAnim, target,clazz.getName()));
+            unBinds.add(new ViewBind((UnBind) baseAnim, target, clazz.getName()));
             return (Builder) baseAnim;
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -149,7 +152,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public QuadBuilder quad(@NonNull View target) {
-        return build(QuadBuilder.class,target);
+        return build(QuadBuilder.class, target);
     }
 
     /**
@@ -158,7 +161,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public RotateBuilder rotate(@NonNull View target) {
-        return build(RotateBuilder.class,target);
+        return build(RotateBuilder.class, target);
     }
 
     /**
@@ -167,7 +170,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public CubicBuilder cubic(@NonNull View target) {
-        return build(CubicBuilder.class,target);
+        return build(CubicBuilder.class, target);
     }
 
     /**
@@ -176,7 +179,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ScaleBuilder scale(@NonNull View target) {
-        return build(ScaleBuilder.class,target);
+        return build(ScaleBuilder.class, target);
     }
 
     /**
@@ -185,7 +188,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlphaBuilder alpha(@NonNull View target) {
-        return build(AlphaBuilder.class,target);
+        return build(AlphaBuilder.class, target);
     }
 
     /**
@@ -194,7 +197,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlwaysRotateBuilder alwaysRotate(@NonNull View target) {
-        return build(AlwaysRotateBuilder.class,target);
+        return build(AlwaysRotateBuilder.class, target);
     }
 
 
@@ -205,7 +208,7 @@ public class AnimBuilder implements UnBind {
      */
     public TogetherBuilder together() {
         togetherBuilder = new TogetherBuilder();
-        unBinds.add(new ViewBind(togetherBuilder,null,TogetherBuilder.class.getName()));
+        unBinds.add(new ViewBind(togetherBuilder, null, TogetherBuilder.class.getName()));
         togetherBuilder.clearAnim();
         return togetherBuilder;
     }
@@ -217,7 +220,7 @@ public class AnimBuilder implements UnBind {
      */
     public PlayOnBuilder playOn() {
         playOnBuilder = new PlayOnBuilder();
-        unBinds.add(new ViewBind(playOnBuilder,null,PlayOnBuilder.class.getName()));
+        unBinds.add(new ViewBind(playOnBuilder, null, PlayOnBuilder.class.getName()));
         return playOnBuilder;
     }
 
@@ -227,7 +230,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public FrameBuilder frame(@NonNull View target) {
-        return build(FrameBuilder.class,target);
+        return build(FrameBuilder.class, target);
     }
 
     /**
@@ -236,7 +239,7 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ColorBuilder color(@NonNull View target) {
-        return build(ColorBuilder.class,target);
+        return build(ColorBuilder.class, target);
     }
 
 
@@ -864,9 +867,10 @@ public class AnimBuilder implements UnBind {
                 }
             }
             if (listener == null) return;
-            Observable.interval(0, 1, TimeUnit.MILLISECONDS, Schedulers.newThread())
+            Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(AndroidSchedulers.mainThread())
+                    .distinct()
                     .map(new Function<Long, Long>() {
                         @Override
                         public Long apply(Long aLong) throws Exception {
@@ -1786,11 +1790,10 @@ public class AnimBuilder implements UnBind {
      */
     public class MoveBuilder extends BaseAnim<MoveBuilder> implements UnBind {
 
-        private float sx, sy, ex, ey;
 
-        public MoveBuilder() {
-            super();
-        }
+        List<PointF> positionF = new ArrayList<>();
+
+
 
         /**
          * 从当前位置移动到x,y处
@@ -1799,8 +1802,7 @@ public class AnimBuilder implements UnBind {
          * @param y
          */
         public MoveBuilder moveTo(float x, float y) {
-            ex = x;
-            ey = y;
+            positionF.add(new PointF(x, y));
             return this;
         }
 
@@ -1813,10 +1815,8 @@ public class AnimBuilder implements UnBind {
          * @param ey
          */
         public MoveBuilder moveTo(float sx, float sy, float ex, float ey) {
-            this.sx = sx;
-            this.sy = sy;
-            this.ex = ex;
-            this.ey = ey;
+            positionF.add(new PointF(sx, sy));
+            positionF.add(new PointF(ex, ey));
             return this;
         }
 
@@ -1826,12 +1826,35 @@ public class AnimBuilder implements UnBind {
         public void start() {
             if (getAnim() != null) {
                 getAnim().start();
+                positionF.clear();
             }
         }
 
         private ObjectAnimator getAnim() {
             checkViewAvailable();
-            return getAnimator(new MoveLineEvaluator(), getPointF(sx == 0 ? target.getX() : sx, sy == 0 ? target.getY() : sx), getPointF(ex, ey));
+            if (positionF.size() == 1) {
+                positionF.add(0, new PointF(target.getX(), target.getY()));
+            }
+            return getAnimator(new MoveLineEvaluator(), null, null);
+        }
+
+        @Override
+        protected ObjectAnimator getAnimator(TypeEvaluator typeEvaluator, PointF startPoint, PointF endPoint) {
+            Object[] objects = new Object[positionF.size()];
+            objects = positionF.toArray(objects);
+            ObjectAnimator animator = ObjectAnimator.ofObject(this, "move", typeEvaluator, objects);
+            animator.setDuration(duration);
+            animator.setInterpolator(interpolator);
+            if (updateListener != null) {
+                animator.addUpdateListener(updateListener);
+            }
+            if (pauseListener != null) {
+                animator.addPauseListener(pauseListener);
+            }
+            if (animatorListener != null) {
+                animator.addListener(animatorListener);
+            }
+            return animator;
         }
 
         @Override
@@ -1869,7 +1892,7 @@ public class AnimBuilder implements UnBind {
     }
 
 
-    private  class BaseAnim<Anim extends BaseAnim> {
+    private class BaseAnim<Anim extends BaseAnim> {
 
         View target;
 

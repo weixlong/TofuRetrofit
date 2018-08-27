@@ -45,7 +45,7 @@ public class MainActivity extends TofuSupportActivity {
         });
 
         Tofu.anim().playOn()
-                .move(Tofu.anim().move(viewById).moveTo(300, 300))
+                .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
                 .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
                 .together(Tofu.anim().together()
                         .quad(Tofu.anim().quad(viewById).duration(4000).end(100, 600).spin(50, 50))
