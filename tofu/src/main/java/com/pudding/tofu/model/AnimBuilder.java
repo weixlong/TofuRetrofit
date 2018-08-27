@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -66,7 +65,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AnimBuilder implements UnBind {
 
-
     private MoveBuilder moveBuilder;
 
     private QuadBuilder quadBuilder;
@@ -102,10 +100,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public MoveBuilder move() {
-        if (moveBuilder == null) {
-            moveBuilder = new MoveBuilder();
-            unBinds.add(moveBuilder);
-        }
+//        if (moveBuilder == null) {
+        moveBuilder = new MoveBuilder();
+        unBinds.add(moveBuilder);
+//        }
         return moveBuilder;
     }
 
@@ -115,10 +113,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public QuadBuilder quad() {
-        if (quadBuilder == null) {
-            quadBuilder = new QuadBuilder();
-            unBinds.add(quadBuilder);
-        }
+//        if (quadBuilder == null) {
+        quadBuilder = new QuadBuilder();
+        unBinds.add(quadBuilder);
+//        }
         return quadBuilder;
     }
 
@@ -128,10 +126,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public RotateBuilder rotate() {
-        if (rotateBuilder == null) {
-            rotateBuilder = new RotateBuilder();
-            unBinds.add(rotateBuilder);
-        }
+//        if (rotateBuilder == null) {
+        rotateBuilder = new RotateBuilder();
+        unBinds.add(rotateBuilder);
+//        }
         return rotateBuilder;
     }
 
@@ -141,10 +139,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public CubicBuilder cubic() {
-        if (cubicBuilder == null) {
-            cubicBuilder = new CubicBuilder();
-            unBinds.add(cubicBuilder);
-        }
+//        if (cubicBuilder == null) {
+        cubicBuilder = new CubicBuilder();
+        unBinds.add(cubicBuilder);
+//        }
         return cubicBuilder;
     }
 
@@ -154,10 +152,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ScaleBuilder scale() {
-        if (scaleBuilder == null) {
-            scaleBuilder = new ScaleBuilder();
-            unBinds.add(scaleBuilder);
-        }
+//        if (scaleBuilder == null) {
+        scaleBuilder = new ScaleBuilder();
+        unBinds.add(scaleBuilder);
+//        }
         return scaleBuilder;
     }
 
@@ -167,10 +165,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlphaBuilder alpha() {
-        if (alphaBuilder == null) {
-            alphaBuilder = new AlphaBuilder();
-            unBinds.add(alphaBuilder);
-        }
+//        if (alphaBuilder == null) {
+        alphaBuilder = new AlphaBuilder();
+        unBinds.add(alphaBuilder);
+//        }
         return alphaBuilder;
     }
 
@@ -180,10 +178,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlwaysRotateBuilder alwaysRotate() {
-        if (alwaysRotateBuilder == null) {
-            alwaysRotateBuilder = new AlwaysRotateBuilder();
-            unBinds.add(alwaysRotateBuilder);
-        }
+//        if (alwaysRotateBuilder == null) {
+        alwaysRotateBuilder = new AlwaysRotateBuilder();
+        unBinds.add(alwaysRotateBuilder);
+//        }
         return alwaysRotateBuilder;
     }
 
@@ -194,10 +192,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public TogetherBuilder together() {
-        if (togetherBuilder == null) {
-            togetherBuilder = new TogetherBuilder();
-            unBinds.add(togetherBuilder);
-        }
+//        if (togetherBuilder == null) {
+        togetherBuilder = new TogetherBuilder();
+        unBinds.add(togetherBuilder);
+//        }
         togetherBuilder.clearAnim();
         return togetherBuilder;
     }
@@ -208,10 +206,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public PlayOnBuilder playOn() {
-        if (playOnBuilder == null) {
+//        if (playOnBuilder == null) {
             playOnBuilder = new PlayOnBuilder();
             unBinds.add(playOnBuilder);
-        }
+//        }
         return playOnBuilder;
     }
 
@@ -221,10 +219,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public FrameBuilder frame() {
-        if (frameBuilder == null) {
+//        if (frameBuilder == null) {
             frameBuilder = new FrameBuilder();
             unBinds.add(frameBuilder);
-        }
+//        }
         return frameBuilder;
     }
 
@@ -234,10 +232,10 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ColorBuilder color() {
-        if (colorBuilder == null) {
+//        if (colorBuilder == null) {
             colorBuilder = new ColorBuilder();
             unBinds.add(colorBuilder);
-        }
+//        }
         colorBuilder.colors.clear();
         return colorBuilder;
     }
@@ -839,17 +837,17 @@ public class AnimBuilder implements UnBind {
          */
         public void start() {
             AnimatorSet clone = animationSet.clone();
-            if(!CollectUtil.isEmpty(valueAnimators)) {
+            if (!CollectUtil.isEmpty(valueAnimators)) {
                 clone.playTogether(new ArrayList<>(valueAnimators));
                 clone.start();
             }
-            if(!CollectUtil.isEmpty(animations)) {
+            if (!CollectUtil.isEmpty(animations)) {
                 for (Animation animation : animations) {
                     animation.start();
                 }
             }
             if (listener == null) return;
-            Observable.interval(0, 1, TimeUnit.MILLISECONDS,Schedulers.newThread())
+            Observable.interval(0, 1, TimeUnit.MILLISECONDS, Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(AndroidSchedulers.mainThread())
                     .map(new Function<Long, Long>() {
@@ -883,7 +881,7 @@ public class AnimBuilder implements UnBind {
         }
 
 
-        private void clearAnim(){
+        private void clearAnim() {
             animations.clear();
             valueAnimators.clear();
         }
