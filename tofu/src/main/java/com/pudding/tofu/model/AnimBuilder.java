@@ -12,6 +12,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -19,6 +20,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -39,6 +41,9 @@ import com.pudding.tofu.widget.CollectUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,7 +92,25 @@ public class AnimBuilder implements UnBind {
 
     private ColorBuilder colorBuilder;
 
-    private List<UnBind> unBinds = new ArrayList<>();
+    private List<ViewBind> unBinds = new ArrayList<>();
+
+
+    private class ViewBind {
+        UnBind unBind;
+        View target;
+        String clazzName;
+        public ViewBind(UnBind unBind, View target,String clazzName) {
+            this.unBind = unBind;
+            this.target = target;
+            this.clazzName = clazzName;
+        }
+
+        private boolean equals(@NonNull View target,String clazzName) {
+            if(this.target == null || target == null)return false;
+            if(TextUtils.isEmpty(this.clazzName) || !TextUtils.equals(this.clazzName,clazzName))return false;
+            return this.target.getId() == target.getId();
+        }
+    }
 
 
     protected AnimBuilder() {
@@ -99,12 +122,44 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public MoveBuilder move() {
-//        if (moveBuilder == null) {
-        moveBuilder = new MoveBuilder();
-        unBinds.add(moveBuilder);
-//        }
-        return moveBuilder;
+    public MoveBuilder move(View target) {
+        return build(MoveBuilder.class,target);
+    }
+
+
+    /**
+     * 构建一个builder
+     * @param clazz
+     * @param target
+     * @param <Builder>
+     * @return
+     */
+    private <Builder> Builder build(Class<Builder> clazz,View target){
+        try {
+            if(!CollectUtil.isEmpty(unBinds)) {
+                for (ViewBind unBind : unBinds) {
+                    if (unBind.equals(target,clazz.getName())) {
+                        return (Builder) unBind.unBind;
+                    }
+                }
+            }
+            Constructor con2 = clazz.getDeclaredConstructor(this.getClass());
+            con2.setAccessible(true);
+            Object obj2 = con2.newInstance(this);
+            BaseAnim baseAnim = (BaseAnim) obj2;
+            baseAnim.target = target;
+            unBinds.add(new ViewBind((UnBind) baseAnim, target,clazz.getName()));
+            return (Builder) baseAnim;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -112,12 +167,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public QuadBuilder quad() {
-//        if (quadBuilder == null) {
-        quadBuilder = new QuadBuilder();
-        unBinds.add(quadBuilder);
-//        }
-        return quadBuilder;
+    public QuadBuilder quad(View target) {
+        return build(QuadBuilder.class,target);
     }
 
     /**
@@ -125,12 +176,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public RotateBuilder rotate() {
-//        if (rotateBuilder == null) {
-        rotateBuilder = new RotateBuilder();
-        unBinds.add(rotateBuilder);
-//        }
-        return rotateBuilder;
+    public RotateBuilder rotate(View target) {
+        return build(RotateBuilder.class,target);
     }
 
     /**
@@ -138,12 +185,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public CubicBuilder cubic() {
-//        if (cubicBuilder == null) {
-        cubicBuilder = new CubicBuilder();
-        unBinds.add(cubicBuilder);
-//        }
-        return cubicBuilder;
+    public CubicBuilder cubic(View target) {
+        return build(CubicBuilder.class,target);
     }
 
     /**
@@ -151,12 +194,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public ScaleBuilder scale() {
-//        if (scaleBuilder == null) {
-        scaleBuilder = new ScaleBuilder();
-        unBinds.add(scaleBuilder);
-//        }
-        return scaleBuilder;
+    public ScaleBuilder scale(View target) {
+        return build(ScaleBuilder.class,target);
     }
 
     /**
@@ -164,12 +203,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public AlphaBuilder alpha() {
-//        if (alphaBuilder == null) {
-        alphaBuilder = new AlphaBuilder();
-        unBinds.add(alphaBuilder);
-//        }
-        return alphaBuilder;
+    public AlphaBuilder alpha(View target) {
+        return build(AlphaBuilder.class,target);
     }
 
     /**
@@ -177,12 +212,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public AlwaysRotateBuilder alwaysRotate() {
-//        if (alwaysRotateBuilder == null) {
-        alwaysRotateBuilder = new AlwaysRotateBuilder();
-        unBinds.add(alwaysRotateBuilder);
-//        }
-        return alwaysRotateBuilder;
+    public AlwaysRotateBuilder alwaysRotate(View target) {
+        return build(AlwaysRotateBuilder.class,target);
     }
 
 
@@ -192,10 +223,8 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public TogetherBuilder together() {
-//        if (togetherBuilder == null) {
         togetherBuilder = new TogetherBuilder();
-        unBinds.add(togetherBuilder);
-//        }
+        unBinds.add(new ViewBind(togetherBuilder,null,TogetherBuilder.class.getName()));
         togetherBuilder.clearAnim();
         return togetherBuilder;
     }
@@ -206,10 +235,8 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public PlayOnBuilder playOn() {
-//        if (playOnBuilder == null) {
-            playOnBuilder = new PlayOnBuilder();
-            unBinds.add(playOnBuilder);
-//        }
+        playOnBuilder = new PlayOnBuilder();
+        unBinds.add(new ViewBind(playOnBuilder,null,PlayOnBuilder.class.getName()));
         return playOnBuilder;
     }
 
@@ -218,12 +245,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public FrameBuilder frame() {
-//        if (frameBuilder == null) {
-            frameBuilder = new FrameBuilder();
-            unBinds.add(frameBuilder);
-//        }
-        return frameBuilder;
+    public FrameBuilder frame(View target) {
+        return build(FrameBuilder.class,target);
     }
 
     /**
@@ -231,13 +254,8 @@ public class AnimBuilder implements UnBind {
      *
      * @return
      */
-    public ColorBuilder color() {
-//        if (colorBuilder == null) {
-            colorBuilder = new ColorBuilder();
-            unBinds.add(colorBuilder);
-//        }
-        colorBuilder.colors.clear();
-        return colorBuilder;
+    public ColorBuilder color(View target) {
+        return build(ColorBuilder.class,target);
     }
 
 
@@ -1773,7 +1791,8 @@ public class AnimBuilder implements UnBind {
 
         private float sx, sy, ex, ey;
 
-        private MoveBuilder() {
+        public MoveBuilder() {
+            super();
         }
 
         /**
@@ -1844,8 +1863,9 @@ public class AnimBuilder implements UnBind {
     @Override
     public void unbind() {
         if (!CollectUtil.isEmpty(unBinds)) {
-            for (UnBind unBind : unBinds) {
-                unBind.unbind();
+            for (ViewBind unBind : unBinds) {
+                unBind.unBind.unbind();
+                unBind.target = null;
             }
         }
         unBinds.clear();
@@ -1866,13 +1886,18 @@ public class AnimBuilder implements UnBind {
 
         Interpolator interpolator = new LinearInterpolator();
 
+
+        protected BaseAnim() {
+
+        }
+
         /**
          * 需要执行动画的view
          *
          * @param target
          * @return
          */
-        public Anim target(View target) {
+        private Anim target(View target) {
             this.target = target;
             return (Anim) this;
         }
