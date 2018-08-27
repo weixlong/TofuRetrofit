@@ -32,7 +32,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -61,6 +64,8 @@ public class AnimBuilder implements UnBind {
     private TogetherBuilder togetherBuilder;
 
     private RotateBuilder rotateBuilder;
+
+    private PlayOnBuilder playOnBuilder;
 
     private List<UnBind> unBinds = new ArrayList<>();
 
@@ -255,11 +260,12 @@ public class AnimBuilder implements UnBind {
 
     /**
      * 旋转动画
+     *
      * @return
      */
-    public RotateBuilder rotate(){
+    public RotateBuilder rotate() {
         checkViewAvailable();
-        if(rotateBuilder == null){
+        if (rotateBuilder == null) {
             rotateBuilder = new RotateBuilder();
             unBinds.add(rotateBuilder);
         }
@@ -337,6 +343,18 @@ public class AnimBuilder implements UnBind {
         return togetherBuilder;
     }
 
+    /**
+     * 连续播放动画
+     * @return
+     */
+    public PlayOnBuilder playOn(){
+        checkViewAvailable();
+        if(playOnBuilder == null){
+            playOnBuilder = new PlayOnBuilder();
+            unBinds.add(playOnBuilder);
+        }
+        return playOnBuilder;
+    }
 
     /**
      * 参数检查
@@ -383,6 +401,176 @@ public class AnimBuilder implements UnBind {
     private PointF getPointF(float x, float y) {
         PointF p = new PointF(x, y);
         return p;
+    }
+
+    /**
+     * 序列播放动画
+     */
+    public class PlayOnBuilder implements UnBind {
+
+        private List<Object> anims = new ArrayList<>();
+
+        protected PlayOnBuilder() {
+
+        }
+
+        /**
+         * 旋转动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder rotate(@NonNull AlwaysRotateBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getRotationXYZAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 透明动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder alpha(@NonNull AlphaBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getAlphaAnimation());
+            }
+            return this;
+        }
+
+        /**
+         * 一阶贝塞尔动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder cubic(@NonNull CubicBuilder builder) {
+            if (builder != null) {
+                anims.add( builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 二阶贝塞尔动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder quad(@NonNull QuadBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 移动动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder move(@NonNull MoveBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 缩放动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder scale(@NonNull ScaleBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getScaleAnimation());
+            }
+            return this;
+        }
+
+        /**
+         * 旋转动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder rotate(@NonNull RotateBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 播放,将会覆盖所有动画监听
+         */
+        public void start() {
+            if(!CollectUtil.isEmpty(anims)) {
+                final Object o = anims.get(0);
+                if (o instanceof Animation) {
+                    Animation anim = (Animation) o;
+                    anim.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            anims.remove(o);
+                            start();
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    anim.start();
+                } else if(o instanceof Animator){
+                    Animator anim = (Animator) o;
+                    anim.addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            anims.remove(o);
+                            start();
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                    anim.start();
+                }
+            }
+        }
+
+
+        @Override
+        public void unbind() {
+            for (Object anim : anims) {
+                if(anim instanceof  UnBind){
+                    UnBind unBind = (UnBind) anim;
+                    unBind.unbind();
+                }
+            }
+            anims.clear();
+        }
     }
 
     /**
@@ -476,11 +664,12 @@ public class AnimBuilder implements UnBind {
 
         /**
          * 旋转动画
+         *
          * @param builder
          * @return
          */
-        public TogetherBuilder rotate(@NonNull RotateBuilder builder){
-            if(builder != null){
+        public TogetherBuilder rotate(@NonNull RotateBuilder builder) {
+            if (builder != null) {
                 valueAnimators.add(builder.getAnim());
             }
             return this;
@@ -611,12 +800,13 @@ public class AnimBuilder implements UnBind {
         /***
          * 开始动画
          */
-        public void start(){
+        public void start() {
             getAnim().start();
         }
 
         /**
          * 获取动画
+         *
          * @return
          */
         @SuppressLint("WrongConstant")
@@ -962,6 +1152,7 @@ public class AnimBuilder implements UnBind {
     @Retention(RetentionPolicy.SOURCE)
     public @interface RepeatMode {
     }
+
     /**
      * When the animation reaches the end and <code>repeatCount</code> is INFINITE
      * or a positive value, the animation restarts from the beginning.
@@ -1429,11 +1620,12 @@ public class AnimBuilder implements UnBind {
 
     @Override
     public void unbind() {
-        if(!CollectUtil.isEmpty(unBinds)){
+        if (!CollectUtil.isEmpty(unBinds)) {
             for (UnBind unBind : unBinds) {
                 unBind.unbind();
             }
         }
+        unBinds.clear();
         duration = 500;
         target = null;
         updateListener = null;
