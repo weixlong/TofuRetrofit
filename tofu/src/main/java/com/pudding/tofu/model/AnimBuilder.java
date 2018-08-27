@@ -898,7 +898,6 @@ public class AnimBuilder implements UnBind {
 
         }
 
-
         private void clearAnim() {
             animations.clear();
             valueAnimators.clear();
@@ -911,12 +910,6 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
-            for (Animation animation : animations) {
-                ((UnBind) animation).unbind();
-            }
-            for (Animator valueAnimator : valueAnimators) {
-                ((UnBind) valueAnimator).unbind();
-            }
             animations.clear();
             valueAnimators.clear();
         }
