@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -609,6 +610,7 @@ public class AnimBuilder implements UnBind {
          * 获取动画
          * @return
          */
+        @SuppressLint("WrongConstant")
         private ObjectAnimator getAnim() {
             String propertyName = "rotation";
             if (rotateX) {
@@ -912,6 +914,7 @@ public class AnimBuilder implements UnBind {
          *
          * @return
          */
+        @SuppressLint("WrongConstant")
         private ObjectAnimator getAlphaAnimation() {
             ObjectAnimator alphaAnimation;
             if (values != null && values.length > 0) {
@@ -1114,6 +1117,7 @@ public class AnimBuilder implements UnBind {
          *
          * @return
          */
+        @SuppressLint("WrongConstant")
         private Collection<Animator> getScaleAnimation() {
             List<Animator> animators = new ArrayList<>();
 
@@ -1422,6 +1426,9 @@ public class AnimBuilder implements UnBind {
 
     @Override
     public void unbind() {
+        if(togetherBuilder != null){
+            togetherBuilder.unbind();
+        }
         duration = 500;
         target = null;
         updateListener = null;
