@@ -2,6 +2,7 @@ package com.pudding.tofu.model;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
@@ -10,8 +11,15 @@ import android.annotation.SuppressLint;
 import android.graphics.Camera;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -25,6 +33,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.Transformation;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.pudding.tofu.widget.CollectUtil;
 
@@ -66,6 +76,10 @@ public class AnimBuilder implements UnBind {
     private RotateBuilder rotateBuilder;
 
     private PlayOnBuilder playOnBuilder;
+
+    private FrameBuilder frameBuilder;
+
+    private ColorBuilder colorBuilder;
 
     private List<UnBind> unBinds = new ArrayList<>();
 
@@ -345,15 +359,44 @@ public class AnimBuilder implements UnBind {
 
     /**
      * 连续播放动画
+     *
      * @return
      */
-    public PlayOnBuilder playOn(){
+    public PlayOnBuilder playOn() {
         checkViewAvailable();
-        if(playOnBuilder == null){
+        if (playOnBuilder == null) {
             playOnBuilder = new PlayOnBuilder();
             unBinds.add(playOnBuilder);
         }
         return playOnBuilder;
+    }
+
+    /**
+     * 帧动画
+     *
+     * @return
+     */
+    public FrameBuilder frame() {
+        checkViewAvailable();
+        if (frameBuilder == null) {
+            frameBuilder = new FrameBuilder();
+            unBinds.add(frameBuilder);
+        }
+        return frameBuilder;
+    }
+
+    /**
+     * 颜色动画
+     *
+     * @return
+     */
+    public ColorBuilder color() {
+        checkViewAvailable();
+        if (colorBuilder == null) {
+            colorBuilder = new ColorBuilder();
+            unBinds.add(colorBuilder);
+        }
+        return colorBuilder;
     }
 
     /**
@@ -403,6 +446,239 @@ public class AnimBuilder implements UnBind {
         return p;
     }
 
+
+    /**
+     * 颜色动画
+     */
+    public class ColorBuilder implements UnBind {
+
+        private List<Integer> colors = new ArrayList<>();
+
+        private boolean isText;
+
+        private int count = 0, mode = RESTART;
+
+        private ColorBuilder() {
+        }
+
+        /**
+         * 添加颜色值
+         *
+         * @param colorValues
+         * @return
+         */
+        public ColorBuilder colorValues(@ColorInt int... colorValues) {
+            if (colorValues != null) {
+                for (int colorValue : colorValues) {
+                    colors.add(colorValue);
+                }
+            }
+            return this;
+        }
+
+        /**
+         * 添加颜色资源
+         *
+         * @param colorRes
+         * @return
+         */
+        public ColorBuilder colorRes(@ColorRes int... colorRes) {
+            if (colorRes != null) {
+                for (int i : colorRes) {
+                    int colorValue = ContextCompat.getColor(target.getContext(), i);
+                    colors.add(colorValue);
+                }
+            }
+            return this;
+        }
+
+        /**
+         * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+         * or a positive value, the animation restarts from the beginning.
+         * <p>
+         * public static final int RESTART = 1;
+         * <p>
+         * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+         * or a positive value, the animation reverses direction on every iteration.
+         * <p>
+         * public static final int REVERSE = 2;
+         * <p>
+         * This value used used with the {@link #setRepeatCount(int)} property to repeat
+         * the animation indefinitely.
+         * <p>
+         * public static final int INFINITE = -1;
+         *
+         * @param count
+         * @return
+         */
+        public ColorBuilder setRepeatCount(int count) {
+            this.count = count;
+            return this;
+        }
+
+        /**
+         * Defines what this animation should do when it reaches the end. This
+         * setting is applied only when the repeat count is either greater than
+         * 0 or {@link # INFINITE}. Defaults to {@link # RESTART}.
+         *
+         * @param mode {@link # RESTART} or {@link # REVERSE}
+         */
+        public ColorBuilder setRepeatMode(@RepeatMode int mode) {
+            this.mode = mode;
+            return this;
+        }
+
+
+        /**
+         * 对TextView类型改变字的颜色
+         *
+         * @return
+         */
+        public ColorBuilder text(boolean isText) {
+            this.isText = isText;
+            return this;
+        }
+
+        /**
+         * 开始动画
+         */
+        public void start() {
+            getAnim().start();
+            colors.clear();
+        }
+
+        /**
+         * 获得动画
+         *
+         * @return
+         */
+        @SuppressLint("WrongConstant")
+        private ValueAnimator getAnim() {
+            Object[] ints = new Integer[colors.size()];
+            ints = colors.toArray(ints);
+            final ValueAnimator valueAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), ints);
+            valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    if (isText) {
+                        if (target instanceof TextView) {
+                            TextView textView = (TextView) target;
+                            textView.setTextColor((Integer) animation.getAnimatedValue());
+                        } else {
+                            throw new ClassCastException("Are you sure target view is TextView class ???");
+                        }
+                    } else {
+                        target.setBackgroundColor((Integer) animation.getAnimatedValue());
+                    }
+                }
+            });
+            valueAnimator.setDuration(duration);
+            if (animatorListener != null) {
+                valueAnimator.addListener(animatorListener);
+            }
+
+            if (pauseListener != null) {
+                valueAnimator.addPauseListener(pauseListener);
+            }
+
+            valueAnimator.setInterpolator(interpolator);
+            valueAnimator.setRepeatCount(count);
+            valueAnimator.setRepeatMode(mode);
+            return valueAnimator;
+        }
+
+        @Override
+        public void unbind() {
+            duration = 500;
+            target = null;
+            isText = false;
+            colors.clear();
+            count = 0;
+            mode = RESTART;
+        }
+    }
+
+    /**
+     * 帧动画
+     */
+    public class FrameBuilder implements UnBind {
+
+        private AnimationDrawable anim = new AnimationDrawable();
+
+        private FrameBuilder() {
+
+        }
+
+        /**
+         * 添加帧
+         *
+         * @param duration
+         * @param drawableIds
+         * @return
+         */
+        public FrameBuilder add(@IntRange(from = 0) int duration, @DrawableRes int... drawableIds) {
+            if (drawableIds != null) {
+                for (int drawableId : drawableIds) {
+                    Drawable drawable = target.getContext().getResources().getDrawable(drawableId);
+                    anim.addFrame(drawable, duration);
+                }
+            }
+            return this;
+        }
+
+        /**
+         * 播放
+         */
+        public void start() {
+            if (target instanceof ImageView) {
+                ImageView imageView = (ImageView) target;
+                imageView.setImageDrawable(anim);
+                anim.start();
+            } else {
+                throw new ClassCastException("Are your sure target view is ImageView class ???");
+            }
+        }
+
+        /**
+         * 停止播放
+         */
+        public void stop() {
+            anim.stop();
+        }
+
+        /**
+         * 移除动画
+         */
+        public void removeAnim() {
+            if (target instanceof ImageView) {
+                ImageView imageView = (ImageView) target;
+                imageView.clearAnimation();
+            }
+        }
+
+        /**
+         * false为循环播放，true为仅播放一次
+         *
+         * @param isOneShot
+         * @return
+         */
+        public FrameBuilder oneShot(boolean isOneShot) {
+            anim.setOneShot(isOneShot);
+            return this;
+        }
+
+        @Override
+        public void unbind() {
+            if (target instanceof ImageView) {
+                ImageView imageView = (ImageView) target;
+                imageView.clearAnimation();
+                imageView.setImageDrawable(null);
+                duration = 500;
+                target = null;
+            }
+        }
+    }
+
     /**
      * 序列播放动画
      */
@@ -448,7 +724,7 @@ public class AnimBuilder implements UnBind {
          */
         public PlayOnBuilder cubic(@NonNull CubicBuilder builder) {
             if (builder != null) {
-                anims.add( builder.getAnim());
+                anims.add(builder.getAnim());
             }
             return this;
         }
@@ -493,6 +769,19 @@ public class AnimBuilder implements UnBind {
         }
 
         /**
+         * 颜色动画
+         *
+         * @param builder
+         * @return
+         */
+        public PlayOnBuilder color(@NonNull ColorBuilder builder) {
+            if (builder != null) {
+                anims.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
          * 旋转动画
          *
          * @param builder
@@ -509,7 +798,7 @@ public class AnimBuilder implements UnBind {
          * 播放,将会覆盖所有动画监听
          */
         public void start() {
-            if(!CollectUtil.isEmpty(anims)) {
+            if (!CollectUtil.isEmpty(anims)) {
                 final Object o = anims.get(0);
                 if (o instanceof Animation) {
                     Animation anim = (Animation) o;
@@ -531,7 +820,7 @@ public class AnimBuilder implements UnBind {
                         }
                     });
                     anim.start();
-                } else if(o instanceof Animator){
+                } else if (o instanceof Animator) {
                     Animator anim = (Animator) o;
                     anim.addListener(new Animator.AnimatorListener() {
                         @Override
@@ -564,7 +853,7 @@ public class AnimBuilder implements UnBind {
         @Override
         public void unbind() {
             for (Object anim : anims) {
-                if(anim instanceof  UnBind){
+                if (anim instanceof UnBind) {
                     UnBind unBind = (UnBind) anim;
                     unBind.unbind();
                 }
@@ -669,6 +958,19 @@ public class AnimBuilder implements UnBind {
          * @return
          */
         public TogetherBuilder rotate(@NonNull RotateBuilder builder) {
+            if (builder != null) {
+                valueAnimators.add(builder.getAnim());
+            }
+            return this;
+        }
+
+        /**
+         * 颜色动画
+         *
+         * @param builder
+         * @return
+         */
+        public TogetherBuilder color(@NonNull ColorBuilder builder) {
             if (builder != null) {
                 valueAnimators.add(builder.getAnim());
             }

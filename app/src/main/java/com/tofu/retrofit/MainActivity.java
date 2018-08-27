@@ -44,13 +44,14 @@ public class MainActivity extends TofuSupportActivity {
             }
         });
 
-        Tofu.anim().target(viewById).duration(2000).playOn()
-                .move(Tofu.anim().move().moveTo(300,300))
-                .cubic(Tofu.anim().duration(3000).cubic().begin(300,300).end(100,600).spin(50,400,400,500))
-                .rotate(Tofu.anim().duration(4000).rotate().values(180,0,180))
-                .alpha(Tofu.anim().duration(5000).alpha().alphaValues(1,0,1))
-                .start();
-
+//        Tofu.anim().target(viewById).duration(2000).playOn()
+//                .move(Tofu.anim().move().moveTo(300,300))
+//                .cubic(Tofu.anim().duration(3000).cubic().begin(300,300).end(100,600).spin(50,400,400,500))
+//                .rotate(Tofu.anim().duration(4000).rotate().values(180,0,180))
+//                .alpha(Tofu.anim().duration(5000).alpha().alphaValues(1,0,1))
+//                .color(Tofu.anim().color().text(true).colorValues(0xFFFFFFFF,0xff78c5f9))
+//                .start();
+        Tofu.anim().target(viewById).duration(5000).color().text(true).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
 //        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();
 //        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();
     }
