@@ -51,7 +51,7 @@ public class MainActivity extends TofuSupportActivity {
 //                .alpha(Tofu.anim().duration(5000).alpha().alphaValues(1,0,1))
 //                .color(Tofu.anim().color().text(true).colorValues(0xFFFFFFFF,0xff78c5f9))
 //                .start();
-        Tofu.anim().target(viewById).duration(5000).color().text(true).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
+        Tofu.anim().color().text(true).target(viewById).duration(5000).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
 //        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();
 //        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();
     }

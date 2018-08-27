@@ -55,9 +55,6 @@ import java.util.Map;
 
 public class AnimBuilder implements UnBind {
 
-    private View target;
-
-    private long duration = 500;
 
     private MoveBuilder moveBuilder;
 
@@ -83,166 +80,10 @@ public class AnimBuilder implements UnBind {
 
     private List<UnBind> unBinds = new ArrayList<>();
 
-    private ValueAnimator.AnimatorUpdateListener updateListener;
-
-    private Animator.AnimatorPauseListener pauseListener;
-
-    private Animator.AnimatorListener animatorListener;
-
-    private Interpolator interpolator = new LinearInterpolator();
 
     protected AnimBuilder() {
     }
 
-    /**
-     * 需要执行动画的view
-     *
-     * @param target
-     * @return
-     */
-    public AnimBuilder target(View target) {
-        this.target = target;
-        return this;
-    }
-
-    /**
-     * 动画执行时间，不设置默认500ms
-     *
-     * @param duration
-     * @return
-     */
-    public AnimBuilder duration(long duration) {
-        this.duration = duration;
-        return this;
-    }
-
-    /**
-     * 加速动画,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder accelerate() {
-        interpolator = new AccelerateInterpolator();
-        return this;
-    }
-
-    /**
-     * 减速动画,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder decelerate() {
-        interpolator = new DecelerateInterpolator();
-        return this;
-    }
-
-    /**
-     * 设置动画为先加速在减速(开始速度最快 逐渐减慢),不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder accelerateDecelerate() {
-        interpolator = new AccelerateDecelerateInterpolator();
-        return this;
-    }
-
-
-    /**
-     * 先反向执行一段，然后再加速反向回来（相当于我们弹簧，先反向压缩一小段，然后在加速弹出）,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder anticipate() {
-        interpolator = new AnticipateInterpolator();
-        return this;
-    }
-
-
-    /**
-     * 先反向一段，然后加速反向回来，执行完毕自带回弹效果（更形象的弹簧效果）,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder anticipateOvershoot() {
-        interpolator = new AnticipateOvershootInterpolator();
-        return this;
-    }
-
-    /**
-     * 执行完毕之后会回弹跳跃几段（相当于我们高空掉下一颗皮球，到地面是会跳动几下）,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder bounce() {
-        interpolator = new BounceInterpolator();
-        return this;
-    }
-
-    /**
-     * 循环，动画循环一定次数，值的改变为一正弦函数：Math.sin(2* mCycles* Math.PI* input),不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder cycle(float cycles) {
-        interpolator = new CycleInterpolator(cycles);
-        return this;
-    }
-
-
-    /**
-     * 加速执行，结束之后回弹,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder overShoot() {
-        interpolator = new OvershootInterpolator();
-        return this;
-    }
-
-    /**
-     * 自定义动画执行效果,不设置则默认匀速
-     *
-     * @return
-     */
-    public AnimBuilder setInterpolator(@NonNull Interpolator value) {
-        if (value != null) {
-            interpolator = value;
-        }
-        return this;
-    }
-
-    /**
-     * 设置执行过程监听
-     *
-     * @param updateCallBack
-     * @return
-     */
-    public AnimBuilder setUpdateCallBack(ValueAnimator.AnimatorUpdateListener updateCallBack) {
-        updateListener = updateCallBack;
-        return this;
-    }
-
-    /**
-     * 设置显示暂停监听
-     *
-     * @param pauseCallBack
-     * @return
-     */
-    public AnimBuilder setPauseCallBack(Animator.AnimatorPauseListener pauseCallBack) {
-        pauseListener = pauseCallBack;
-        return this;
-    }
-
-    /**
-     * 设置监听
-     *
-     * @param animatorCallBack
-     * @return
-     */
-    public AnimBuilder setAnimatorCallBack(Animator.AnimatorListener animatorCallBack) {
-        animatorListener = animatorCallBack;
-        return this;
-    }
 
     /**
      * 平移
@@ -250,7 +91,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public MoveBuilder move() {
-        checkViewAvailable();
         if (moveBuilder == null) {
             moveBuilder = new MoveBuilder();
             unBinds.add(moveBuilder);
@@ -264,7 +104,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public QuadBuilder quad() {
-        checkViewAvailable();
         if (quadBuilder == null) {
             quadBuilder = new QuadBuilder();
             unBinds.add(quadBuilder);
@@ -278,7 +117,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public RotateBuilder rotate() {
-        checkViewAvailable();
         if (rotateBuilder == null) {
             rotateBuilder = new RotateBuilder();
             unBinds.add(rotateBuilder);
@@ -292,7 +130,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public CubicBuilder cubic() {
-        checkViewAvailable();
         if (cubicBuilder == null) {
             cubicBuilder = new CubicBuilder();
             unBinds.add(cubicBuilder);
@@ -306,7 +143,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ScaleBuilder scale() {
-        checkViewAvailable();
         if (scaleBuilder == null) {
             scaleBuilder = new ScaleBuilder();
             unBinds.add(scaleBuilder);
@@ -320,7 +156,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlphaBuilder alpha() {
-        checkViewAvailable();
         if (alphaBuilder == null) {
             alphaBuilder = new AlphaBuilder();
             unBinds.add(alphaBuilder);
@@ -334,7 +169,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public AlwaysRotateBuilder alwaysRotate() {
-        checkViewAvailable();
         if (alwaysRotateBuilder == null) {
             alwaysRotateBuilder = new AlwaysRotateBuilder();
             unBinds.add(alwaysRotateBuilder);
@@ -349,7 +183,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public TogetherBuilder together() {
-        checkViewAvailable();
         if (togetherBuilder == null) {
             togetherBuilder = new TogetherBuilder();
             unBinds.add(togetherBuilder);
@@ -363,7 +196,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public PlayOnBuilder playOn() {
-        checkViewAvailable();
         if (playOnBuilder == null) {
             playOnBuilder = new PlayOnBuilder();
             unBinds.add(playOnBuilder);
@@ -377,7 +209,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public FrameBuilder frame() {
-        checkViewAvailable();
         if (frameBuilder == null) {
             frameBuilder = new FrameBuilder();
             unBinds.add(frameBuilder);
@@ -391,7 +222,6 @@ public class AnimBuilder implements UnBind {
      * @return
      */
     public ColorBuilder color() {
-        checkViewAvailable();
         if (colorBuilder == null) {
             colorBuilder = new ColorBuilder();
             unBinds.add(colorBuilder);
@@ -399,47 +229,6 @@ public class AnimBuilder implements UnBind {
         return colorBuilder;
     }
 
-    /**
-     * 参数检查
-     */
-    private void checkViewAvailable() {
-        if (target == null) throw new IllegalArgumentException("Are you sure set view target ???");
-    }
-
-    /**
-     * 获取ObjectAnimator
-     *
-     * @param typeEvaluator
-     * @param startPoint
-     * @param endPoint
-     * @return
-     */
-    protected ObjectAnimator getAnimator(TypeEvaluator typeEvaluator, PointF startPoint, PointF endPoint) {
-        ObjectAnimator animator = ObjectAnimator.ofObject(this, "move", typeEvaluator, startPoint, endPoint);
-        animator.setDuration(duration);
-        animator.setInterpolator(interpolator);
-        if (updateListener != null) {
-            animator.addUpdateListener(updateListener);
-        }
-        if (pauseListener != null) {
-            animator.addPauseListener(pauseListener);
-        }
-        if (animatorListener != null) {
-            animator.addListener(animatorListener);
-        }
-        return animator;
-    }
-
-
-    /**
-     * call from object animator of object method 'move' char
-     *
-     * @param pointF {@hide}
-     */
-    public void setMove(PointF pointF) {
-        target.setX(pointF.x);
-        target.setY(pointF.y);
-    }
 
     private PointF getPointF(float x, float y) {
         PointF p = new PointF(x, y);
@@ -450,7 +239,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 颜色动画
      */
-    public class ColorBuilder implements UnBind {
+    public class ColorBuilder extends BaseAnim<ColorBuilder> implements UnBind {
 
         private List<Integer> colors = new ArrayList<>();
 
@@ -483,6 +272,7 @@ public class AnimBuilder implements UnBind {
          * @return
          */
         public ColorBuilder colorRes(@ColorRes int... colorRes) {
+            checkViewAvailable();
             if (colorRes != null) {
                 for (int i : colorRes) {
                     int colorValue = ContextCompat.getColor(target.getContext(), i);
@@ -601,7 +391,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 帧动画
      */
-    public class FrameBuilder implements UnBind {
+    public class FrameBuilder extends BaseAnim<FrameBuilder> implements UnBind {
 
         private AnimationDrawable anim = new AnimationDrawable();
 
@@ -617,6 +407,7 @@ public class AnimBuilder implements UnBind {
          * @return
          */
         public FrameBuilder add(@IntRange(from = 0) int duration, @DrawableRes int... drawableIds) {
+            checkViewAvailable();
             if (drawableIds != null) {
                 for (int drawableId : drawableIds) {
                     Drawable drawable = target.getContext().getResources().getDrawable(drawableId);
@@ -630,6 +421,7 @@ public class AnimBuilder implements UnBind {
          * 播放
          */
         public void start() {
+            checkViewAvailable();
             if (target instanceof ImageView) {
                 ImageView imageView = (ImageView) target;
                 imageView.setImageDrawable(anim);
@@ -650,6 +442,7 @@ public class AnimBuilder implements UnBind {
          * 移除动画
          */
         public void removeAnim() {
+            checkViewAvailable();
             if (target instanceof ImageView) {
                 ImageView imageView = (ImageView) target;
                 imageView.clearAnimation();
@@ -669,6 +462,7 @@ public class AnimBuilder implements UnBind {
 
         @Override
         public void unbind() {
+            if (target == null) return;
             if (target instanceof ImageView) {
                 ImageView imageView = (ImageView) target;
                 imageView.clearAnimation();
@@ -865,7 +659,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 同时执行
      */
-    public class TogetherBuilder implements UnBind {
+    public class TogetherBuilder extends BaseAnim implements UnBind {
         List<Animation> animations = new ArrayList<>();
         List<Animator> valueAnimators = new ArrayList<>();
         private AnimatorSet animationSet = new AnimatorSet();
@@ -1007,7 +801,7 @@ public class AnimBuilder implements UnBind {
     }
 
 
-    public class RotateBuilder implements UnBind {
+    public class RotateBuilder extends BaseAnim<RotateBuilder> implements UnBind {
         private int count = 0, mode = RESTART;
         private boolean rotateX, rotateY, rotateZ;
         private float[] values;
@@ -1113,6 +907,7 @@ public class AnimBuilder implements UnBind {
          */
         @SuppressLint("WrongConstant")
         private ObjectAnimator getAnim() {
+            checkViewAvailable();
             String propertyName = "rotation";
             if (rotateX) {
                 propertyName = "rotationX";
@@ -1134,6 +929,7 @@ public class AnimBuilder implements UnBind {
                 objectAnimator.addListener(animatorListener);
             }
             objectAnimator.setInterpolator(interpolator);
+
             return objectAnimator;
         }
 
@@ -1156,7 +952,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 旋转动画
      */
-    public class AlwaysRotateBuilder implements UnBind {
+    public class AlwaysRotateBuilder extends BaseAnim<AlwaysRotateBuilder> implements UnBind {
         private Animation.AnimationListener mListener;
         private boolean rotateX, rotateY, rotateZ;
         private int count = 0, mode = RESTART;
@@ -1254,6 +1050,7 @@ public class AnimBuilder implements UnBind {
          * @return
          */
         private Animation getRotationXYZAnim() {
+            checkViewAvailable();
             RotationXYZAnimation anim = new RotationXYZAnimation();
             anim.setRepeatCount(count);
             anim.setRepeatMode(mode);
@@ -1331,7 +1128,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 透明动画
      */
-    public class AlphaBuilder implements UnBind {
+    public class AlphaBuilder extends BaseAnim<AlphaBuilder> implements UnBind {
 
         private float fromAlphaValue, toAlphaValue;
         private int count = 0, mode = RESTART;
@@ -1415,6 +1212,7 @@ public class AnimBuilder implements UnBind {
          */
         @SuppressLint("WrongConstant")
         private ObjectAnimator getAlphaAnimation() {
+            checkViewAvailable();
             ObjectAnimator alphaAnimation;
             if (values != null && values.length > 0) {
                 alphaAnimation = ObjectAnimator.ofFloat(target, "alpha", values);
@@ -1474,7 +1272,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 缩放动画
      */
-    public class ScaleBuilder implements UnBind {
+    public class ScaleBuilder extends BaseAnim<ScaleBuilder> implements UnBind {
         private int count = 0, mode = RESTART;
         private float fromXValue, toXValue, fromYValue, toYValue;
         private AnimatorSet animationSet = new AnimatorSet();
@@ -1618,6 +1416,7 @@ public class AnimBuilder implements UnBind {
          */
         @SuppressLint("WrongConstant")
         private Collection<Animator> getScaleAnimation() {
+            checkViewAvailable();
             List<Animator> animators = new ArrayList<>();
 
             if (scaleX) {
@@ -1667,9 +1466,9 @@ public class AnimBuilder implements UnBind {
     /**
      * 二阶贝塞尔曲线
      */
-    public class CubicBuilder implements UnBind {
+    public class CubicBuilder extends BaseAnim<CubicBuilder> implements UnBind {
 
-        private float spinX0, spinY0, spinX1, spinY1, sX = target.getX(), sY = target.getY(), eX, eY;
+        private float spinX0, spinY0, spinX1, spinY1, sX, sY, eX, eY;
 
         private CubicBuilder() {
         }
@@ -1723,7 +1522,8 @@ public class AnimBuilder implements UnBind {
         }
 
         private ObjectAnimator getAnim() {
-            return getAnimator(new CubicEvaluator(spinX0, spinY0, spinX1, spinY1), getPointF(sX, sY), getPointF(eX, eY));
+            checkViewAvailable();
+            return getAnimator(new CubicEvaluator(spinX0 == 0 ? target.getX() : spinX0, spinY0 == 0 ? target.getY() : spinY0, spinX1, spinY1), getPointF(sX, sY), getPointF(eX, eY));
         }
 
         @Override
@@ -1762,9 +1562,9 @@ public class AnimBuilder implements UnBind {
     /**
      * 一阶贝塞尔曲线
      */
-    public class QuadBuilder implements UnBind {
+    public class QuadBuilder extends BaseAnim<QuadBuilder> implements UnBind {
 
-        private float spinX, spinY, sX = target.getX(), sY = target.getY(), eX, eY;
+        private float spinX, spinY, sX, sY, eX, eY;
 
         private QuadBuilder() {
         }
@@ -1816,7 +1616,8 @@ public class AnimBuilder implements UnBind {
         }
 
         private ObjectAnimator getAnim() {
-            return getAnimator(new QuadEvaluator(spinX, spinY), getPointF(sX, sY), getPointF(eX, eY));
+            checkViewAvailable();
+            return getAnimator(new QuadEvaluator(spinX, spinY), getPointF(sX == 0 ? target.getX() : sX, sY == 0 ? target.getY() : sY), getPointF(eX, eY));
         }
 
         @Override
@@ -1849,9 +1650,13 @@ public class AnimBuilder implements UnBind {
         }
     }
 
-    public class MoveBuilder implements UnBind {
 
-        private float sx = target.getX(), sy = target.getY(), ex, ey;
+    /**
+     * 移动
+     */
+    public class MoveBuilder extends BaseAnim<MoveBuilder> implements UnBind {
+
+        private float sx, sy, ex, ey;
 
         private MoveBuilder() {
         }
@@ -1894,7 +1699,8 @@ public class AnimBuilder implements UnBind {
         }
 
         private ObjectAnimator getAnim() {
-            return getAnimator(new MoveLineEvaluator(), getPointF(sx, sy), getPointF(ex, ey));
+            checkViewAvailable();
+            return getAnimator(new MoveLineEvaluator(), getPointF(sx == 0 ? target.getX() : sx, sy == 0 ? target.getY() : sx), getPointF(ex, ey));
         }
 
         @Override
@@ -1928,10 +1734,216 @@ public class AnimBuilder implements UnBind {
             }
         }
         unBinds.clear();
-        duration = 500;
-        target = null;
-        updateListener = null;
-        pauseListener = null;
-        animatorListener = null;
+    }
+
+
+    private class BaseAnim<Anim extends BaseAnim> {
+
+        View target;
+
+        long duration = 500;
+
+        ValueAnimator.AnimatorUpdateListener updateListener;
+
+        Animator.AnimatorPauseListener pauseListener;
+
+        Animator.AnimatorListener animatorListener;
+
+        Interpolator interpolator = new LinearInterpolator();
+
+        /**
+         * 需要执行动画的view
+         *
+         * @param target
+         * @return
+         */
+        public Anim target(View target) {
+            this.target = target;
+            return (Anim) this;
+        }
+
+        /**
+         * 动画执行时间，不设置默认500ms
+         *
+         * @param duration
+         * @return
+         */
+        public Anim duration(long duration) {
+            this.duration = duration;
+            return (Anim) this;
+        }
+
+        /**
+         * 加速动画,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim accelerate() {
+            interpolator = new AccelerateInterpolator();
+            return (Anim) this;
+        }
+
+        /**
+         * 减速动画,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim decelerate() {
+            interpolator = new DecelerateInterpolator();
+            return (Anim) this;
+        }
+
+        /**
+         * 设置动画为先加速在减速(开始速度最快 逐渐减慢),不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim accelerateDecelerate() {
+            interpolator = new AccelerateDecelerateInterpolator();
+            return (Anim) this;
+        }
+
+
+        /**
+         * 先反向执行一段，然后再加速反向回来（相当于我们弹簧，先反向压缩一小段，然后在加速弹出）,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim anticipate() {
+            interpolator = new AnticipateInterpolator();
+            return (Anim) this;
+        }
+
+
+        /**
+         * 先反向一段，然后加速反向回来，执行完毕自带回弹效果（更形象的弹簧效果）,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim anticipateOvershoot() {
+            interpolator = new AnticipateOvershootInterpolator();
+            return (Anim) this;
+        }
+
+        /**
+         * 执行完毕之后会回弹跳跃几段（相当于我们高空掉下一颗皮球，到地面是会跳动几下）,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim bounce() {
+            interpolator = new BounceInterpolator();
+            return (Anim) this;
+        }
+
+        /**
+         * 循环，动画循环一定次数，值的改变为一正弦函数：Math.sin(2* mCycles* Math.PI* input),不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim cycle(float cycles) {
+            interpolator = new CycleInterpolator(cycles);
+            return (Anim) this;
+        }
+
+
+        /**
+         * 加速执行，结束之后回弹,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim overShoot() {
+            interpolator = new OvershootInterpolator();
+            return (Anim) this;
+        }
+
+        /**
+         * 自定义动画执行效果,不设置则默认匀速
+         *
+         * @return
+         */
+        public Anim setInterpolator(@NonNull Interpolator value) {
+            if (value != null) {
+                interpolator = value;
+            }
+            return (Anim) this;
+        }
+
+        /**
+         * 设置执行过程监听
+         *
+         * @param updateCallBack
+         * @return
+         */
+        public Anim setUpdateCallBack(ValueAnimator.AnimatorUpdateListener updateCallBack) {
+            updateListener = updateCallBack;
+            return (Anim) this;
+        }
+
+        /**
+         * 设置显示暂停监听
+         *
+         * @param pauseCallBack
+         * @return
+         */
+        public Anim setPauseCallBack(Animator.AnimatorPauseListener pauseCallBack) {
+            pauseListener = pauseCallBack;
+            return (Anim) this;
+        }
+
+        /**
+         * 设置监听
+         *
+         * @param animatorCallBack
+         * @return
+         */
+        public Anim setAnimatorCallBack(Animator.AnimatorListener animatorCallBack) {
+            animatorListener = animatorCallBack;
+            return (Anim) this;
+        }
+
+
+        /**
+         * 参数检查
+         */
+        protected void checkViewAvailable() {
+            if (target == null)
+                throw new IllegalArgumentException("Are you sure set view target ???");
+        }
+
+        /**
+         * 获取ObjectAnimator
+         *
+         * @param typeEvaluator
+         * @param startPoint
+         * @param endPoint
+         * @return
+         */
+        protected ObjectAnimator getAnimator(TypeEvaluator typeEvaluator, PointF startPoint, PointF endPoint) {
+            ObjectAnimator animator = ObjectAnimator.ofObject(this, "move", typeEvaluator, startPoint, endPoint);
+            animator.setDuration(duration);
+            animator.setInterpolator(interpolator);
+            if (updateListener != null) {
+                animator.addUpdateListener(updateListener);
+            }
+            if (pauseListener != null) {
+                animator.addPauseListener(pauseListener);
+            }
+            if (animatorListener != null) {
+                animator.addListener(animatorListener);
+            }
+            return animator;
+        }
+
+
+        /**
+         * call from object animator of object method 'move' char
+         *
+         * @param pointF {@hide}
+         */
+        public void setMove(PointF pointF) {
+            target.setX(pointF.x);
+            target.setY(pointF.y);
+        }
+
     }
 }
