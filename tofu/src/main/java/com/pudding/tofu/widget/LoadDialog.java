@@ -81,7 +81,7 @@ public class LoadDialog extends ProgressDialog {
     }
 
     class RoundRectDrawable extends Drawable {
-        private static final float DEFAULT_RADIUS = 6.f;
+        private static final float DEFAULT_RADIUS = 10.f;
         private Paint mPaint = new Paint();
         private RoundRectShape mShape;
         private float[] mOuter;

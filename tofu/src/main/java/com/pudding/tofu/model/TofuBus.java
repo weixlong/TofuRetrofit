@@ -774,7 +774,7 @@ public class TofuBus {
             public void subscribe(ObservableEmitter<Post> e) throws Exception {
                 onExecuteSimpleInterceptorMethod(e, label, maps, results);
             }
-        }).subscribeOn(Schedulers.newThread()).distinct().observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.io()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Post>() {
                     @Override
                     public void accept(Post post) throws Exception {
@@ -903,7 +903,7 @@ public class TofuBus {
             public void subscribe(ObservableEmitter<Post> e) throws Exception {
                 executeInterceptorMethod(e, label, maps, results);
             }
-        }).subscribeOn(Schedulers.newThread()).distinct().observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.io()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Post>() {
                     @Override
                     public void accept(Post post) throws Exception {

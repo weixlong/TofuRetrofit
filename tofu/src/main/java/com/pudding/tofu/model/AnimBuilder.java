@@ -94,7 +94,8 @@ public class AnimBuilder implements UnBind {
 
             Object tag = this.target.getTag(0x0066966589);
             Object tag1 = target.getTag(0x0066966589);
-            if(tag1 == null || tag == null || ((Long)tag).intValue() != ((Long)tag1).intValue())return false;
+            if (tag1 == null || tag == null || ((Long) tag).intValue() != ((Long) tag1).intValue())
+                return false;
             return true;
         }
     }
@@ -131,6 +132,13 @@ public class AnimBuilder implements UnBind {
                             MoveBuilder move = (MoveBuilder) unBind.unBind;
                             move.positionF.clear();
                         }
+
+                        if(unBind.unBind instanceof ColorBuilder){
+                            ColorBuilder color = (ColorBuilder) unBind.unBind;
+                            color.colors.clear();
+                            color.isText = false;
+                        }
+
                         return (Builder) unBind.unBind;
                     }
                 }
@@ -885,160 +893,69 @@ public class AnimBuilder implements UnBind {
             }
 
             if (listener == null) return;
-            if (!CollectUtil.isEmpty(valueAnimators) && !CollectUtil.isEmpty(animations)) {
-                if(anInt >= 0 && valueInt >= 0) {
-                    if (animations.get(anInt).getDuration() > valueAnimators.get(valueInt).getDuration()) {
-                        animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
 
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                if (listener != null) {
-                                    listener.onTogetherAnimEnd();
-                                    duration_max = 0;
-                                    anInt = -1;
-                                    valueInt = -1;
-                                }
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-
-                            }
-                        });
-                    } else {
-                        valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                if (listener != null) {
-                                    listener.onTogetherAnimEnd();
-                                    duration_max = 0;
-                                    anInt = -1;
-                                    valueInt = -1;
-                                }
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-
-                            }
-                        });
-                    }
-                } else if(anInt < 0 && valueInt >= 0){
-                    valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            if (listener != null) {
-                                listener.onTogetherAnimEnd();
-                                duration_max = 0;
-                                anInt = -1;
-                                valueInt = -1;
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
-                } else if(anInt >= 0 && valueInt < 0){
-                    animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            if (listener != null) {
-                                listener.onTogetherAnimEnd();
-                                duration_max = 0;
-                                anInt = -1;
-                                valueInt = -1;
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
+            if (anInt >= 0 && valueInt >= 0) {
+                if (animations.get(anInt).getDuration() > valueAnimators.get(valueInt).getDuration()) {
+                    animations.get(anInt).setAnimationListener(tionListener);
+                } else {
+                    valueAnimators.get(valueInt).addListener(animListener);
                 }
-            } else if(CollectUtil.isEmpty(valueAnimators) && !CollectUtil.isEmpty(animations)){
-                animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if (listener != null) {
-                            listener.onTogetherAnimEnd();
-                            duration_max = 0;
-                            anInt = -1;
-                            valueInt = -1;
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-            } else if(!CollectUtil.isEmpty(valueAnimators) && CollectUtil.isEmpty(animations)){
-                valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (listener != null) {
-                            listener.onTogetherAnimEnd();
-                            duration_max = 0;
-                            anInt = -1;
-                            valueInt = -1;
-                        }
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
+            } else if (anInt < 0 && valueInt >= 0) {
+                valueAnimators.get(valueInt).addListener(animListener);
+            } else if (anInt >= 0 && valueInt < 0) {
+                animations.get(anInt).setAnimationListener(tionListener);
             }
 
         }
+
+        private Animation.AnimationListener tionListener = new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (listener != null) {
+                    listener.onTogetherAnimEnd();
+                    duration_max = 0;
+                    anInt = -1;
+                    valueInt = -1;
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        };
+
+        private Animator.AnimatorListener animListener = new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (listener != null) {
+                    listener.onTogetherAnimEnd();
+                    duration_max = 0;
+                    anInt = -1;
+                    valueInt = -1;
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        };
 
         private void clearAnim() {
             animations.clear();
@@ -2058,17 +1975,17 @@ public class AnimBuilder implements UnBind {
          */
         private Anim target(View target) {
             this.target = target;
-            target.setTag(0x0066966589,System.currentTimeMillis());
+            target.setTag(0x0066966589, System.currentTimeMillis());
             return (Anim) this;
         }
 
         /**
          * 停止动画
          */
-        public void stop(){
-            if(target != null) {
+        public void stop() {
+            if (target != null) {
                 Animation animation = target.getAnimation();
-                if(animation != null){
+                if (animation != null) {
                     animation.cancel();
                 }
             }
