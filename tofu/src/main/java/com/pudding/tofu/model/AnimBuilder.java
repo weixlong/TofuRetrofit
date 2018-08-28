@@ -123,6 +123,10 @@ public class AnimBuilder implements UnBind {
             if (!CollectUtil.isEmpty(unBinds)) {
                 for (ViewBind unBind : unBinds) {
                     if (unBind.equals(target, clazz.getName())) {
+                        if (unBind.unBind instanceof MoveBuilder) {
+                            MoveBuilder move = (MoveBuilder) unBind.unBind;
+                            move.positionF.clear();
+                        }
                         return (Builder) unBind.unBind;
                     }
                 }
@@ -132,10 +136,6 @@ public class AnimBuilder implements UnBind {
             Object obj2 = con2.newInstance(this);
             BaseAnim baseAnim = (BaseAnim) obj2;
             baseAnim.target = target;
-            if (baseAnim instanceof MoveBuilder) {
-                MoveBuilder move = (MoveBuilder) baseAnim;
-                move.positionF.clear();
-            }
             unBinds.add(new ViewBind((UnBind) baseAnim, target, clazz.getName()));
             return (Builder) baseAnim;
         } catch (InstantiationException e) {
