@@ -15,43 +15,48 @@ public class MainActivity extends TofuSupportActivity {
 
     public static final String update_sex_url = "http://www.kangyu.com/api/user/modify_sex";
 
+    View viewById,viewById1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        View viewById = findViewById(R.id.main_text);
-        findViewById(R.id.main_text).setOnClickListener(new View.OnClickListener() {
+        viewById = findViewById(R.id.main_text);
+        viewById1 = findViewById(R.id.main_text1);
+        viewById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Text text = new Text();
-////                text.insert();
-                text.in("999", 132465);
-//                text.save();
-                Tofu.orm().table(Text.class).save(text);
-                Tofu.post().result(String.class)
-                        .label("789")
-                        .asDialog(v.getContext())
-                        .url(update_sex_url)
-                        .put("user_id", "23")
-                        .put("sex", "0")
-                        .execute();
+//                Text text = new Text();
+//////                text.insert();
+//                text.in("999", 132465);
+////                text.save();
+//                Tofu.orm().table(Text.class).save(text);
+//                Tofu.post().result(String.class)
+//                        .label("789")
+//                        .asDialog(v.getContext())
+//                        .url(update_sex_url)
+//                        .put("user_id", "23")
+//                        .put("sex", "0")
+//                        .execute();
+                Tofu.anim().playOn()
+                        .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
+                        .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
+                        .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
+                        .together(Tofu.anim().together()
+                                .color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
+                                .quad(Tofu.anim().quad(viewById1).duration(4000).end(100, 600).spin(50, 50))
+                                .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
+                                .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
+                        )
+                        .rotate(Tofu.anim().rotate(viewById).duration(4000).values(180, 0, 180))
+                        .alpha(Tofu.anim().alpha(viewById).duration(5000).alphaValues(1, 0, 1))
+                        .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
+                        .start();
 
             }
         });
 
-        Tofu.anim().playOn()
-                .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
-                .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
-                .together(Tofu.anim().together()
-                        .quad(Tofu.anim().quad(viewById).duration(4000).end(100, 600).spin(50, 50))
-                        .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
-                        .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
-                )
-                .rotate(Tofu.anim().rotate(viewById).duration(4000).values(180, 0, 180))
-                .alpha(Tofu.anim().alpha(viewById).duration(5000).alphaValues(1, 0, 1))
-                .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
-                .start();
+
 //        Tofu.anim().color().text(true).target(viewById).duration(5000).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
 //        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();
 //        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();

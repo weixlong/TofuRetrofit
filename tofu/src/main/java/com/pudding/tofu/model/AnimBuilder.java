@@ -131,12 +131,14 @@ public class AnimBuilder implements UnBind {
                         if (unBind.unBind instanceof MoveBuilder) {
                             MoveBuilder move = (MoveBuilder) unBind.unBind;
                             move.positionF.clear();
+                            move.target = target;
                         }
 
                         if(unBind.unBind instanceof ColorBuilder){
                             ColorBuilder color = (ColorBuilder) unBind.unBind;
                             color.colors.clear();
                             color.isText = false;
+                            color.target = target;
                         }
 
                         return (Builder) unBind.unBind;
