@@ -91,7 +91,11 @@ public class AnimBuilder implements UnBind {
             if (this.target == null || target == null) return false;
             if (TextUtils.isEmpty(this.clazzName) || !TextUtils.equals(this.clazzName, clazzName))
                 return false;
-            return this.target.getId() == target.getId();
+
+            Object tag = this.target.getTag(0x0066966589);
+            Object tag1 = target.getTag(0x0066966589);
+            if(tag1 == null || tag == null || ((Long)tag).intValue() != ((Long)tag1).intValue())return false;
+            return true;
         }
     }
 
@@ -135,7 +139,7 @@ public class AnimBuilder implements UnBind {
             con2.setAccessible(true);
             Object obj2 = con2.newInstance(this);
             BaseAnim baseAnim = (BaseAnim) obj2;
-            baseAnim.target = target;
+            baseAnim.target(target);
             unBinds.add(new ViewBind((UnBind) baseAnim, target, clazz.getName()));
             return (Builder) baseAnim;
         } catch (InstantiationException e) {
@@ -2054,6 +2058,7 @@ public class AnimBuilder implements UnBind {
          */
         private Anim target(View target) {
             this.target = target;
+            target.setTag(0x0066966589,System.currentTimeMillis());
             return (Anim) this;
         }
 
