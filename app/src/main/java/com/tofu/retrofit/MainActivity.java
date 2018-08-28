@@ -59,7 +59,7 @@ public class MainActivity extends TofuSupportActivity {
                                         Tofu.log().ping().p("onTogetherAnimEnd").v();
                                     }
                                 }).color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
-                                .quad(Tofu.anim().quad(viewById1).duration(4000).end(100, 600).spin(50, 50))
+                                .move(Tofu.anim().move(viewById1).duration(4000).moveTo(500,500))
                                 .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
                                 .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
                         )
