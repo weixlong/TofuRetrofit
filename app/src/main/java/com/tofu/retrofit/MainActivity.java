@@ -1,13 +1,9 @@
 package com.tofu.retrofit;
 
-import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import com.pudding.tofu.TofuSupportActivity;
-import com.pudding.tofu.model.AnimBuilder;
 import com.pudding.tofu.model.Tofu;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
@@ -49,7 +45,9 @@ public class MainActivity extends TofuSupportActivity {
                 .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
                 .together(Tofu.anim().together()
                         .quad(Tofu.anim().quad(viewById).duration(4000).end(100, 600).spin(50, 50))
-                        .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1)))
+                        .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
+                        .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
+                )
                 .rotate(Tofu.anim().rotate(viewById).duration(4000).values(180, 0, 180))
                 .alpha(Tofu.anim().alpha(viewById).duration(5000).alphaValues(1, 0, 1))
                 .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))

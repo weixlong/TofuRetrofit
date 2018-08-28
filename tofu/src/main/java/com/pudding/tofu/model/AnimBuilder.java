@@ -132,6 +132,10 @@ public class AnimBuilder implements UnBind {
             Object obj2 = con2.newInstance(this);
             BaseAnim baseAnim = (BaseAnim) obj2;
             baseAnim.target = target;
+            if (baseAnim instanceof MoveBuilder) {
+                MoveBuilder move = (MoveBuilder) baseAnim;
+                move.positionF.clear();
+            }
             unBinds.add(new ViewBind((UnBind) baseAnim, target, clazz.getName()));
             return (Builder) baseAnim;
         } catch (InstantiationException e) {
@@ -712,6 +716,7 @@ public class AnimBuilder implements UnBind {
         private List<UnBind> unBinds = new ArrayList<>();
         private AnimatorSet animationSet = new AnimatorSet();
         private long duration_max;
+        private int anInt = -1, valueInt = -1;
 
         private TogetherBuilder() {
         }
@@ -728,6 +733,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    anInt = animations.size() - 1;
                 }
             }
             return this;
@@ -745,6 +751,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -762,6 +769,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -779,6 +787,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -796,6 +805,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -813,6 +823,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -830,6 +841,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -847,6 +859,7 @@ public class AnimBuilder implements UnBind {
                 unBinds.add(builder);
                 if (duration_max < builder.duration) {
                     duration_max = builder.duration;
+                    valueInt = valueAnimators.size() - 1;
                 }
             }
             return this;
@@ -866,38 +879,160 @@ public class AnimBuilder implements UnBind {
                     animation.start();
                 }
             }
+
             if (listener == null) return;
-            Observable.interval(0, 1, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .distinct()
-                    .map(new Function<Long, Long>() {
-                        @Override
-                        public Long apply(Long aLong) throws Exception {
-                            return duration_max - aLong.intValue();
-                        }
-                    }).take(duration_max + 1).subscribe(new Observer<Long>() {
-                @Override
-                public void onSubscribe(Disposable d) {
+            if (!CollectUtil.isEmpty(valueAnimators) && !CollectUtil.isEmpty(animations)) {
+                if(anInt >= 0 && valueInt >= 0) {
+                    if (animations.get(anInt).getDuration() > valueAnimators.get(valueInt).getDuration()) {
+                        animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
 
-                }
+                            }
 
-                @Override
-                public void onNext(Long aLong) {
-                }
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                if (listener != null) {
+                                    listener.onTogetherAnimEnd();
+                                    duration_max = 0;
+                                    anInt = -1;
+                                    valueInt = -1;
+                                }
+                            }
 
-                @Override
-                public void onError(Throwable e) {
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
 
-                }
+                            }
+                        });
+                    } else {
+                        valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
 
-                @Override
-                public void onComplete() {
-                    if (listener != null) {
-                        listener.onTogetherAnimEnd();
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                if (listener != null) {
+                                    listener.onTogetherAnimEnd();
+                                    duration_max = 0;
+                                    anInt = -1;
+                                    valueInt = -1;
+                                }
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animation) {
+
+                            }
+                        });
                     }
+                } else if(anInt < 0 && valueInt >= 0){
+                    valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (listener != null) {
+                                listener.onTogetherAnimEnd();
+                                duration_max = 0;
+                                anInt = -1;
+                                valueInt = -1;
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+                } else if(anInt >= 0 && valueInt < 0){
+                    animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            if (listener != null) {
+                                listener.onTogetherAnimEnd();
+                                duration_max = 0;
+                                anInt = -1;
+                                valueInt = -1;
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
                 }
-            });
+            } else if(CollectUtil.isEmpty(valueAnimators) && !CollectUtil.isEmpty(animations)){
+                animations.get(anInt).setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        if (listener != null) {
+                            listener.onTogetherAnimEnd();
+                            duration_max = 0;
+                            anInt = -1;
+                            valueInt = -1;
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            } else if(!CollectUtil.isEmpty(valueAnimators) && CollectUtil.isEmpty(animations)){
+                valueAnimators.get(valueInt).addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (listener != null) {
+                            listener.onTogetherAnimEnd();
+                            duration_max = 0;
+                            anInt = -1;
+                            valueInt = -1;
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+            }
 
         }
 
@@ -1033,6 +1168,7 @@ public class AnimBuilder implements UnBind {
             getAnim().start();
         }
 
+
         /**
          * 获取动画
          *
@@ -1062,7 +1198,6 @@ public class AnimBuilder implements UnBind {
                 objectAnimator.addListener(animatorListener);
             }
             objectAnimator.setInterpolator(interpolator);
-
             return objectAnimator;
         }
 
@@ -1794,7 +1929,6 @@ public class AnimBuilder implements UnBind {
         List<PointF> positionF = new ArrayList<>();
 
 
-
         /**
          * 从当前位置移动到x,y处
          *
@@ -1859,6 +1993,7 @@ public class AnimBuilder implements UnBind {
 
         @Override
         public void unbind() {
+            positionF.clear();
             duration = 500;
             target = null;
             updateListener = null;
@@ -1920,6 +2055,18 @@ public class AnimBuilder implements UnBind {
         private Anim target(View target) {
             this.target = target;
             return (Anim) this;
+        }
+
+        /**
+         * 停止动画
+         */
+        public void stop(){
+            if(target != null) {
+                Animation animation = target.getAnimation();
+                if(animation != null){
+                    animation.cancel();
+                }
+            }
         }
 
         /**
