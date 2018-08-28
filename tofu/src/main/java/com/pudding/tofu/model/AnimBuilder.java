@@ -134,7 +134,7 @@ public class AnimBuilder implements UnBind {
                             move.target = target;
                         }
 
-                        if(unBind.unBind instanceof ColorBuilder){
+                        if (unBind.unBind instanceof ColorBuilder) {
                             ColorBuilder color = (ColorBuilder) unBind.unBind;
                             color.colors.clear();
                             color.isText = false;
@@ -416,6 +416,7 @@ public class AnimBuilder implements UnBind {
             colors.clear();
             count = 0;
             mode = RESTART;
+            adapter = null;
         }
     }
 
@@ -513,6 +514,8 @@ public class AnimBuilder implements UnBind {
 
         private List<UnBind> unBinds = new ArrayList<>();
 
+        private  AnimRunAdapter adapter;
+
         protected PlayOnBuilder() {
 
         }
@@ -528,6 +531,16 @@ public class AnimBuilder implements UnBind {
                 anims.add(builder.getRotationXYZAnim());
                 unBinds.add(builder);
             }
+            return this;
+        }
+
+        /**
+         * 序列动画监听
+         * @param callback
+         * @return
+         */
+        public PlayOnBuilder setAnimRunBack(AnimRunAdapter callback){
+            adapter = callback;
             return this;
         }
 
@@ -650,23 +663,33 @@ public class AnimBuilder implements UnBind {
         public void start() {
             if (!CollectUtil.isEmpty(anims)) {
                 final Object o = anims.get(0);
+                if(adapter != null){
+                    adapter.onPlayOnAnimStart(this);
+                }
                 if (o instanceof Animation) {
                     Animation anim = (Animation) o;
                     anim.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
-
+                            if(adapter != null){
+                                adapter.onAnimationStart(animation);
+                            }
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             anims.remove(o);
                             start();
+                            if(adapter != null){
+                                adapter.onAnimationEnd(animation);
+                            }
                         }
 
                         @Override
                         public void onAnimationRepeat(Animation animation) {
-
+                            if(adapter != null){
+                                adapter.onAnimationRepeat(animation);
+                            }
                         }
                     });
                     anim.start();
@@ -675,23 +698,32 @@ public class AnimBuilder implements UnBind {
                     anim.addListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-
+                            if(adapter != null){
+                                adapter.onAnimationStart(animation);
+                            }
                         }
 
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             anims.remove(o);
                             start();
+                            if(adapter != null){
+                                adapter.onAnimationEnd(animation);
+                            }
                         }
 
                         @Override
                         public void onAnimationCancel(Animator animation) {
-
+                            if(adapter != null){
+                                adapter.onAnimationCancel(animation);
+                            }
                         }
 
                         @Override
                         public void onAnimationRepeat(Animator animation) {
-
+                            if(adapter != null){
+                                adapter.onAnimationRepeat(animation);
+                            }
                         }
                     });
                     anim.start();
@@ -707,6 +739,10 @@ public class AnimBuilder implements UnBind {
                     });
                     builder.start();
                 }
+            } else {
+                if(adapter != null){
+                    adapter.onPlayOnAnimEnd(this);
+                }
             }
         }
 
@@ -716,6 +752,7 @@ public class AnimBuilder implements UnBind {
             for (UnBind unBind : unBinds) {
                 unBind.unbind();
             }
+            adapter = null;
             unBinds.clear();
             anims.clear();
         }
@@ -724,7 +761,7 @@ public class AnimBuilder implements UnBind {
     /**
      * 同时执行
      */
-    public class TogetherBuilder extends BaseAnim implements UnBind {
+    public class TogetherBuilder extends BaseAnim<TogetherBuilder> implements UnBind {
         List<Animation> animations = new ArrayList<>();
         List<Animator> valueAnimators = new ArrayList<>();
         private List<UnBind> unBinds = new ArrayList<>();
@@ -894,7 +931,9 @@ public class AnimBuilder implements UnBind {
                 }
             }
 
-            if (listener == null) return;
+            if(adapter != null){
+                adapter.onTogetherAnimStart(this);
+            }
 
             if (anInt >= 0 && valueInt >= 0) {
                 if (animations.get(anInt).getDuration() > valueAnimators.get(valueInt).getDuration()) {
@@ -913,6 +952,9 @@ public class AnimBuilder implements UnBind {
         private Animation.AnimationListener tionListener = new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                if(adapter != null){
+                    adapter.onAnimationStart(animation);
+                }
 
             }
 
@@ -924,18 +966,25 @@ public class AnimBuilder implements UnBind {
                     anInt = -1;
                     valueInt = -1;
                 }
+                if(adapter != null){
+                    adapter.onAnimationEnd(animation);
+                }
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                if(adapter != null){
+                    adapter.onAnimationRepeat(animation);
+                }
             }
         };
 
         private Animator.AnimatorListener animListener = new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
+                if(adapter != null){
+                    adapter.onAnimationStart(animation);
+                }
             }
 
             @Override
@@ -946,16 +995,24 @@ public class AnimBuilder implements UnBind {
                     anInt = -1;
                     valueInt = -1;
                 }
+                if(adapter != null){
+                    adapter.onAnimationEnd(animation);
+                    adapter.onTogetherAnimEnd(TogetherBuilder.this);
+                }
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                if(adapter != null){
+                    adapter.onAnimationCancel(animation);
+                }
             }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
-
+                if(adapter != null){
+                    adapter.onAnimationRepeat(animation);
+                }
             }
         };
 
@@ -971,6 +1028,7 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            adapter = null;
             animations.clear();
             valueAnimators.clear();
             for (UnBind unBind : unBinds) {
@@ -1136,6 +1194,7 @@ public class AnimBuilder implements UnBind {
             pauseListener = null;
             animatorListener = null;
             values = null;
+            adapter = null;
         }
     }
 
@@ -1144,7 +1203,7 @@ public class AnimBuilder implements UnBind {
      * 旋转动画
      */
     public class AlwaysRotateBuilder extends BaseAnim<AlwaysRotateBuilder> implements UnBind {
-        private Animation.AnimationListener mListener;
+
         private boolean rotateX, rotateY, rotateZ;
         private int count = 0, mode = RESTART;
 
@@ -1181,16 +1240,7 @@ public class AnimBuilder implements UnBind {
             return this;
         }
 
-        /**
-         * 动画执行监听
-         *
-         * @param callBack
-         * @return
-         */
-        public AlwaysRotateBuilder setCallBack(Animation.AnimationListener callBack) {
-            mListener = callBack;
-            return this;
-        }
+
 
         /**
          * When the animation reaches the end and <code>repeatCount</code> is INFINITE
@@ -1245,8 +1295,8 @@ public class AnimBuilder implements UnBind {
             RotationXYZAnimation anim = new RotationXYZAnimation();
             anim.setRepeatCount(count);
             anim.setRepeatMode(mode);
-            if (mListener != null) {
-                anim.setAnimationListener(mListener);
+            if (animationListener != null) {
+                anim.setAnimationListener(animationListener);
             }
             return anim;
         }
@@ -1255,13 +1305,14 @@ public class AnimBuilder implements UnBind {
         public void unbind() {
             count = 0;
             mode = RESTART;
-            mListener = null;
+            animationListener = null;
             rotateX = rotateY = rotateZ = false;
             duration = 500;
             target = null;
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            adapter = null;
         }
 
 
@@ -1436,6 +1487,7 @@ public class AnimBuilder implements UnBind {
             pauseListener = null;
             values = null;
             animatorListener = null;
+            adapter = null;
         }
     }
 
@@ -1652,6 +1704,7 @@ public class AnimBuilder implements UnBind {
             pauseListener = null;
             animatorListener = null;
             values = null;
+            adapter = null;
         }
     }
 
@@ -1725,6 +1778,7 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            adapter = null;
         }
 
         class CubicEvaluator implements TypeEvaluator<PointF> {
@@ -1819,6 +1873,7 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            adapter = null;
         }
 
         class QuadEvaluator implements TypeEvaluator<PointF> {
@@ -1922,6 +1977,7 @@ public class AnimBuilder implements UnBind {
             updateListener = null;
             pauseListener = null;
             animatorListener = null;
+            adapter = null;
         }
 
         class MoveLineEvaluator implements TypeEvaluator<PointF> {
@@ -1956,7 +2012,9 @@ public class AnimBuilder implements UnBind {
 
         long duration = 500;
 
-        ValueAnimator.AnimatorUpdateListener updateListener;
+        ValueAnimator.AnimatorUpdateListener updateListener ;
+
+        Animation.AnimationListener animationListener;
 
         Animator.AnimatorPauseListener pauseListener;
 
@@ -1964,6 +2022,7 @@ public class AnimBuilder implements UnBind {
 
         Interpolator interpolator = new LinearInterpolator();
 
+        AnimRunAdapter adapter;
 
         protected BaseAnim() {
 
@@ -2001,6 +2060,20 @@ public class AnimBuilder implements UnBind {
          */
         public Anim duration(long duration) {
             this.duration = duration;
+            return (Anim) this;
+        }
+
+        /**
+         * 设置监听
+         * @param listener
+         * @return
+         */
+        public Anim setAnimRunBack(AnimRunAdapter listener){
+            adapter = listener;
+            updateListener = listener;
+            animationListener = listener;
+            pauseListener = listener;
+            animatorListener = listener;
             return (Anim) this;
         }
 
@@ -2100,40 +2173,6 @@ public class AnimBuilder implements UnBind {
         }
 
         /**
-         * 设置执行过程监听
-         *
-         * @param updateCallBack
-         * @return
-         */
-        public Anim setUpdateCallBack(ValueAnimator.AnimatorUpdateListener updateCallBack) {
-            updateListener = updateCallBack;
-            return (Anim) this;
-        }
-
-        /**
-         * 设置显示暂停监听
-         *
-         * @param pauseCallBack
-         * @return
-         */
-        public Anim setPauseCallBack(Animator.AnimatorPauseListener pauseCallBack) {
-            pauseListener = pauseCallBack;
-            return (Anim) this;
-        }
-
-        /**
-         * 设置监听
-         *
-         * @param animatorCallBack
-         * @return
-         */
-        public Anim setAnimatorCallBack(Animator.AnimatorListener animatorCallBack) {
-            animatorListener = animatorCallBack;
-            return (Anim) this;
-        }
-
-
-        /**
          * 参数检查
          */
         protected void checkViewAvailable() {
@@ -2165,7 +2204,6 @@ public class AnimBuilder implements UnBind {
             return animator;
         }
 
-
         /**
          * call from object animator of object method 'move' char
          *
@@ -2176,5 +2214,95 @@ public class AnimBuilder implements UnBind {
             target.setY(pointF.y);
         }
 
+    }
+
+
+    public static class AnimRunAdapter implements Animator.AnimatorListener,
+            Animator.AnimatorPauseListener,
+            Animation.AnimationListener,
+            ValueAnimator.AnimatorUpdateListener{
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationPause(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationResume(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+
+        /**
+         * together动画开始
+         *
+         * @param builder
+         */
+        public void onTogetherAnimStart(TogetherBuilder builder){
+
+        }
+
+        /**
+         *  together动画结束
+         * @param builder
+         */
+        public void onTogetherAnimEnd(TogetherBuilder builder){
+
+        }
+
+        /**
+         * 连续动画开始
+         * @param builder
+         */
+        public void onPlayOnAnimStart(PlayOnBuilder builder){
+
+        }
+
+        /**
+         * 连续动画结束
+         * @param builder
+         */
+        public void onPlayOnAnimEnd(PlayOnBuilder builder){
+
+        }
     }
 }

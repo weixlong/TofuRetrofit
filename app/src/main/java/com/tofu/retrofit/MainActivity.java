@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.pudding.tofu.TofuSupportActivity;
+import com.pudding.tofu.model.AnimBuilder;
 import com.pudding.tofu.model.Tofu;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
@@ -38,12 +39,26 @@ public class MainActivity extends TofuSupportActivity {
 //                        .put("user_id", "23")
 //                        .put("sex", "0")
 //                        .execute();
-                Tofu.anim().playOn()
+                Tofu.anim().playOn().setAnimRunBack(new AnimBuilder.AnimRunAdapter(){
+                    @Override
+                    public void onPlayOnAnimEnd(AnimBuilder.PlayOnBuilder builder) {
+                        Tofu.log().ping().p("onPlayOnAnimEnd").v();
+                    }
+                })
                         .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
                         .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
                         .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
-                        .together(Tofu.anim().together()
-                                .color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
+                        .together(Tofu.anim().together().setAnimRunBack(new AnimBuilder.AnimRunAdapter(){
+                                    @Override
+                                    public void onTogetherAnimStart(AnimBuilder.TogetherBuilder builder) {
+                                        Tofu.log().ping().p("onTogetherAnimStart").v();
+                                    }
+
+                                    @Override
+                                    public void onTogetherAnimEnd(AnimBuilder.TogetherBuilder builder) {
+                                        Tofu.log().ping().p("onTogetherAnimEnd").v();
+                                    }
+                                }).color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
                                 .quad(Tofu.anim().quad(viewById1).duration(4000).end(100, 600).spin(50, 50))
                                 .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
                                 .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
