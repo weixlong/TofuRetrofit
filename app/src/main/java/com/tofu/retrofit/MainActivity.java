@@ -45,7 +45,8 @@ public class MainActivity extends TofuSupportActivity {
                         Tofu.log().ping().p("onPlayOnAnimEnd").v();
                     }
                 })
-                        .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
+                       // .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
+                        .move(Tofu.anim().move(viewById1).duration(4000).moveTo(viewById1.getX(),viewById1.getY()).moveTo(500, 300).delay(2000))
                         .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
                         .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
                         .together(Tofu.anim().together().setAnimRunBack(new AnimBuilder.AnimRunAdapter(){
@@ -60,8 +61,9 @@ public class MainActivity extends TofuSupportActivity {
                                     }
                                 }).color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
                                 .move(Tofu.anim().move(viewById1).duration(4000).moveTo(500,500))
-                                .alpha(Tofu.anim().alpha(viewById).duration(6000).alphaValues(1, 0, 1))
-                                .move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
+                                .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(500, 300).delay(2000))
+                                .alpha(Tofu.anim().alpha(viewById).duration(4000).alphaValues(1, 0, 1))
+                                //.move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
                         )
                         .rotate(Tofu.anim().rotate(viewById).duration(4000).values(180, 0, 180))
                         .alpha(Tofu.anim().alpha(viewById).duration(5000).alphaValues(1, 0, 1))
