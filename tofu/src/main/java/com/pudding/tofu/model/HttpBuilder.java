@@ -3,6 +3,7 @@ package com.pudding.tofu.model;
 import android.Manifest;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.lzy.okgo.model.HttpHeaders;
@@ -70,6 +71,11 @@ public class HttpBuilder<Result> implements UnBind {
     private boolean isShowDialog = false;
 
     /**
+     * 自定义对话框
+     */
+    private AlertDialog diyDialog;
+
+    /**
      * 上下文对象
      */
     private Context context;
@@ -100,6 +106,7 @@ public class HttpBuilder<Result> implements UnBind {
         context = null;
         isShowDialog = false;
         resultClass = null;
+        diyDialog = null;
     }
 
 
@@ -264,13 +271,23 @@ public class HttpBuilder<Result> implements UnBind {
     }
 
     /**
-     * 显示dialog
+     * 显示默认dialog
      *
      * @return
      */
     public HttpBuilder asDialog(@NonNull Context context) {
         isShowDialog = true;
         this.context = context;
+        return this;
+    }
+
+    /**
+     * 设置自定义对话框
+     * @param dialog
+     * @return
+     */
+    public HttpBuilder setDialog(@NonNull AlertDialog dialog){
+        this.diyDialog = dialog;
         return this;
     }
 
@@ -356,6 +373,8 @@ public class HttpBuilder<Result> implements UnBind {
         if(AndPermission.hasPermission(context, Manifest.permission.INTERNET)) {
             if (isShowDialog) {
                 http.showDialog(context);
+            } else {
+                ((HttpImpl) http).showDialog(diyDialog);
             }
             http.execute();
             unBinds.add(http);

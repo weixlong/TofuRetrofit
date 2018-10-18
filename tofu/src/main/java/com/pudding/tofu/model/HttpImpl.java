@@ -1,6 +1,7 @@
 package com.pudding.tofu.model;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 
 import com.lzy.okgo.OkGo;
@@ -43,6 +44,11 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
      * 进度条
      */
     private LoadDialog dialog;
+
+    /**
+     * 自定义对话框
+     */
+    private AlertDialog diyDialog;
 
     /**
      * 实现
@@ -148,6 +154,17 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
     }
 
     /**
+     * 显示自定义对话框
+     * @param dialog
+     */
+    public void showDialog(AlertDialog dialog){
+        if(dialog != null && !dialog.isShowing()) {
+            this.diyDialog = dialog;
+            dialog.show();
+        }
+    }
+
+    /**
      * 获取当前窗口名
      * @param context
      * @return
@@ -161,6 +178,9 @@ public class HttpImpl<Result> implements PostInterface, PostResultCallback {
     public void closeDialog() {
         if (dialog != null) {
             dialog.closeDialog();
+        }
+        if(dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
         }
     }
 
