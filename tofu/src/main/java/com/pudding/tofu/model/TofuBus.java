@@ -110,14 +110,16 @@ public class TofuBus {
 
     private HashMap<String, HashMap<String, Method>> singleMethods = new HashMap<>();
 
+    private long position = 0;
+
     /**
      * 找post注解
      *
      * @param target
      */
-    protected void findSubscribe(Object target) {
+    protected synchronized void findSubscribe(Object target) {
         if (target == null) return;
-        String key = Long.toString(System.currentTimeMillis());
+        String key = Long.toString(++position+System.currentTimeMillis());
         keys.add(key);
         keyMap.put(key, target);
         newTofuIfEmptyMethodList(key, cachePostMethods, postErrorMethods,

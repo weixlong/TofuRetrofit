@@ -53,6 +53,8 @@ public class TofuBusRx {
 
     private HashMap<String, Object> keyMap = new HashMap<>();
 
+    private long position = 0;
+
     /**
      * 获取bus
      *
@@ -70,7 +72,7 @@ public class TofuBusRx {
      * @param target
      */
     public synchronized void bindTarget(Object target) {
-        String key = Long.toString(System.currentTimeMillis());
+        String key = Long.toString(++position+System.currentTimeMillis());
         bindRetentionMethods(key,
                 refreshResult.class.getName(),
                 refreshFailed.class.getName(),
