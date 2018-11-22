@@ -3,11 +3,11 @@ package com.pudding.tofu.rx.tofu;
 import android.support.annotation.NonNull;
 
 import com.pudding.tofu.model.Tofu;
-import com.tofu.rx.callback.UnBindRx;
-import com.tofu.rx.widget.PayBuilder;
-import com.tofu.rx.widget.PayFactory;
-import com.tofu.rx.widget.RefreshBuilder;
-import com.tofu.rx.widget.RefreshFactory;
+import com.pudding.tofu.rx.callback.UnBindRx;
+import com.pudding.tofu.rx.widget.PayBuilder;
+import com.pudding.tofu.rx.widget.PayFactory;
+import com.pudding.tofu.rx.widget.RefreshBuilder;
+import com.pudding.tofu.rx.widget.RefreshFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;

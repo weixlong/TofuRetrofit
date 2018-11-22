@@ -1,7 +1,7 @@
 package com.pudding.tofu.rx.widget;
 
 
-import com.tofu.rx.callback.UnBindRx;
+import com.pudding.tofu.rx.callback.UnBindRx;
 
 /**
  * Created by wxl on 2018/8/6 0006.

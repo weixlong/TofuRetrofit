@@ -7,13 +7,13 @@ import android.text.TextUtils;
 
 import com.alipay.sdk.app.PayTask;
 import com.pudding.tofu.model.Tofu;
+import com.pudding.tofu.rx.callback.UnBindRx;
 import com.tencent.mm.opensdk.constants.Build;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.modelpay.PayResp;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
-import com.tofu.rx.callback.UnBindRx;
 
 import java.util.Map;
 

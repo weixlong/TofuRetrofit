@@ -8,11 +8,11 @@ import com.pudding.tofu.model.Tofu;
 import com.pudding.tofu.model.TofuConfig;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
+import com.pudding.tofu.rx.tofu.TofuBusRx;
 import com.pudding.tofu.widget.CollectUtil;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
-import com.tofu.rx.tofu.TofuBusRx;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -2,13 +2,13 @@ package com.pudding.tofu.rx.tofu;
 
 import android.text.TextUtils;
 
+import com.pudding.tofu.rx.retion.loadMoreBefore;
+import com.pudding.tofu.rx.retion.loadMoreFailed;
+import com.pudding.tofu.rx.retion.loadMoreResult;
+import com.pudding.tofu.rx.retion.refreshBefore;
+import com.pudding.tofu.rx.retion.refreshFailed;
+import com.pudding.tofu.rx.retion.refreshResult;
 import com.pudding.tofu.widget.CollectUtil;
-import com.tofu.rx.retion.loadMoreBefore;
-import com.tofu.rx.retion.loadMoreFailed;
-import com.tofu.rx.retion.loadMoreResult;
-import com.tofu.rx.retion.refreshBefore;
-import com.tofu.rx.retion.refreshFailed;
-import com.tofu.rx.retion.refreshResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

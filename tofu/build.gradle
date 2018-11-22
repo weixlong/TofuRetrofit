@@ -51,6 +51,10 @@ dependencies {
     compile ('com.alibaba.android:vlayout:1.2.8@aar') {
         transitive = true
     }
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.0.3'
+    compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
+    implementation files('libs/alipaySdk-20180601.jar')
+    implementation files('libs/wechat-sdk-android-without-mta-5.1.4.jar')
 }
 
 //---------------------------------------------下面的必加，加上下面的作用是在上传后会带上注释，不然会发现没有注释
