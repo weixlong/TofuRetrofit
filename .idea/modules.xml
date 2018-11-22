@@ -3,11 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TofuRetrofit.iml" filepath="$PROJECT_DIR$/TofuRetrofit.iml" />
-      <module fileurl="file://F:\android_project\tofu\tofu\TofuRetrofit\TofuRetrofit.iml" filepath="F:\android_project\tofu\tofu\TofuRetrofit\TofuRetrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://F:\android_project\tofu\tofu\TofuRetrofit\app\app.iml" filepath="F:\android_project\tofu\tofu\TofuRetrofit\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/tofu/tofu.iml" filepath="$PROJECT_DIR$/tofu/tofu.iml" />
-      <module fileurl="file://F:\android_project\tofu\tofu\TofuRetrofit\tofu\tofu.iml" filepath="F:\android_project\tofu\tofu\TofuRetrofit\tofu\tofu.iml" />
     </modules>
   </component>
 </project>
