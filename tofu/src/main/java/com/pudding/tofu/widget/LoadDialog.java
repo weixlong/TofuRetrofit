@@ -47,6 +47,10 @@ public class LoadDialog extends ProgressDialog {
         this.msg = msg;
     }
 
+    public LoadDialog(Context context) {
+        super(context,R.style.dialog);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
