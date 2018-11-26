@@ -121,6 +121,15 @@ public class RefreshManager<Result> {
         this.pageKey = pageKey;
     }
 
+
+    /**
+     * 获得当前的pageKey
+     * @return
+     */
+    public String getPageKey() {
+        return pageKey;
+    }
+
     /**
      * 存参数
      *
@@ -263,6 +272,23 @@ public class RefreshManager<Result> {
             Map.Entry<String, String> next = iterator.next();
             this.params.put(next.getKey(), next.getValue());
         }
+    }
+
+
+    /**
+     * 清除缓存参数
+     */
+    protected void clearCache(){
+        if (CollectUtil.isEmpty(cache_params)) return;
+        cache_params.clear();
+    }
+
+    /**
+     * 获取缓存参数
+     * @return
+     */
+    protected Map<String, String> getCache(){
+        return cache_params;
     }
 
     /**

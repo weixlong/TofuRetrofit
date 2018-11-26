@@ -9,6 +9,7 @@ import com.pudding.tofu.model.Tofu;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
 import com.pudding.tofu.retention.subscribe;
+import com.pudding.tofu.widget.LoadDialog;
 import com.tofu.retrofit.orm.Text;
 
 
@@ -24,6 +25,7 @@ public class MainActivity extends TofuSupportActivity {
         setContentView(R.layout.activity_main);
         viewById = findViewById(R.id.main_text);
         viewById1 = findViewById(R.id.main_text1);
+
         viewById.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +75,8 @@ public class MainActivity extends TofuSupportActivity {
             }
         });
 
+//        LoadDialog dialog = new LoadDialog(this,"加载中...");
+//        dialog.showDialog();
 
 //        Tofu.anim().color().text(true).target(viewById).duration(5000).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
 //        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();

@@ -11,15 +11,22 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.pudding.tofu.R;
+
+import static android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM;
+import static android.widget.RelativeLayout.CENTER_HORIZONTAL;
 import static android.widget.RelativeLayout.CENTER_IN_PARENT;
 
 /**
@@ -29,9 +36,15 @@ import static android.widget.RelativeLayout.CENTER_IN_PARENT;
 
 public class LoadDialog extends ProgressDialog {
 
+    private String msg;
 
     public LoadDialog(Context context ,int theme) {
         super(context,theme);
+    }
+
+    public LoadDialog(Context context, String msg) {
+        super(context, R.style.dialog);
+        this.msg = msg;
     }
 
     @Override
@@ -48,6 +61,11 @@ public class LoadDialog extends ProgressDialog {
         layout.setGravity(Gravity.CENTER);
         layout.setBackgroundColor(ContextCompat.getColor(getContext(),android.R.color.transparent));
 
+        RelativeLayout contentLayout = new RelativeLayout(this.getContext());
+        RelativeLayout.LayoutParams contentParams = new RelativeLayout.LayoutParams(dipToPX(getContext(), 100), dipToPX(getContext(), 100));
+        contentParams.addRule(CENTER_IN_PARENT);
+        contentLayout.setLayoutParams(contentParams);
+        layout.addView(contentLayout,contentParams);
 
         ImageView imageView = new ImageView(getContext());
         RelativeLayout.LayoutParams imageParam = new RelativeLayout.LayoutParams(dipToPX(getContext(),100), dipToPX(getContext(),100));
@@ -57,13 +75,26 @@ public class LoadDialog extends ProgressDialog {
 
         drawable.setColor(ContextCompat.getColor(getContext(),android.R.color.tertiary_text_dark));
         imageView.setBackground(drawable);
-        layout.addView(imageView,imageParam);
+        contentLayout.addView(imageView,imageParam);
 
         ProgressBar bar = new ProgressBar(getContext());
         RelativeLayout.LayoutParams barParam = new RelativeLayout.LayoutParams(dipToPX(getContext(),40), dipToPX(getContext(),40));
         barParam.addRule(CENTER_IN_PARENT);
         bar.setLayoutParams(barParam);
         layout.addView(bar,barParam);
+
+        if(!TextUtils.isEmpty(msg)){
+            TextView text = new TextView(getContext());
+            RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            textParams.addRule(ALIGN_PARENT_BOTTOM);
+            textParams.bottomMargin = 15;
+            text.setLayoutParams(textParams);
+            text.setText(msg);
+            text.setTextColor(ContextCompat.getColor(getContext(),android.R.color.white));
+            text.setTextSize(12);
+            text.setGravity(Gravity.CENTER_HORIZONTAL);
+            contentLayout.addView(text,textParams);
+        }
 
         return layout;
     }
@@ -165,4 +196,5 @@ public class LoadDialog extends ProgressDialog {
     public static int dipToPX(final Context ctx, float dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, ctx.getResources().getDisplayMetrics());
     }
+
 }

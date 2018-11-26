@@ -190,6 +190,28 @@ public class RefreshBuilder<Result> implements UnBindRx {
     }
 
     /**
+     * 清除缓存参数
+     * @return
+     */
+    public RefreshBuilder clearCache(){
+        checkParamAvailable();
+        manager.clearCache();
+        return this;
+    }
+
+    /**
+     * 获得当前的pageKey
+     * @return
+     */
+    public String getPageKey(){
+        checkParamAvailable();
+        return manager.getPageKey();
+    }
+
+
+
+
+    /**
      * 指针回退一页
      *
      * @return
@@ -364,6 +386,14 @@ public class RefreshBuilder<Result> implements UnBindRx {
         return manager.getParams();
     }
 
+    /**
+     * 获取缓存参数
+     * @return
+     */
+    public Map<String, String> chache(){
+        checkParamAvailable();
+        return manager.getCache();
+    }
 
     private void checkParamAvailable() {
         if (manager == null)
