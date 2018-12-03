@@ -5,23 +5,33 @@ package com.pudding.tofu.model;
  * 邮箱：632716169@qq.com
  */
 
-public class LogFactory implements UnBind{
+public class LogFactory implements UnBind {
 
-    private LogBuilder builder;
 
-    private static volatile LogFactory factory = new LogFactory();
+    private static class FactoryInstance {
+        private static volatile LogFactory INSTANCE = new LogFactory();
+        private static volatile LogBuilder builder;
 
-    protected static LogFactory get(){
-        synchronized (LogFactory.class){
-            return factory;
+        private static LogBuilder build() {
+            synchronized (FactoryInstance.class) {
+                if (builder == null) {
+                    synchronized (FactoryInstance.class) {
+                        if (builder == null) {
+                            builder = new LogBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
         }
     }
 
-    protected LogBuilder build(){
-        if(builder == null){
-            builder = new LogBuilder();
-        }
-        return builder;
+    protected static LogFactory get() {
+        return FactoryInstance.INSTANCE;
+    }
+
+    protected LogBuilder build() {
+        return FactoryInstance.build();
     }
 
     protected LogFactory() {
@@ -29,8 +39,9 @@ public class LogFactory implements UnBind{
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
+        if (FactoryInstance.builder != null) {
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

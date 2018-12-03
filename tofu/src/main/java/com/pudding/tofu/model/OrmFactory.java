@@ -5,36 +5,46 @@ package com.pudding.tofu.model;
  * 邮箱：632716169@qq.com
  */
 
-public class OrmFactory implements UnBind{
+public class OrmFactory implements UnBind {
 
-    private static OrmFactory factory = new OrmFactory();
 
-    private OrmBuilder builder;
+    private static class FactoryInstance {
+        private static volatile OrmFactory INSTANCE = new OrmFactory();
+        private static volatile OrmBuilder builder;
+
+        private static OrmBuilder build() {
+            synchronized (FactoryInstance.class) {
+                if (builder == null) {
+                    synchronized (FactoryInstance.class) {
+                        if (builder == null) {
+                            builder = new OrmBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
     protected OrmFactory() {
 
     }
 
-    protected static OrmFactory get(){
-        synchronized (OrmFactory.class){
-            return factory;
-        }
+    protected static OrmFactory get() {
+        return FactoryInstance.INSTANCE;
     }
 
 
-    protected OrmBuilder build(){
-        if(builder == null){
-            builder = new OrmBuilder();
-        }
-        return builder;
+    protected OrmBuilder build() {
+        return FactoryInstance.build();
     }
 
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
-            builder = null;
+        if (FactoryInstance.builder != null) {
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

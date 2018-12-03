@@ -5,33 +5,43 @@ package com.pudding.tofu.model;
  * 邮箱：632716169@qq.com
  */
 
-public class AskFactory implements UnBind{
+public class AskFactory implements UnBind {
 
-    private static volatile AskFactory factory = new AskFactory();
+    private static class FactoryInstance {
+        private static volatile AskFactory INSTANCE = new AskFactory();
+        private static volatile AskBuilder builder ;
+        private static AskBuilder build(){
+            synchronized (FactoryInstance.class){
+                if(builder ==  null){
+                    synchronized (FactoryInstance.class){
+                        if(builder == null){
+                            builder = new AskBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
-    private AskBuilder builder;
+
 
     protected AskFactory() {
     }
 
-    protected static AskFactory get(){
-        synchronized (AskFactory.class){
-            return factory;
-        }
+    protected static AskFactory get() {
+        return FactoryInstance.INSTANCE;
     }
 
-    protected AskBuilder build(){
-        if(builder == null){
-            builder = new AskBuilder();
-        }
-        return builder;
+    protected AskBuilder build() {
+        return FactoryInstance.build();
     }
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
+        if (FactoryInstance.builder != null) {
+            FactoryInstance.builder.unbind();
         }
-        builder = null;
+        FactoryInstance.builder = null;
     }
 }

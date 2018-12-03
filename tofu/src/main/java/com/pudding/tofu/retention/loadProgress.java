@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by wxl on 2018/6/24 0024.
  * 邮箱：632716169@qq.com
- * float progress
+ * 响应参数LoadResult
  * 如果lable相同则只响应最近绑定这个lable的这个对象
  */
 @Target(ElementType.METHOD)

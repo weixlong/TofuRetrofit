@@ -7,14 +7,25 @@ package com.pudding.tofu.model;
 
 public class ImageBuilderFactory implements UnBind {
 
-    private static ImageBuilderFactory factory = new ImageBuilderFactory();
-
-    private ImageBuilder builder;
+    private static class FactoryInstance {
+        private static volatile ImageBuilderFactory INSTANCE = new ImageBuilderFactory();
+        private static volatile ImageBuilder builder ;
+        private static ImageBuilder build(){
+            synchronized (FactoryInstance.class){
+                if(builder ==  null){
+                    synchronized (FactoryInstance.class){
+                        if(builder == null){
+                            builder = new ImageBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
     protected static ImageBuilderFactory get(){
-        synchronized (ImageBuilderFactory.class){
-            return factory;
-        }
+        return FactoryInstance.INSTANCE;
     }
 
     private ImageBuilderFactory(){
@@ -22,17 +33,14 @@ public class ImageBuilderFactory implements UnBind {
     }
 
     protected ImageBuilder build(){
-        if(builder == null){
-            builder = new ImageBuilder();
-        }
-        return builder;
+        return FactoryInstance.build();
     }
 
     @Override
     public void unbind() {
-        if(builder != null) {
-            builder.unbind();
-            builder = null;
+        if(FactoryInstance.builder != null) {
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

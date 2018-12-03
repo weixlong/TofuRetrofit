@@ -57,6 +57,8 @@ public class LoadImpl implements PostInterface, LoadFileCallback {
 
     protected List<Cookie> cookies;
 
+    private LoadResult result = new LoadResult();
+
     protected LoadImpl(String url, String destPath,List<Cookie> cookies,HttpHeaders heads, Map<String, String> params, String label) {
         this.url = url;
         this.destPath = destPath;
@@ -127,10 +129,14 @@ public class LoadImpl implements PostInterface, LoadFileCallback {
 
     @Override
     public void inProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+        result.currentSize = currentSize;
+        result.networkSpeed = networkSpeed;
+        result.progress = progress;
+        result.totalSize = totalSize;
         if(TextUtils.isEmpty(label)) {
-            TofuBus.get().executeLoadProgressMethod(url, progress);
+            TofuBus.get().executeLoadProgressMethod(url, result);
         } else {
-            TofuBus.get().executeLoadProgressMethod(label, progress);
+            TofuBus.get().executeLoadProgressMethod(label, result);
         }
     }
 

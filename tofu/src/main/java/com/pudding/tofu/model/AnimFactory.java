@@ -5,18 +5,27 @@ package com.pudding.tofu.model;
  * 邮箱：632716169@qq.com
  */
 
-public class AnimFactory implements UnBind{
-    private static volatile AnimFactory factory = new AnimFactory();
-    private AnimBuilder builder;
-    protected static AnimFactory get(){
-        synchronized (AnimFactory.class){
-            return factory;
-        }
+public class AnimFactory implements UnBind {
+
+    private static class FactoryInstance {
+        private static volatile AnimFactory INSTANCE = new AnimFactory();
     }
 
-    protected AnimBuilder build(){
-        if(builder == null){
-            builder = new AnimBuilder();
+    private AnimBuilder builder;
+
+    protected static AnimFactory get() {
+        return FactoryInstance.INSTANCE;
+    }
+
+    protected AnimBuilder build() {
+        synchronized (AnimFactory.class) {
+            if (builder == null) {
+                synchronized (AnimFactory.class) {
+                    if(builder == null) {
+                        builder = new AnimBuilder();
+                    }
+                }
+            }
         }
         return builder;
     }
@@ -26,7 +35,7 @@ public class AnimFactory implements UnBind{
 
     @Override
     public void unbind() {
-        if(builder != null){
+        if (builder != null) {
             builder.unbind();
             builder = null;
         }

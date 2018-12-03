@@ -7,32 +7,40 @@ package com.pudding.tofu.model;
 
 public class ImagePickerFactory implements UnBind{
 
-    private static ImagePickerFactory factory = new ImagePickerFactory();
-
-    private ImagePickerBuilder builder;
+    private static class FactoryInstance {
+        private static volatile ImagePickerFactory INSTANCE = new ImagePickerFactory();
+        private static volatile ImagePickerBuilder builder ;
+        private static ImagePickerBuilder build(){
+            synchronized (FactoryInstance.class){
+                if(builder ==  null){
+                    synchronized (FactoryInstance.class){
+                        if(builder == null){
+                            builder = new ImagePickerBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
     protected static ImagePickerFactory get(){
-        synchronized (ImagePickerFactory.class){
-            return factory;
-        }
+        return FactoryInstance.INSTANCE;
     }
 
     private ImagePickerFactory() {
     }
 
     protected ImagePickerBuilder build(){
-        if(builder == null){
-            builder = new ImagePickerBuilder();
-        }
-        builder.clear();
-        return builder;
+        FactoryInstance.build().clear();
+        return FactoryInstance.builder;
     }
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
-            builder = null;
+        if(FactoryInstance.builder != null){
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

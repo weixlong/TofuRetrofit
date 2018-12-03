@@ -9,30 +9,41 @@ package com.pudding.tofu.model;
 
 public class EventFactory implements UnBind {
 
-    private static EventFactory factory = new EventFactory();
+    private static class FactoryInstance {
+        private static volatile EventFactory INSTANCE = new EventFactory();
+        private static volatile EventBuilder builder ;
+        private static EventBuilder build(){
+            synchronized (FactoryInstance.class){
+                if(builder ==  null){
+                    synchronized (FactoryInstance.class){
+                        if(builder == null){
+                            builder = new EventBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
-    private EventBuilder builder;
 
     public static EventFactory get(){
-        synchronized (EventFactory.class){
-            return factory;
-        }
+        return FactoryInstance.INSTANCE;
     }
 
     public EventBuilder build(){
-        if(builder == null){
-            builder = new EventBuilder();
-        }
-        return builder;
+        return FactoryInstance.build();
     }
 
 
+    private EventFactory() {
+    }
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
-            builder = null;
+        if(FactoryInstance.builder != null){
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

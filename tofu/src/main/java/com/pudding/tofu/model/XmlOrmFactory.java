@@ -7,31 +7,41 @@ package com.pudding.tofu.model;
 
 public class XmlOrmFactory implements UnBind {
 
-   private volatile static XmlOrmFactory factory = new XmlOrmFactory();
 
-   private XmlOrmBuilder builder;
+    private static class FactoryInstance {
+        private static volatile XmlOrmFactory INSTANCE = new XmlOrmFactory();
+        private static volatile XmlOrmBuilder builder;
+
+        private static XmlOrmBuilder build() {
+            synchronized (FactoryInstance.class) {
+                if (builder == null) {
+                    synchronized (FactoryInstance.class) {
+                        if (builder == null) {
+                            builder = new XmlOrmBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
     private XmlOrmFactory() {
     }
 
     protected static XmlOrmFactory get(){
-        synchronized (XmlOrmFactory.class){
-            return factory;
-        }
+        return FactoryInstance.INSTANCE;
     }
 
 
     protected XmlOrmBuilder build(){
-        if(builder == null){
-            builder = new XmlOrmBuilder();
-        }
-        return builder;
+        return FactoryInstance.build();
     }
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
+        if(FactoryInstance.builder != null){
+            FactoryInstance.builder.unbind();
         }
     }
 }

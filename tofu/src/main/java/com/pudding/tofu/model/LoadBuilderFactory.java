@@ -7,32 +7,41 @@ package com.pudding.tofu.model;
 
 public class LoadBuilderFactory implements UnBind {
 
-    private static LoadBuilderFactory factory = new LoadBuilderFactory();
 
-    private LoadFileBuilder builder;
+    private static class FactoryInstance {
+        private static volatile LoadBuilderFactory INSTANCE = new LoadBuilderFactory();
+        private static volatile LoadFileBuilder builder ;
+        private static LoadFileBuilder build(){
+            synchronized (FactoryInstance.class){
+                if(builder ==  null){
+                    synchronized (FactoryInstance.class){
+                        if(builder == null){
+                            builder = new LoadFileBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
+        }
+    }
 
     private LoadBuilderFactory() {
     }
 
     protected static LoadBuilderFactory get() {
-        synchronized (LoadBuilderFactory.class) {
-            return factory;
-        }
+        return FactoryInstance.INSTANCE;
     }
 
     protected LoadFileBuilder build() {
-        if(builder == null){
-            builder = new LoadFileBuilder();
-        }
-        builder.clear();
-        return builder;
+        FactoryInstance.build().clear();
+        return FactoryInstance.builder;
     }
 
     @Override
     public void unbind() {
-        if(builder != null){
-            builder.unbind();
-            builder = null;
+        if(FactoryInstance.builder != null){
+            FactoryInstance.builder.unbind();
+            FactoryInstance.builder = null;
         }
     }
 }

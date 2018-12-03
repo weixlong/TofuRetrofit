@@ -7,21 +7,32 @@ package com.pudding.tofu.model;
 
 public class ToastFactory implements UnBind {
 
-    private ToastBuilder builder;
 
-    private static volatile ToastFactory factory = new ToastFactory();
 
-    protected static ToastFactory get() {
-        synchronized (ToastFactory.class) {
-            return factory;
+    private static class FactoryInstance {
+        private static volatile ToastFactory INSTANCE = new ToastFactory();
+        private static volatile ToastBuilder builder;
+
+        private static ToastBuilder build() {
+            synchronized (FactoryInstance.class) {
+                if (builder == null) {
+                    synchronized (FactoryInstance.class) {
+                        if (builder == null) {
+                            builder = new ToastBuilder();
+                        }
+                    }
+                }
+            }
+            return builder;
         }
     }
 
+    protected static ToastFactory get() {
+        return FactoryInstance.INSTANCE;
+    }
+
     protected ToastBuilder build() {
-        if (builder == null) {
-            builder = new ToastBuilder();
-        }
-        return builder;
+        return FactoryInstance.build();
     }
 
 
@@ -30,8 +41,8 @@ public class ToastFactory implements UnBind {
 
     @Override
     public void unbind() {
-        if (builder != null) {
-            builder.unbind();
+        if (FactoryInstance.builder != null) {
+            FactoryInstance.builder.unbind();
         }
     }
 }
