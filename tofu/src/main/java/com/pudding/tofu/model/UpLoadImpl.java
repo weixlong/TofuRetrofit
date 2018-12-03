@@ -87,6 +87,8 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
 
    private List<Cookie> cookies;
 
+   private LoadResult result = new LoadResult();
+
     protected UpLoadImpl() {
     }
 
@@ -208,10 +210,14 @@ public class UpLoadImpl<Result> implements PostInterface,UploadCallback {
 
     @Override
     public void inProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+        result.totalSize = totalSize;
+        result.progress = progress;
+        result.networkSpeed  =networkSpeed;
+        result.currentSize = currentSize;
         if(TextUtils.isEmpty(label)) {
-            TofuBus.get().executeUploadProgressMethod(url, progress);
+            TofuBus.get().executeUploadProgressMethod(url, result);
         } else {
-            TofuBus.get().executeUploadProgressMethod(label, progress);
+            TofuBus.get().executeUploadProgressMethod(label, result);
         }
     }
 

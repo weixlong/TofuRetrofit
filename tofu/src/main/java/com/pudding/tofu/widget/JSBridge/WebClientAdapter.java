@@ -3,7 +3,7 @@ package com.pudding.tofu.widget.JSBridge;
 import android.graphics.Bitmap;
 import android.webkit.WebView;
 
-public  class WebClientAdapter {
+public class WebClientAdapter {
 
     public String splitDex() {
         return "";

@@ -2,6 +2,7 @@ package com.pudding.tofu.widget.JSBridge;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -9,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.webkit.WebView;
+
+import com.pudding.tofu.model.Tofu;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.internal.functions.ObjectHelper;
 
 public class JSHolder {
 
@@ -96,42 +101,28 @@ public class JSHolder {
     }
 
     /**
-     * 注册js回调方法
+     * 注册js回调方法,响应@subscribe注解
      *
      * @return
      */
     public RJs rJs() {
         checkWebAvailable();
-        return rjs;
+        return rjs.build();
     }
 
 
     public class RJs {
 
-        private List<Target> queue = new ArrayList<>();
-
         private WebClientAdapter adapter;
-
-
+        private JsWebViewClient client;
         private RJs() {
-            //todo nothing
+
         }
 
-        public RJs setLoadCallback(WebClientAdapter adapter) {
-            this.adapter = adapter;
-            return this;
-        }
-
-        /**
-         * 注册返回目标方法
-         *
-         * @param target
-         * @return
-         */
-        public RJs add(@NonNull Object target, @NonNull String method) {
+        private RJs build(){
             if (webView.getTag(key) == null) {
                 webView.setTag(key, ++index + System.currentTimeMillis());
-                JsWebViewClient client = new JsWebViewClient(this);
+                client = new JsWebViewClient(this);
                 if(adapter == null){
                     adapter = new WebClientAdapter() ;
                 }
@@ -139,36 +130,20 @@ public class JSHolder {
                 webView.setWebViewClient(client);
                 adapter = null;
             }
-            if (target != null && !TextUtils.isEmpty(method)) {
-                Target targetObj = new Target(target, method);
-                if (!queue.contains(targetObj)) {
-                    queue.add(targetObj);
-                }
-            }
             return this;
         }
 
+
         /**
-         * 移除一个注册目标
-         *
-         * @param target
+         * 设置加载过程回调监听
+         * @param adapter
          * @return
          */
-        public RJs remove(@NonNull Object target) {
-            for (Target q : queue) {
-                if (q.target.equals(target)) {
-                    queue.remove(q);
-                    q.target = null;
-                }
-            }
+        public RJs setAdapter(WebClientAdapter adapter) {
+            this.adapter = adapter;
+            client.setWebClientCallback(adapter);
+            webView.setWebViewClient(client);
             return this;
-        }
-
-        /**
-         * 清除所有注册对象
-         */
-        public void clear() {
-            queue.clear();
         }
 
 
@@ -180,56 +155,16 @@ public class JSHolder {
         private void dispatchQueue(String data) {
             try {
                 JSONObject jsonObject = new JSONObject(data);
-                for (Target target : queue) {
-                    Method[] declaredMethods = target.target.getClass().getDeclaredMethods();
-                    if (declaredMethods != null && declaredMethods.length > 0) {
-                        for (Method declaredMethod : declaredMethods) {
-                            if (declaredMethod.getName().equals(jsonObject.getString("methodName"))) {
-                                executeDispatch(target.target, declaredMethod, jsonObject.getString("data"));
-                                return;
-                            }
-                        }
-                    }
+                String methodId = jsonObject.getString("methodName");
+                String param = jsonObject.getString("data");
+                if(!TextUtils.isEmpty(methodId)){
+                    Tofu.go().to(methodId,param);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
-
-        /**
-         * 执行分发
-         *
-         * @param method
-         * @param json
-         */
-        private void executeDispatch(Object target, Method method, String json) {
-            try {
-                method.setAccessible(true);
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                if (parameterTypes != null && parameterTypes.length == 1 &&
-                        parameterTypes[0].isInstance("") && !TextUtils.isEmpty(json)) {
-                    method.invoke(target, json);
-                } else {
-                    method.invoke(target);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        class Target {
-            Object target;
-            String method;
-
-            private Target(Object target, String method) {
-                this.target = target;
-                this.method = method;
-            }
-        }
     }
 
 
@@ -270,8 +205,6 @@ public class JSHolder {
             this.data = json;
             return tojs;
         }
-
-
 
 
         /**
@@ -351,7 +284,7 @@ public class JSHolder {
      * 参数检查
      */
     private void checkWebAvailable() {
-        if (webView == null) throw new NullPointerException("webView is null !!");
+        ObjectHelper.requireNonNull(webView,"webView is null !!");
     }
 
     /**
