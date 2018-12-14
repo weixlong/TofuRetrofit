@@ -58,6 +58,7 @@ dependencies {
     //compile 'com.zaaach:citypicker:1.1'城市选择框架 https://www.jianshu.com/p/b469c6f02754
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar' //https://blog.csdn.net/qq_39652726/article/details/81114765
     compile 'com.youth.banner:banner:1.4.10'  //https://blog.csdn.net/chaoyu168/article/details/79017172
+    compile 'com.github.iwgang:countdownview:2.1.6' //倒计时模块，https://blog.csdn.net/zhaihaohao1/article/details/78026632
 }
 
 //---------------------------------------------下面的必加，加上下面的作用是在上传后会带上注释，不然会发现没有注释
