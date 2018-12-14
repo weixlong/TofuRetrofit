@@ -32,7 +32,7 @@ public class ValidatorUtil {
     /**
      * 正则表达式：验证身份证
      */
-    public static final String REGEX_ID_CARD = "(^\\d{18}$)|(^\\d{15}$)";
+    public static final String REGEX_ID_CARD = "(^\\d{18}$)|(^\\d{15}$)|(^\\d{17}+[X]$)";
 
     /**
      * 正则表达式：验证URL
