@@ -10,14 +10,33 @@ import java.util.Map;
 
 public class CollectUtil {
 
-    public static boolean isEmpty(Collection list){
+    public static boolean isEmpty(Collection list) {
         return list == null || list.isEmpty();
     }
 
-    public static boolean isEmpty(Map map){
-        if(map == null || map.isEmpty()){
+    public static boolean isEmpty(Map map) {
+        if (map == null || map.isEmpty()) {
             return true;
         }
         return false;
+    }
+
+    public static boolean isEmpty(Object[] args) {
+        if (args == null || args.length == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isNotEmpty(Collection list) {
+        return !isEmpty(list);
+    }
+
+    public static boolean isNotEmpty(Map map) {
+        return !isEmpty(map);
+    }
+
+    public static boolean isNotEmpty(Object[] args) {
+        return !isEmpty(args);
     }
 }

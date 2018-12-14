@@ -77,7 +77,7 @@ public class LoadDialog extends ProgressDialog {
         layout.setLayoutParams(imageParam);
         RoundRectDrawable drawable = new RoundRectDrawable();
 
-        drawable.setColor(ContextCompat.getColor(getContext(),android.R.color.tertiary_text_dark));
+        drawable.setColor(ContextCompat.getColor(getContext(),R.color.half_transparent));
         imageView.setBackground(drawable);
         contentLayout.addView(imageView,imageParam);
 

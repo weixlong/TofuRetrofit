@@ -1,7 +1,9 @@
 package com.pudding.tofu.widget.JSBridge;
 
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.text.TextUtils;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -27,18 +29,14 @@ public class JsWebViewClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String data) {
         try {
-            //$JsD&{"methodName":"JsToPhone","data":[{"name":"小伟闷","age":13,"code":"a8d8feasdf7"},{"name":"小力火","age":18,"code":"easdf7fa8sd"}]}
-            //{"methodName":"JsToPhone","data":[{"name":"小伟闷","age":13,"code":"a8d8feasdf7"},{"name":"小力火","age":18,"code":"easdf7fa8sd"}]}
             data = URLDecoder.decode(data, "UTF-8");
-            if(!TextUtils.isEmpty(adapter.splitDex())){
-                if (data.contains(adapter.splitDex()) && !data.endsWith(adapter.splitDex())) {
-                    if (obj != null) {
-                        data = data.split(adapter.splitDex())[1];
-                        Method method = obj.getClass().getDeclaredMethod("dispatchQueue", String.class);
-                        method.setAccessible(true);
-                        method.invoke(obj, data);
-                        return true;
-                    }
+            String matchData = adapter.splitResultMatchData(data);
+            if (!TextUtils.isEmpty(matchData)) {
+                if (obj != null) {
+                    Method method = obj.getClass().getDeclaredMethod("dispatchQueue", String.class);
+                    method.setAccessible(true);
+                    method.invoke(obj, matchData);
+                    return true;
                 }
             } else {
                 Method method = obj.getClass().getDeclaredMethod("dispatchQueue", String.class);
@@ -63,7 +61,7 @@ public class JsWebViewClient extends WebViewClient {
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        adapter.onPageStarted(view,url,favicon);
+        adapter.onPageStarted(view, url, favicon);
     }
 
     /**
@@ -82,5 +80,11 @@ public class JsWebViewClient extends WebViewClient {
     public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
         adapter.onReceivedError(view, errorCode, description, failingUrl);
+    }
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        adapter.onReceivedSslError(view,handler,error);
+//        super.onReceivedSslError(view,handler,error);
     }
 }

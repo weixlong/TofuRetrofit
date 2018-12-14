@@ -7,6 +7,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import java.lang.reflect.Method;
+
 public class JsWebView extends WebView {
 
     public JsWebView(Context context) {
@@ -43,8 +45,21 @@ public class JsWebView extends WebView {
 
         this.setVerticalScrollBarEnabled(false);
         this.setHorizontalScrollBarEnabled(false);
+        try {
+            Method setTextSize = WebSettings.class.getDeclaredMethod("setTextSize", WebSettings.TextSize.class);
+            setTextSize.setAccessible(true);
+            setTextSize.invoke(webSettings, WebSettings.TextSize.NORMAL);
+            Method setTextZoom = WebSettings.class.getDeclaredMethod("setTextZoom", Integer.class);
+            setTextZoom.setAccessible(true);
+            setTextZoom.invoke(webSettings,100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setDebug(boolean isDebug){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+            WebView.setWebContentsDebuggingEnabled(isDebug);
         }
     }
 }
