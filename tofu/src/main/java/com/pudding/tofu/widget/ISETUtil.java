@@ -206,7 +206,7 @@ public class ISETUtil {
 
 
     /**
-     * 是否为空
+     * 判断以上添加是否全部符合条件，否则弹出第一个不符合的提示并返回
      *
      * @return
      */
@@ -217,7 +217,9 @@ public class ISETUtil {
                 declaredMethod.setAccessible(true);
                 boolean r = (boolean) declaredMethod.invoke(this, em);
                 if (!r) {
-                    Tofu.tu().tall(em.msg);
+                    if(!TextUtils.isEmpty(em.msg)) {
+                        Tofu.tu().tell(em.msg);
+                    }
                     ems.clear();
                     return false;
                 }
