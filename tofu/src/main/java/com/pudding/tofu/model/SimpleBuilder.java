@@ -63,7 +63,7 @@ public class SimpleBuilder implements UnBind {
      */
     public <Result> Disposable delayTo(@NonNull String label, @IntRange(from = 0) int delay, Result... results) {
         checkParamIsAvailable(label);
-        return TofuBus.get().executeSimpleMethod(label, delay, results);
+        return TofuBus.get().executeSimpleDelayMethod(label, delay, results);
     }
 
     /**

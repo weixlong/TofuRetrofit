@@ -377,9 +377,9 @@ public class TofuBus {
      * @param results
      * @param <Result>
      */
-    protected <Result> Disposable executeSimpleMethod(final String label, int delay, final Result... results) {
+    protected <Result> Disposable executeSimpleDelayMethod(final String label, int delay, final Result... results) {
        return Observable.just("Tofu")
-                .delay(delay, TimeUnit.MICROSECONDS)
+                .delay(delay, TimeUnit.MILLISECONDS)
                 // Run on a background thread
                 .subscribeOn(Schedulers.io())
                 // Be notified on the main thread
