@@ -1,11 +1,14 @@
 package com.pudding.tofu.model;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by wxl on 2018/6/26 0026.
@@ -27,7 +30,7 @@ public class SimpleBuilder implements UnBind {
 
     /**
      * <p>
-     * 执行回调
+     * 执行label回调
      * <p>
      * 如果lable相同将会执行最近一次注册的方法
      * <p>
@@ -44,6 +47,46 @@ public class SimpleBuilder implements UnBind {
     }
 
     /**
+     * 延时发送
+     * <p>
+     * 执行label回调
+     * <p>
+     * 如果lable相同将会执行最近一次注册的方法
+     * <p>
+     * 回调subscribe注解
+     * <p>
+     * 使用该方法时请注意参数必须一一对应
+     * @param label
+     * @param delay 延时时间
+     * @param results
+     * @param <Result>
+     */
+    public <Result> Disposable to(@NonNull String label, @IntRange(from = 0) int delay, Result... results) {
+        checkParamIsAvailable(label);
+        return TofuBus.get().executeSimpleMethod(label, delay, results);
+    }
+
+    /**
+     * 循环发送
+     * <p>
+     * 执行label回调
+     * <p>
+     * 如果lable相同将会执行最近一次注册的方法
+     * <p>
+     * 回调subscribe注解
+     * <p>
+     * 使用该方法时请注意参数必须一一对应
+     * @param label
+     * @param interval 间隔时间
+     * @param results
+     * @param <Result>
+     */
+    public <Result> Disposable valTo(@NonNull String label, @IntRange(from = 0) int interval, Result... results) {
+        checkParamIsAvailable(label);
+        return TofuBus.get().executeSimpleIntervalMethod(label, interval, results);
+    }
+
+    /**
      * <p>
      * 回调到指定的target下的label方法
      * <p>
@@ -56,6 +99,7 @@ public class SimpleBuilder implements UnBind {
      * 使用该方法时请注意参数必须一一对应
      * </p>
      * 无注解限制
+     *
      * @param target
      * @param label
      * @param results

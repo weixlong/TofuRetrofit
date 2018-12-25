@@ -2,6 +2,7 @@ package com.pudding.tofu.model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.ImageView;
@@ -46,20 +47,22 @@ public class ImageBuilder implements UnBind {
 
     /**
      * 设置View
+     *
      * @param simpleView
      * @return
      */
-    public SimpleBuilder setShowView(@NonNull SimpleDraweeView simpleView){
+    public SimpleBuilder setShowView(@NonNull SimpleDraweeView simpleView) {
         simpleBuilder.setSimpleView(simpleView);
         return simpleBuilder;
     }
 
     /**
      * 设置View
+     *
      * @param glideView
      * @return
      */
-    public GlidedBuilder setShowView(@NonNull ImageView glideView){
+    public GlidedBuilder setShowView(@NonNull ImageView glideView) {
         glideBuilder.setImageView(glideView);
         return glideBuilder;
     }
@@ -67,10 +70,14 @@ public class ImageBuilder implements UnBind {
 
     /**
      * 全屏图
+     *
      * @param urls
      */
-    public void showShuff(@NonNull Context context, @NonNull List<String> urls){
-        if(context == null){System.err.println("your context is release !!!");return;}
+    public void showShuff(@NonNull Context context, @NonNull List<String> urls) {
+        if (context == null) {
+            System.err.println("your context is release !!!");
+            return;
+        }
         Intent intent = new Intent(context, ShowBigPic.class);
         intent.putStringArrayListExtra("paths", (ArrayList<String>) urls);
         context.startActivity(intent);
@@ -78,36 +85,43 @@ public class ImageBuilder implements UnBind {
 
     /**
      * 全屏图
+     *
      * @param urls
      */
-    public void showShuff(@NonNull Context context, @NonNull List<String> urls, int position){
-        if(context == null){System.err.println("your context is release !!!");return;}
+    public void showShuff(@NonNull Context context, @NonNull List<String> urls, int position) {
+        if (context == null) {
+            System.err.println("your context is release !!!");
+            return;
+        }
         Intent intent = new Intent(context, ShowBigPic.class);
         intent.putStringArrayListExtra("paths", (ArrayList<String>) urls);
-        intent.putExtra("position",position);
+        intent.putExtra("position", position);
         context.startActivity(intent);
     }
 
     /**
      * 显示大图
+     *
      * @param path
      */
-    public void showBigView(@NonNull Context context, @NonNull String path){
-        if(context == null){System.err.println("your context is release !!!");return;}
+    public void showBigView(@NonNull Context context, @NonNull String path) {
+        if (context == null) {
+            System.err.println("your context is release !!!");
+            return;
+        }
         Intent intent = new Intent(context, ShowBigPic.class);
-        intent.putExtra("path",path);
+        intent.putExtra("path", path);
         context.startActivity(intent);
     }
 
 
-
     @Override
     public void unbind() {
-        if(simpleImage != null){
+        if (simpleImage != null) {
             simpleImage.unBind();
         }
 
-        if(glide != null){
+        if (glide != null) {
             glide.unBind();
         }
 
@@ -116,8 +130,7 @@ public class ImageBuilder implements UnBind {
     }
 
 
-
-    public class GlidedBuilder{
+    public class GlidedBuilder {
         /**
          * Fresco 加载
          */
@@ -141,7 +154,7 @@ public class ImageBuilder implements UnBind {
         /**
          * 显示区域
          */
-        private int width = -1 , height = -1;
+        private int width = -1, height = -1;
 
         /**
          * 是否显示圆形
@@ -159,6 +172,15 @@ public class ImageBuilder implements UnBind {
         private File file;
 
 
+        private boolean isGif;
+
+        private int resId = 0x00fffff;
+
+        private String gif_label;
+
+        private int maxLoopCount = 1;
+
+
         private void setImageView(@NonNull ImageView imageView) {
             this.imageView = imageView;
             this.url = "";
@@ -172,6 +194,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 图片路径
+         *
          * @param url
          * @return
          */
@@ -182,6 +205,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 高度适应宽度
+         *
          * @param adaptiveWidth
          * @return
          */
@@ -192,6 +216,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 圆角
+         *
          * @param radius
          * @return
          */
@@ -202,11 +227,12 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 固定宽高
+         *
          * @param width
          * @param height
          * @return
          */
-        public GlidedBuilder setWidth(int width,int height) {
+        public GlidedBuilder setWidth(int width, int height) {
             this.width = width;
             this.height = height;
             return this;
@@ -215,6 +241,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 是否圆形
+         *
          * @param circle
          * @return
          */
@@ -225,6 +252,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 错误占位图
+         *
          * @param errorRes
          * @return
          */
@@ -235,6 +263,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 需要显示的图片文件
+         *
          * @param file
          * @return
          */
@@ -244,14 +273,81 @@ public class ImageBuilder implements UnBind {
         }
 
         /**
+         * 当url为gif时播放
+         *
+         * @return
+         */
+        public GlidedBuilder asGif() {
+            this.isGif = true;
+            return this;
+        }
+
+        /**
+         * 本地gif资源播放，与其他属性互斥
+         *
+         * @param gifRes
+         * @return
+         */
+        public GlidedBuilder asGif(@DrawableRes int gifRes) {
+            this.resId = gifRes;
+            this.isGif = true;
+            return this;
+        }
+
+
+        /**
+         * 本地gif资源播放，与其他属性互斥
+         *
+         * @param gifRes
+         * @return
+         */
+        public GlidedBuilder asGif(@DrawableRes int gifRes,int maxLoopCount) {
+            this.resId = gifRes;
+            this.isGif = true;
+            this.maxLoopCount = maxLoopCount;
+            return this;
+        }
+
+
+        /**
+         * 本地gif资源播放，与其他属性互斥
+         *
+         * @param gifRes
+         * @param label gif播放结束回调，可不设
+         * @return
+         */
+        public GlidedBuilder asGif(@DrawableRes int gifRes,String label) {
+            this.resId = gifRes;
+            this.isGif = true;
+            this.gif_label = label;
+            return this;
+        }
+
+        /**
+         * 本地gif资源播放，与其他属性互斥
+         *
+         * @param gifRes
+         * @param label gif播放结束回调，可不设
+         * @param maxLoopCount {@link com.bumptech.glide.load.resource.drawable.GlideDrawable} in an {@link android.widget.ImageView}.
+         * @return
+         */
+        public GlidedBuilder asGif(@DrawableRes int gifRes,int maxLoopCount,String label) {
+            this.resId = gifRes;
+            this.isGif = true;
+            this.gif_label = label;
+            this.maxLoopCount = maxLoopCount;
+            return this;
+        }
+
+        /**
          * 显示
          */
-        public void show(){
+        public void show() {
             checkParams();
-            if(glide == null){
-                glide = new GlideImpl(imageView,url,adaptiveWidth,radius,width,height,isCircle,errorRes,file);
+            if (glide == null) {
+                glide = new GlideImpl(imageView, url, adaptiveWidth, radius, width, height, isCircle, errorRes, file,isGif,resId,gif_label,maxLoopCount);
             } else {
-                glide.setGlideImpl(imageView,url,adaptiveWidth,radius,width,height,isCircle,errorRes,file);
+                glide.setGlideImpl(imageView, url, adaptiveWidth, radius, width, height, isCircle, errorRes, file,isGif,resId,gif_label,maxLoopCount);
             }
             glide.execute();
         }
@@ -259,7 +355,7 @@ public class ImageBuilder implements UnBind {
         /**
          * 解绑
          */
-        private void unBind(){
+        private void unBind() {
             this.imageView = null;
             this.url = "";
             this.height = -1;
@@ -274,18 +370,16 @@ public class ImageBuilder implements UnBind {
         /**
          * 参数检查
          */
-        private void checkParams(){
-            if(imageView == null)throw new NullPointerException("your imageView is null !");
-            if(TextUtils.isEmpty(url) && file == null)throw new NullPointerException("your url is null !");
+        private void checkParams() {
+            if (imageView == null) throw new NullPointerException("your imageView is null !");
+            if (TextUtils.isEmpty(url) && file == null && resId == 0x00fffff)
+                throw new NullPointerException("your url is null !");
         }
 
     }
 
 
-
-
-
-    public class SimpleBuilder{
+    public class SimpleBuilder {
 
         /**
          * SimpleDraweeView 属性
@@ -385,7 +479,7 @@ public class ImageBuilder implements UnBind {
         /**
          * 显示区域
          */
-        private int width = -1 , height = -1;
+        private int width = -1, height = -1;
 
         /**
          * 是否显示圆形
@@ -402,8 +496,13 @@ public class ImageBuilder implements UnBind {
          */
         private File file;
 
+        private boolean isGif;
+
+        private int resId = 0x00fffff;
+
         /**
          * 图片路径
+         *
          * @param url
          * @return
          */
@@ -414,6 +513,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 设置view
+         *
          * @param simpleView
          */
         private void setSimpleView(@NonNull SimpleDraweeView simpleView) {
@@ -430,21 +530,23 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 高度自适应宽度
+         *
          * @param width
          * @return
          */
-        public SimpleBuilder setAdaptive(int width){
+        public SimpleBuilder setAdaptive(int width) {
             adaptiveWidth = width;
             return this;
         }
 
         /**
          * 设置显示大小
+         *
          * @param width
          * @param height
          * @return
          */
-        public SimpleBuilder setRect(int width,int height){
+        public SimpleBuilder setRect(int width, int height) {
             this.width = width;
             this.height = height;
             return this;
@@ -452,6 +554,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 圆角
+         *
          * @param radius
          * @return
          */
@@ -462,6 +565,7 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 是否显示圆形
+         *
          * @param isCircle
          */
         public SimpleBuilder setCircle(boolean isCircle) {
@@ -471,28 +575,52 @@ public class ImageBuilder implements UnBind {
 
         /**
          * 设置错误显示的资源
+         *
          * @param errorRes
          * @return
          */
-        public SimpleBuilder setErrorRes(int errorRes){
+        public SimpleBuilder setErrorRes(@DrawableRes int errorRes) {
             this.errorRes = errorRes;
             return this;
         }
 
         /**
          * 显示文件
+         *
          * @param file
          * @return
          */
-        public SimpleBuilder setFile(File file){
+        public SimpleBuilder setFile(File file) {
             this.file = file;
+            return this;
+        }
+
+        /**
+         * 当url为gif时播放
+         *
+         * @return
+         */
+        public SimpleBuilder asGif() {
+            this.isGif = true;
+            return this;
+        }
+
+        /**
+         * 本地gif资源播放，与url互斥
+         *
+         * @param gifRes
+         * @return
+         */
+        public SimpleBuilder asGif(@DrawableRes int gifRes) {
+            this.resId = gifRes;
+            this.isGif = true;
             return this;
         }
 
         /**
          * 解绑
          */
-        private void unBind(){
+        private void unBind() {
             this.simpleView = null;
             this.url = "";
             this.height = -1;
@@ -507,12 +635,12 @@ public class ImageBuilder implements UnBind {
         /**
          * 简单显示
          */
-        public void show(){
+        public void show() {
             checkParams();
-            if(simpleImage == null){
-                simpleImage = new SimpleImageImpl(simpleView,url,adaptiveWidth,radius,width,height,isCircle,errorRes,file);
+            if (simpleImage == null) {
+                simpleImage = new SimpleImageImpl(simpleView, url, adaptiveWidth, radius, width, height, isCircle, errorRes, file, isGif, resId);
             } else {
-                simpleImage.setSimpleImageImpl(simpleView,url,adaptiveWidth,radius,width,height,isCircle,errorRes,file);
+                simpleImage.setSimpleImageImpl(simpleView, url, adaptiveWidth, radius, width, height, isCircle, errorRes, file, isGif, resId);
             }
             simpleImage.execute();
         }
@@ -520,9 +648,10 @@ public class ImageBuilder implements UnBind {
         /**
          * 参数检查
          */
-        private void checkParams(){
-            if(simpleView == null)throw new NullPointerException("your imageView is null !");
-            if(TextUtils.isEmpty(url) && file == null)throw new NullPointerException("your url is null !");
+        private void checkParams() {
+            if (simpleView == null) throw new NullPointerException("your imageView is null !");
+            if (TextUtils.isEmpty(url) && file == null && resId == 0x00fffff)
+                throw new NullPointerException("your url is null !");
         }
     }
 }

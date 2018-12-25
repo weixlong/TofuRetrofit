@@ -1,5 +1,6 @@
 package com.pudding.tofu.model;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -22,11 +23,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -368,6 +371,49 @@ public class TofuBus {
     }
 
     /**
+     * 延时执行
+     * @param label
+     * @param delay
+     * @param results
+     * @param <Result>
+     */
+    protected <Result> Disposable executeSimpleMethod(final String label, int delay, final Result... results) {
+       return Observable.just("Tofu")
+                .delay(delay, TimeUnit.MICROSECONDS)
+                // Run on a background thread
+                .subscribeOn(Schedulers.io())
+                // Be notified on the main thread
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        executeSimple(label, subscribeMethods, results);
+                    }
+                });
+
+    }
+
+
+    /**
+     * 循环执行
+     * @param label
+     * @param interval 间隔时间
+     * @param results
+     * @param <Result>
+     */
+    protected <Result> Disposable executeSimpleIntervalMethod(final String label, int interval, final Result... results) {
+        return Observable.interval(interval, TimeUnit.MILLISECONDS,Schedulers.io())
+                // Be notified on the main thread
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        executeSimple(label, subscribeMethods, results);
+                    }
+                });
+    }
+
+    /**
      * 执行指定对象的方法
      *
      * @param target
@@ -375,6 +421,7 @@ public class TofuBus {
      * @param results
      * @param <Result>
      */
+    @SuppressLint("CheckResult")
     protected <Result> void executeTargetMethod(final Object target, final String label, final Result... results) {
         if(target == null)return;
         Observable.create(new ObservableOnSubscribe<SingleTarget>() {
@@ -770,6 +817,7 @@ public class TofuBus {
      * @param results
      * @param <Result>
      */
+    @SuppressLint("CheckResult")
     private <Result> void executeSimple(final String label, final HashMap<String, List<TofuMethod>> maps, final Result... results) {
         Observable.create(new ObservableOnSubscribe<Post>() {
             @Override
@@ -899,6 +947,7 @@ public class TofuBus {
      * @param label
      * @param
      */
+    @SuppressLint("CheckResult")
     private <Result> void execute(final String label, final HashMap<String, List<TofuMethod>> maps, final Result... results) {
         Observable.create(new ObservableOnSubscribe<Post>() {
             @Override

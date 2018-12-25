@@ -56,6 +56,8 @@ dependencies {
     implementation files('libs/alipaySdk-20180601.jar')
     implementation files('libs/wechat-sdk-android-without-mta-5.1.4.jar')
     //compile 'com.zaaach:citypicker:1.1'城市选择框架 https://www.jianshu.com/p/b469c6f02754
+    //compile 'com.github.waynell:VideoListPlayer:1.4' 视频播放控件 https://github.com/waynell/VideoListPlayer
+    //https://juejin.im/entry/57611a1fdf0eea0062cdcb31 酷炫的 RecyclerView 开源库
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar' //https://blog.csdn.net/qq_39652726/article/details/81114765
     compile 'com.youth.banner:banner:1.4.10'  //https://blog.csdn.net/chaoyu168/article/details/79017172
     compile 'com.github.iwgang:countdownview:2.1.6' //倒计时模块，https://blog.csdn.net/zhaihaohao1/article/details/78026632

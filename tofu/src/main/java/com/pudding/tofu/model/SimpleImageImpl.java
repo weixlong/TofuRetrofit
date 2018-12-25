@@ -4,6 +4,7 @@ import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -74,11 +75,15 @@ public class SimpleImageImpl implements BaseInterface {
 
     private File file;
 
+    private boolean isGif;
+
+    private int gifRes = 0x00fffff;
+
     protected SimpleImageImpl() {
     }
 
     protected SimpleImageImpl(SimpleDraweeView simpleView, String url, int adaptiveWidth,
-                              float radius, int width, int height, boolean isCircle, int errorRes, File file) {
+                              float radius, int width, int height, boolean isCircle, int errorRes, File file, boolean isGif, int gifRes) {
         this.simpleView = simpleView;
         this.url = url;
         this.adaptiveWidth = adaptiveWidth;
@@ -88,12 +93,15 @@ public class SimpleImageImpl implements BaseInterface {
         this.isCircle = isCircle;
         this.errorRes = errorRes;
         this.file = file;
+        this.isGif = isGif;
+        this.gifRes = gifRes;
     }
 
 
     /**
      * 设置数据
-     *  @param simpleView
+     *
+     * @param simpleView
      * @param url
      * @param adaptiveWidth
      * @param radius
@@ -104,7 +112,7 @@ public class SimpleImageImpl implements BaseInterface {
      * @param file
      */
     protected void setSimpleImageImpl(SimpleDraweeView simpleView, String url, int adaptiveWidth,
-                                   float radius, int width, int height, boolean isCircle, int errorRes, File file) {
+                                      float radius, int width, int height, boolean isCircle, int errorRes, File file, boolean isGif, int gifRes) {
         this.simpleView = simpleView;
         this.url = url;
         this.adaptiveWidth = adaptiveWidth;
@@ -114,32 +122,34 @@ public class SimpleImageImpl implements BaseInterface {
         this.isCircle = isCircle;
         this.errorRes = errorRes;
         this.file = file;
+        this.isGif = isGif;
+        this.gifRes = gifRes;
     }
 
     @Override
     public void execute() {
 
-        if(file != null){
+        if (file != null) {
             showImageFile(file);
         }
 
-        if(adaptiveWidth != -1){
+        if (adaptiveWidth != -1) {
             showAdaptive(adaptiveWidth);
         }
 
-        if(radius != -1){
+        if (radius != -1) {
             showRadiusImage(radius);
         }
 
-        if(isCircle){
+        if (isCircle) {
             showRadiusImage(-1);
         }
 
-        if(width != -1 && height != -1){
-            showThumb(width,height);
+        if (width != -1 && height != -1) {
+            showThumb(width, height);
         }
 
-        if(errorRes != -1){
+        if (errorRes != -1) {
             showError();
         }
 
@@ -151,32 +161,43 @@ public class SimpleImageImpl implements BaseInterface {
      * 显示
      */
     private void simpleShow() {
-        if (Util.isUri(url)) {
-            PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder();
-            builder.setUri(Uri.parse(url));
-            builder.setAutoPlayAnimations(true);
-
-            if(request == null) {
-                builder.setControllerListener(controllerListener);
-            } else {
-                builder.setImageRequest(request)
-                        .setOldController(simpleView.getController())
-                        .setControllerListener(new BaseControllerListener<ImageInfo>());
-            }
-
-            if (simpleView instanceof PhotoDraweeView) {
-                ((PhotoDraweeView) simpleView).setPhotoUri(Uri.parse(url));
-            } else {
-                simpleView.setController(builder.build());
-            }
-
+        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder();
+        if (request == null) {
+            builder.setControllerListener(controllerListener);
+        } else {
+            builder.setImageRequest(request)
+                    .setOldController(simpleView.getController())
+                    .setControllerListener(new BaseControllerListener<ImageInfo>());
         }
+
+        if (isGif) {
+            builder.setAutoPlayAnimations(true);
+            if (gifRes != 0x00fffff) {
+                Uri uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+                        .path(String.valueOf(gifRes))
+                        .build();
+                builder.setUri(uri);
+                this.url = uri.getPath();
+            } else {
+                builder.setUri(Uri.parse(url));
+            }
+        } else {
+            builder.setUri(Uri.parse(url));
+        }
+
+        if (simpleView instanceof PhotoDraweeView) {
+            ((PhotoDraweeView) simpleView).setPhotoUri(Uri.parse(url));
+        } else {
+            simpleView.setController(builder.build());
+        }
+
     }
 
     /**
      * 加载错误时的图片
      */
-    private void showError(){
+    private void showError() {
         GenericDraweeHierarchy hierarchy = simpleView.getHierarchy();
         hierarchy.setFailureImage(errorRes);
         hierarchy.setProgressBarImage(errorRes);
@@ -193,12 +214,12 @@ public class SimpleImageImpl implements BaseInterface {
         final ViewGroup.LayoutParams layoutParams = simpleView.getLayoutParams();
         if (!UriUtil.isNetworkUri(Uri.parse(url))) {
             layoutParams.width = width;
-            simpleView.setBackgroundColor(ContextCompat.getColor(simpleView.getContext(),android.R.color.darker_gray));
+            simpleView.setBackgroundColor(ContextCompat.getColor(simpleView.getContext(), android.R.color.darker_gray));
             simpleView.setLayoutParams(layoutParams);
             return;
         }
 
-         controllerListener = new BaseControllerListener<ImageInfo>() {
+        controllerListener = new BaseControllerListener<ImageInfo>() {
             @Override
             public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable anim) {
                 if (imageInfo == null) {
@@ -267,8 +288,8 @@ public class SimpleImageImpl implements BaseInterface {
      * @param resizeWidthDp  resizeWidth
      * @param resizeHeightDp resizeHeight
      */
-    private void showThumb( int resizeWidthDp, int resizeHeightDp) {
-         request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
+    private void showThumb(int resizeWidthDp, int resizeHeightDp) {
+        request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
                 .setResizeOptions(new ResizeOptions(Util.dip2px(simpleView.getContext(), resizeWidthDp),
                         Util.dip2px(simpleView.getContext(), resizeHeightDp)))
                 .build();
@@ -285,8 +306,10 @@ public class SimpleImageImpl implements BaseInterface {
         this.isCircle = false;
         this.errorRes = -1;
         this.file = null;
-        this.controllerListener  =null;
+        this.controllerListener = null;
         this.request = null;
+        this.isGif = false;
+        this.gifRes = 0x00fffff;
     }
 
 
