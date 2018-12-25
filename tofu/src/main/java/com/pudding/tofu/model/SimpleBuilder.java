@@ -56,8 +56,9 @@ public class SimpleBuilder implements UnBind {
      * 回调subscribe注解
      * <p>
      * 使用该方法时请注意参数必须一一对应
+     *
      * @param label
-     * @param delay 延时时间
+     * @param delay    延时时间
      * @param results
      * @param <Result>
      */
@@ -76,6 +77,7 @@ public class SimpleBuilder implements UnBind {
      * 回调subscribe注解
      * <p>
      * 使用该方法时请注意参数必须一一对应
+     *
      * @param label
      * @param interval 间隔时间
      * @param results
@@ -84,6 +86,25 @@ public class SimpleBuilder implements UnBind {
     public <Result> Disposable valTo(@NonNull String label, @IntRange(from = 0) int interval, Result... results) {
         checkParamIsAvailable(label);
         return TofuBus.get().executeSimpleIntervalMethod(label, interval, results);
+    }
+
+    /**
+     * 穿透执行
+     * <p>
+     * 执行label回调
+     * <p>
+     * 将回调{@link com.pudding.tofu.retention.pierce}pierce注解lable相同的注册方法
+     * <p>
+     * 使用该方法时请注意results参数必须一一对应，参数不对应则继续寻找参数符合的方法
+     * <p>
+     *
+     * @param label
+     * @param results 参数
+     * @param <Result>
+     */
+    public <Result> void pierceTo(@NonNull String label, Result... results) {
+        checkParamIsAvailable(label);
+        TofuBus.get().executeSimplePierceMethod(label, results);
     }
 
     /**

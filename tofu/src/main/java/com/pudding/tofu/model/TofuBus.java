@@ -8,6 +8,7 @@ import com.pudding.tofu.retention.loadError;
 import com.pudding.tofu.retention.loadFile;
 import com.pudding.tofu.retention.loadProgress;
 import com.pudding.tofu.retention.photoPick;
+import com.pudding.tofu.retention.pierce;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
 import com.pudding.tofu.retention.subscribe;
@@ -103,6 +104,12 @@ public class TofuBus {
 
 
     /**
+     * 穿透注解
+     */
+    private HashMap<String, List<TofuMethod>> pierceMethods = new HashMap<>();
+
+
+    /**
      * 取target的介质集合
      */
     private List<String> keys = new ArrayList<>();
@@ -122,13 +129,13 @@ public class TofuBus {
      */
     protected synchronized void findSubscribe(Object target) {
         if (target == null) return;
-        String key = Long.toString(++position+System.currentTimeMillis());
+        String key = Long.toString(++position + System.currentTimeMillis());
         keys.add(key);
         keyMap.put(key, target);
         newTofuIfEmptyMethodList(key, cachePostMethods, postErrorMethods,
                 loadFileMethods, loadFileErrorMethods, loadFileProgressMethods,
                 upLoadFileMethods, upLoadFileErrorMethods,
-                upLoadFileProgressMethods, subscribeMethods, pickerMethods);
+                upLoadFileProgressMethods, subscribeMethods, pickerMethods, pierceMethods);
 
         List<TofuMethod> postMethods = cachePostMethods.get(key);
         List<TofuMethod> tofuErrorMethods = postErrorMethods.get(key);
@@ -140,7 +147,7 @@ public class TofuBus {
         List<TofuMethod> tofuUpLoadFileProgressMethods = upLoadFileProgressMethods.get(key);
         List<TofuMethod> tofuSimpleMethods = subscribeMethods.get(key);
         List<TofuMethod> tofuPickerMethods = pickerMethods.get(key);
-
+        List<TofuMethod> tofuPierceMethods = pierceMethods.get(key);
 
         Method[] declaredMethods = target.getClass().getDeclaredMethods();
         for (Method method : declaredMethods) {
@@ -154,7 +161,7 @@ public class TofuBus {
             findUploadProgressSubscribe(key, tofuUpLoadFileProgressMethods, method, target);
             findSimpleSubscribe(key, tofuSimpleMethods, method, target);
             findPickerSubscribe(key, tofuPickerMethods, method, target);
-
+            findPierceSubscribe(key, tofuPierceMethods, method, target);
         }
     }
 
@@ -172,6 +179,24 @@ public class TofuBus {
             }
             methodMaps[i].put(key, tofuMethods);
         }
+    }
+
+
+    /**
+     * 找穿透注解
+     *
+     * @param key
+     * @param tofuPierceMethods
+     * @param method
+     * @param target
+     */
+    private void findPierceSubscribe(String key, List<TofuMethod> tofuPierceMethods, Method method, Object target) {
+        pierce p = method.getAnnotation(pierce.class);
+        if (null != p) {
+            String[] values = p.value();
+            fullyTofuMethod(values, tofuPierceMethods, method, target);
+        }
+        pierceMethods.put(key, tofuPierceMethods);
     }
 
     /**
@@ -371,14 +396,26 @@ public class TofuBus {
     }
 
     /**
+     * 执行穿透方法
+     *
+     * @param label
+     * @param results
+     * @param <Result>
+     */
+    protected <Result> void executeSimplePierceMethod(String label, Result... results) {
+        executePierceSimple(label, pierceMethods, results);
+    }
+
+    /**
      * 延时执行
+     *
      * @param label
      * @param delay
      * @param results
      * @param <Result>
      */
     protected <Result> Disposable executeSimpleDelayMethod(final String label, int delay, final Result... results) {
-       return Observable.just("Tofu")
+        return Observable.just("Tofu")
                 .delay(delay, TimeUnit.MILLISECONDS)
                 // Run on a background thread
                 .subscribeOn(Schedulers.io())
@@ -396,13 +433,14 @@ public class TofuBus {
 
     /**
      * 循环执行
+     *
      * @param label
      * @param interval 间隔时间
      * @param results
      * @param <Result>
      */
     protected <Result> Disposable executeSimpleIntervalMethod(final String label, int interval, final Result... results) {
-        return Observable.interval(interval, TimeUnit.MILLISECONDS,Schedulers.io())
+        return Observable.interval(interval, TimeUnit.MILLISECONDS, Schedulers.io())
                 // Be notified on the main thread
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Long>() {
@@ -423,7 +461,7 @@ public class TofuBus {
      */
     @SuppressLint("CheckResult")
     protected <Result> void executeTargetMethod(final Object target, final String label, final Result... results) {
-        if(target == null)return;
+        if (target == null) return;
         Observable.create(new ObservableOnSubscribe<SingleTarget>() {
             @Override
             public void subscribe(ObservableEmitter<SingleTarget> e) throws Exception {
@@ -835,6 +873,31 @@ public class TofuBus {
 
 
     /**
+     * 执行穿透
+     *
+     * @param label
+     * @param maps
+     * @param results
+     * @param <Result>
+     */
+    @SuppressLint("CheckResult")
+    private <Result> void executePierceSimple(final String label, final HashMap<String, List<TofuMethod>> maps, final Result... results) {
+        Observable.create(new ObservableOnSubscribe<Post>() {
+            @Override
+            public void subscribe(ObservableEmitter<Post> e) throws Exception {
+                onExecuteSimplePierceMethod(e, label, maps, results);
+            }
+        }).subscribeOn(Schedulers.io()).distinct().observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Post>() {
+                    @Override
+                    public void accept(Post post) throws Exception {
+                        executeSimplePost(post);
+                    }
+                });
+    }
+
+
+    /**
      * 执行普通post方法
      *
      * @param post
@@ -849,6 +912,67 @@ public class TofuBus {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 执行普通调用方法
+     *
+     * @param e
+     * @param label
+     * @param maps
+     * @param results
+     * @param <Result>
+     */
+    private <Result> void onExecuteSimplePierceMethod(ObservableEmitter<Post> e, String label, HashMap<String, List<TofuMethod>> maps, Result... results) {
+        for (int i = keys.size() - 1; i >= 0; i--) {
+            List<TofuMethod> tofuMethods = maps.get(keys.get(i));
+            if (CollectUtil.isEmpty(tofuMethods)) continue;
+            for (int i1 = tofuMethods.size() - 1; i1 >= 0; i1--) {
+                if (isSameMethod(tofuMethods.get(i1),label,results)) {
+                    executeSimpleMethod(e, tofuMethods.get(i1), results);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 是否为同一方法
+     *
+     * @param tofuMethod
+     * @param label
+     * @return
+     */
+    private <Result> boolean isSameMethod(TofuMethod tofuMethod, String label, Result... results) {
+        return TextUtils.equals(label, tofuMethod.getlabel()) && isSameParams(tofuMethod, results);
+    }
+
+
+    /**
+     * 参数是否相同
+     *
+     * @param tofuMethod
+     * @param results
+     * @param <Result>
+     * @return
+     */
+    private <Result> boolean isSameParams(TofuMethod tofuMethod, Result... results) {
+        Class[] paramterClass = tofuMethod.getParamterClass();
+        if (CollectUtil.isNotEmpty(paramterClass)) {
+            if (results == null || paramterClass.length != results.length) {
+                return false;
+            }
+            for (int i = 0; i < paramterClass.length; i++) {
+                if (!paramterClass[i].isInstance(results[i])) {
+                    return false;
+                }
+            }
+        } else {
+            if (results != null || results.length > 0){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -1134,6 +1258,7 @@ public class TofuBus {
             clear(upLoadFileMethods.remove(key));
             clear(upLoadFileProgressMethods.remove(key));
             clear(upLoadFileErrorMethods.remove(key));
+            clear(pierceMethods.remove(key));
             keyMap.remove(key);
             keys.remove(key);
         }
@@ -1143,7 +1268,7 @@ public class TofuBus {
     private String findKeyByTarget(Object target) {
         for (int i = keys.size() - 1; i >= 0; i--) {
             Object o = keyMap.get(keys.get(i));
-            if(o != null) {
+            if (o != null) {
                 if (TextUtils.equals(target.getClass().getName(), o.getClass().getName())) {
                     return keys.get(i);
                 }
