@@ -365,6 +365,10 @@ public class ImageBuilder implements UnBind {
             this.radius = -1;
             this.isCircle = false;
             this.file = null;
+            this.isGif = false;
+            this.resId = 0x00fffff;
+            this.gif_label = null;
+            this.maxLoopCount = 1;
         }
 
         /**
@@ -630,6 +634,8 @@ public class ImageBuilder implements UnBind {
             this.radius = -1;
             this.isCircle = false;
             this.file = null;
+            this.isGif = false;
+            this.resId = 0x00fffff;
         }
 
         /**

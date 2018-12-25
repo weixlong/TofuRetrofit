@@ -2,15 +2,9 @@ package com.pudding.tofu;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.pudding.tofu.model.Tofu;
 
 
 import indi.yume.tools.fragmentmanager.BaseManagerFragment;
-import indi.yume.tools.fragmentmanager.SwipeBackUtil;
 
 /**
  * Created by wxl on 2018/8/20 0020.

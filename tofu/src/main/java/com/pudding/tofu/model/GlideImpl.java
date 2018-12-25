@@ -24,7 +24,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
-import com.pudding.tofu.R;
 import com.pudding.tofu.callback.BaseInterface;
 
 import java.io.File;
@@ -222,9 +221,9 @@ public class GlideImpl implements BaseInterface {
                         }
                         if (!TextUtils.isEmpty(gif_label)) {
                             if (maxLoopCount > 0) {
-                                disposable = Tofu.go().to(gif_label, duration * maxLoopCount);
+                                disposable = Tofu.go().delayTo(gif_label, duration * maxLoopCount);
                             } else {
-                                disposable = Tofu.go().to(gif_label, duration);
+                                disposable = Tofu.go().delayTo(gif_label, duration);
                             }
                         }
                         return false;
