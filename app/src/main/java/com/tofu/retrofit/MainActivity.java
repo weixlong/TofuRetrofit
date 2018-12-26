@@ -6,11 +6,10 @@ import android.view.View;
 import com.pudding.tofu.TofuSupportActivity;
 import com.pudding.tofu.model.AnimBuilder;
 import com.pudding.tofu.model.Tofu;
+import com.pudding.tofu.retention.pierce;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
 import com.pudding.tofu.retention.subscribe;
-import com.pudding.tofu.widget.LoadDialog;
-import com.pudding.tofu.widget.loadApk.LoadApk;
 import com.tofu.retrofit.orm.Text;
 
 
@@ -18,7 +17,7 @@ public class MainActivity extends TofuSupportActivity {
 
     public static final String update_sex_url = "http://www.kangyu.com/api/user/modify_sex";
 
-    View viewById,viewById1;
+    View viewById, viewById1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,17 +41,18 @@ public class MainActivity extends TofuSupportActivity {
 //                        .put("user_id", "23")
 //                        .put("sex", "0")
 //                        .execute();
-                Tofu.anim().playOn().setAnimRunBack(new AnimBuilder.AnimRunAdapter(){
+                Tofu.go().pierceTo("a", "ccc");
+                Tofu.anim().playOn().setAnimRunBack(new AnimBuilder.AnimRunAdapter() {
                     @Override
                     public void onPlayOnAnimEnd(AnimBuilder.PlayOnBuilder builder) {
                         Tofu.log().ping().p("onPlayOnAnimEnd").v();
                     }
                 })
-                       // .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
-                        .move(Tofu.anim().move(viewById1).duration(4000).moveTo(viewById1.getX(),viewById1.getY()).moveTo(500, 300).delay(2000))
+                        // .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(300, 300).moveTo(200,400))
+                        .move(Tofu.anim().move(viewById1).duration(4000).moveTo(viewById1.getX(), viewById1.getY()).moveTo(500, 300).delay(2000))
                         .cubic(Tofu.anim().cubic(viewById).duration(3000).begin(300, 300).end(100, 600).spin(50, 400, 400, 500))
                         .color(Tofu.anim().color(viewById).duration(2000).text(true).colorValues(0xFFAAFFFF, 0xff78c5f9))
-                        .together(Tofu.anim().together().setAnimRunBack(new AnimBuilder.AnimRunAdapter(){
+                        .together(Tofu.anim().together().setAnimRunBack(new AnimBuilder.AnimRunAdapter() {
                                     @Override
                                     public void onTogetherAnimStart(AnimBuilder.TogetherBuilder builder) {
                                         Tofu.log().ping().p("onTogetherAnimStart").v();
@@ -61,11 +61,12 @@ public class MainActivity extends TofuSupportActivity {
                                     @Override
                                     public void onTogetherAnimEnd(AnimBuilder.TogetherBuilder builder) {
                                         Tofu.log().ping().p("onTogetherAnimEnd").v();
+
                                     }
                                 }).color(Tofu.anim().color(viewById1).duration(2000).text(true).colorValues(0xFFAA0077, 0xff2536AA))
-                                .move(Tofu.anim().move(viewById1).duration(4000).moveTo(500,500))
-                                .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(),viewById.getY()).moveTo(500, 300).delay(2000))
-                                .alpha(Tofu.anim().alpha(viewById).duration(4000).alphaValues(1, 0, 1))
+                                        .move(Tofu.anim().move(viewById1).duration(4000).moveTo(500, 500))
+                                        .move(Tofu.anim().move(viewById).duration(4000).moveTo(viewById.getX(), viewById.getY()).moveTo(500, 300).delay(2000))
+                                        .alpha(Tofu.anim().alpha(viewById).duration(4000).alphaValues(1, 0, 1))
                                 //.move(Tofu.anim().move(viewById).duration(5000).moveTo(200,300))
                         )
                         .rotate(Tofu.anim().rotate(viewById).duration(4000).values(180, 0, 180))
@@ -82,6 +83,7 @@ public class MainActivity extends TofuSupportActivity {
 //        Tofu.anim().color().text(true).target(viewById).duration(5000).colorValues(0xFFFFFFFF, 0xff78c5f9).setRepeatCount(-1).start();
 //        Tofu.anim().target(viewById).duration(2000).quad().end(300,300).spin(100,-100).start();
 //        Tofu.anim().target(viewById).rotate().rotateX().setRepeatCount(-1).setRepeatMode(AnimBuilder.RESTART).values(180,0,90).start();
+
     }
 
     @subscribe("789")
@@ -106,4 +108,16 @@ public class MainActivity extends TofuSupportActivity {
         Text o = Tofu.orm().table(Text.class).queryFirst();
         System.out.println(o.textId);
     }
+
+    @pierce("a")
+    private void a(String c) {
+        Tofu.log().d("a(c)");
+    }
+
+    @pierce("a")
+    private void a() {
+        Tofu.log().d("a()");
+    }
+
+
 }

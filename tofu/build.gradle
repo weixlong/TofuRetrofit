@@ -55,6 +55,8 @@ dependencies {
     compile 'com.scwang.smartrefresh:SmartRefreshHeader:1.0.3'
     implementation files('libs/alipaySdk-20180601.jar')
     implementation files('libs/wechat-sdk-android-without-mta-5.1.4.jar')
+    //noinspection GradleCompatible
+    compile 'com.android.support:appcompat-v7:26.1.0'
     //compile 'com.zaaach:citypicker:1.1'城市选择框架 https://www.jianshu.com/p/b469c6f02754
     //compile 'com.github.waynell:VideoListPlayer:1.4' 视频播放控件 https://github.com/waynell/VideoListPlayer
     //https://juejin.im/entry/57611a1fdf0eea0062cdcb31 酷炫的 RecyclerView 开源库
