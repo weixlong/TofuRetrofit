@@ -30,7 +30,6 @@ public class Tofu {
 
     /**
      * 绑定操作对象
-     *
      * @param target
      * @return
      */
@@ -43,7 +42,7 @@ public class Tofu {
     /**
      * 数据库操作
      * <p>
-     * 数据库建表，已com.pudding.tofu.Text为例
+     * 数据库建表，已{@link com.pudding.tofu.OrmText}为例
      * <p>
      * Table 注解，必须写
      * <p>
@@ -77,7 +76,7 @@ public class Tofu {
 
     /**
      * 普通回调
-     *
+     * 主程中执行回调方法
      * @return
      */
     public static SimpleBuilder go() {
@@ -91,9 +90,26 @@ public class Tofu {
 
 
     /**
+     * 线程或io中执行方法
+     * <p>
+     *     切回主程可调用其他注解回调如{@link com.pudding.tofu.retention.subscribe }
+     * </p>
+     * @return
+     */
+    public static TIOBuilder tio(){
+        TIOFactory factory = (TIOFactory) builders.get("TIOFactory");
+        if(factory == null){
+            factory = TIOFactory.get();
+            builders.put("TIOFactory",factory);
+        }
+        return factory.build();
+    }
+
+
+    /**
      * post请求
-     * 响应post 、postError注解
-     *
+     * 响应{@link com.pudding.tofu.retention.post}{@link com.pudding.tofu.retention.postError}注解
+     * 主程中执行回调方法
      * @return
      */
     public static HttpBuilder post() {
@@ -107,7 +123,6 @@ public class Tofu {
 
     /**
      * 图片加载
-     *
      * @return
      */
     public static ImageBuilder image() {
@@ -121,7 +136,10 @@ public class Tofu {
 
     /**
      * 下载文件
-     * 响应loadFile 、loadError、loadProgress注解
+     * 响应{@link com.pudding.tofu.retention.loadFile} 、
+     * {@link com.pudding.tofu.retention.loadError}、
+     * {@link com.pudding.tofu.retention.loadProgress}注解
+     * 主程中执行回调方法
      */
     public static LoadFileBuilder load() {
         LoadBuilderFactory factory = (LoadBuilderFactory) builders.get("LoadBuilderFactory");
@@ -135,8 +153,10 @@ public class Tofu {
 
     /**
      * 上传文件
-     * 响应upload、uploadError、uploadProgress注解
-     *
+     * 响应{@link com.pudding.tofu.retention.upload}、
+     * {@link com.pudding.tofu.retention.uploadError}、
+     * {@link com.pudding.tofu.retention.uploadProgress}注解
+     * 主程中执行回调方法
      * @return
      */
     public static UpLoadBuilder upload() {
@@ -151,8 +171,8 @@ public class Tofu {
 
     /**
      * 图片选择
-     * 响应photoPick注解
-     *
+     * 响应{@link com.pudding.tofu.retention.photoPick}注解
+     * 主程中执行回调方法
      * @return
      */
     public static ImagePickerBuilder pick() {
@@ -181,6 +201,7 @@ public class Tofu {
 
     /**
      * 事件管理
+     * 主程中执行回调方法
      * @return
      */
     public static EventBuilder event(){

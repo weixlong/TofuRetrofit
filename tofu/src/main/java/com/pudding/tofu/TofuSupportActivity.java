@@ -3,6 +3,8 @@ package com.pudding.tofu;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.pudding.tofu.model.Tofu;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ public abstract class TofuSupportActivity extends BaseFragmentManagerActivity {
         super.onCreate(savedInstanceState);
 //        //StartBuilder.builder(new Intent()).withEnableAnimation(true);
 //        //SwipeBackUtil.enableSwipeBackAtActivity(this); 侧滑返回
+//        Tofu.bind(this);
     }
 
 

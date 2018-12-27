@@ -7,23 +7,22 @@ import net.tsz.afinal.annotation.sqlite.Table;
 /**
  * Created by wxl on 2018/7/27 0027.
  * 邮箱：632716169@qq.com
+ *
+ * 参数必须有get和set方法
  */
-@Table(name = "Text")
+@Table(name = "Text") //必须
 public class OrmText {
 
 
     public String textId;
 
-    @Id
+    @Id //必须
     public long id;
 
     public OrmText() {
     }
 
-    public void in(String textId, long id) {
-        this.textId = textId;
-        this.id = id;
-    }
+
 
     public String getTextId() {
         return textId;

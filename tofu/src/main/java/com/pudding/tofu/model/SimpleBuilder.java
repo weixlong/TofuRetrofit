@@ -34,7 +34,7 @@ public class SimpleBuilder implements UnBind {
      * <p>
      * 如果lable相同将会执行最近一次注册的方法
      * <p>
-     * 回调subscribe注解
+     * 回调{@link com.pudding.tofu.retention.subscribe}注解
      * <p>
      * 使用该方法时请注意参数必须一一对应
      *
@@ -53,7 +53,7 @@ public class SimpleBuilder implements UnBind {
      * <p>
      * 如果lable相同将会执行最近一次注册的方法
      * <p>
-     * 回调subscribe注解
+     * 回调{@link com.pudding.tofu.retention.subscribe}注解
      * <p>
      * 使用该方法时请注意参数必须一一对应
      *
@@ -74,7 +74,7 @@ public class SimpleBuilder implements UnBind {
      * <p>
      * 如果lable相同将会执行最近一次注册的方法
      * <p>
-     * 回调subscribe注解
+     * 回调{@link com.pudding.tofu.retention.subscribe}注解
      * <p>
      * 使用该方法时请注意参数必须一一对应
      *

@@ -12,6 +12,7 @@ import com.pudding.tofu.retention.pierce;
 import com.pudding.tofu.retention.post;
 import com.pudding.tofu.retention.postError;
 import com.pudding.tofu.retention.subscribe;
+import com.pudding.tofu.retention.tio;
 import com.pudding.tofu.retention.upload;
 import com.pudding.tofu.retention.uploadError;
 import com.pudding.tofu.retention.uploadProgress;
@@ -108,6 +109,11 @@ public class TofuBus {
      */
     private HashMap<String, List<TofuMethod>> pierceMethods = new HashMap<>();
 
+    /**
+     * tio注解集合
+     */
+    private HashMap<String, List<TofuMethod>> tioMethods = new HashMap<>();
+
 
     /**
      * 取target的介质集合
@@ -135,7 +141,8 @@ public class TofuBus {
         newTofuIfEmptyMethodList(key, cachePostMethods, postErrorMethods,
                 loadFileMethods, loadFileErrorMethods, loadFileProgressMethods,
                 upLoadFileMethods, upLoadFileErrorMethods,
-                upLoadFileProgressMethods, subscribeMethods, pickerMethods, pierceMethods);
+                upLoadFileProgressMethods, subscribeMethods, pickerMethods,
+                pierceMethods, tioMethods);
 
         List<TofuMethod> postMethods = cachePostMethods.get(key);
         List<TofuMethod> tofuErrorMethods = postErrorMethods.get(key);
@@ -148,6 +155,7 @@ public class TofuBus {
         List<TofuMethod> tofuSimpleMethods = subscribeMethods.get(key);
         List<TofuMethod> tofuPickerMethods = pickerMethods.get(key);
         List<TofuMethod> tofuPierceMethods = pierceMethods.get(key);
+        List<TofuMethod> tioTofuMethods = tioMethods.get(key);
 
         Method[] declaredMethods = target.getClass().getDeclaredMethods();
         for (Method method : declaredMethods) {
@@ -162,6 +170,7 @@ public class TofuBus {
             findSimpleSubscribe(key, tofuSimpleMethods, method, target);
             findPickerSubscribe(key, tofuPickerMethods, method, target);
             findPierceSubscribe(key, tofuPierceMethods, method, target);
+            findTIOSubscribe(key, tioTofuMethods, method, target);
         }
     }
 
@@ -197,6 +206,23 @@ public class TofuBus {
             fullyTofuMethod(values, tofuPierceMethods, method, target);
         }
         pierceMethods.put(key, tofuPierceMethods);
+    }
+
+    /**
+     * 注册tio注解方法
+     *
+     * @param key
+     * @param tioTofuMethods
+     * @param method
+     * @param target
+     */
+    private void findTIOSubscribe(String key, List<TofuMethod> tioTofuMethods, Method method, Object target) {
+        tio t = method.getAnnotation(tio.class);
+        if (null != t) {
+            String[] values = t.value();
+            fullyTofuMethod(values, tioTofuMethods, method, target);
+        }
+        tioMethods.put(key, tioTofuMethods);
     }
 
     /**
@@ -428,6 +454,31 @@ public class TofuBus {
                     }
                 });
 
+    }
+
+
+    /**
+     * 执行tio方法
+     *
+     * @param label
+     * @param isIo
+     * @param results
+     * @param <Result>
+     * @return
+     */
+    protected <Result> Disposable executeTIOMethod(final String label, boolean isIo, final Result... results) {
+        return Observable.create(new ObservableOnSubscribe<Post>() {
+            @Override
+            public void subscribe(ObservableEmitter<Post> e) throws Exception {
+                onExecuteSimpleInterceptorMethod(e, label, tioMethods, results);
+            }
+        }).subscribeOn(Schedulers.io()).distinct().observeOn(isIo ? Schedulers.io() : Schedulers.newThread())
+                .subscribe(new Consumer<Post>() {
+                    @Override
+                    public void accept(Post post) throws Exception {
+                        executeSimplePost(post);
+                    }
+                });
     }
 
 
@@ -928,7 +979,7 @@ public class TofuBus {
             List<TofuMethod> tofuMethods = maps.get(keys.get(i));
             if (CollectUtil.isEmpty(tofuMethods)) continue;
             for (int i1 = tofuMethods.size() - 1; i1 >= 0; i1--) {
-                if (isSameMethod(tofuMethods.get(i1),label,results)) {
+                if (isSameMethod(tofuMethods.get(i1), label, results)) {
                     executeSimpleMethod(e, tofuMethods.get(i1), results);
                 }
             }
@@ -968,7 +1019,7 @@ public class TofuBus {
                 }
             }
         } else {
-            if (results != null || results.length > 0){
+            if (results != null || results.length > 0) {
                 return false;
             }
         }
@@ -1259,6 +1310,7 @@ public class TofuBus {
             clear(upLoadFileProgressMethods.remove(key));
             clear(upLoadFileErrorMethods.remove(key));
             clear(pierceMethods.remove(key));
+            clear(tioMethods.remove(key));
             keyMap.remove(key);
             keys.remove(key);
         }
