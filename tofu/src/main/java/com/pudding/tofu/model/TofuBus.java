@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -933,16 +934,41 @@ public class TofuBus {
      */
     @SuppressLint("CheckResult")
     private <Result> void executePierceSimple(final String label, final HashMap<String, List<TofuMethod>> maps, final Result... results) {
+        Observable.create(new ObservableOnSubscribe<List<Post>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<Post>> e) throws Exception {
+                e.onNext(onExecuteSimplePierceMethod(label, maps, results));
+            }
+        }).subscribeOn(Schedulers.io()).distinct().observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Post>>() {
+                    @Override
+                    public void accept(List<Post> methods) throws Exception {
+                        doPierceMethod(methods);
+                    }
+                });
+    }
+
+
+    /**
+     * 递归执行
+     *
+     * @param methods
+     */
+    @SuppressLint("CheckResult")
+    private void doPierceMethod(final List<Post> methods) {
+        if (CollectUtil.isEmpty(methods)) return;
         Observable.create(new ObservableOnSubscribe<Post>() {
             @Override
             public void subscribe(ObservableEmitter<Post> e) throws Exception {
-                onExecuteSimplePierceMethod(e, label, maps, results);
+                e.onNext(methods.get(0));
             }
         }).subscribeOn(Schedulers.io()).distinct().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Post>() {
                     @Override
                     public void accept(Post post) throws Exception {
                         executeSimplePost(post);
+                        methods.remove(0);
+                        doPierceMethod(methods);
                     }
                 });
     }
@@ -966,24 +992,35 @@ public class TofuBus {
     }
 
     /**
-     * 执行普通调用方法
+     * 执行穿透调用方法
      *
-     * @param e
      * @param label
      * @param maps
      * @param results
      * @param <Result>
      */
-    private <Result> void onExecuteSimplePierceMethod(ObservableEmitter<Post> e, String label, HashMap<String, List<TofuMethod>> maps, Result... results) {
-        for (int i = keys.size() - 1; i >= 0; i--) {
+    private <Result> List<Post> onExecuteSimplePierceMethod(String label, HashMap<String, List<TofuMethod>> maps, Result... results) {
+        List<Post> executeMethods = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
             List<TofuMethod> tofuMethods = maps.get(keys.get(i));
             if (CollectUtil.isEmpty(tofuMethods)) continue;
-            for (int i1 = tofuMethods.size() - 1; i1 >= 0; i1--) {
+            for (int i1 = 0 ; i1 < tofuMethods.size(); i1 ++) {
                 if (isSameMethod(tofuMethods.get(i1), label, results)) {
-                    executeSimpleMethod(e, tofuMethods.get(i1), results);
+                    TofuMethod tofuMethod = tofuMethods.get(i1);
+                    Post post = new Post();
+                    post.tofuMethod = tofuMethod;
+                    Class[] paramterClass = tofuMethod.getParamterClass();
+                    if (paramterClass != null && paramterClass.length == results.length) {
+                        Object[] realParams = new Object[paramterClass.length];
+                        findSimpleMethodWithParam(realParams, paramterClass, results);
+                        post.realParams = realParams;
+                    }
+                    executeMethods.add(post);
                 }
             }
         }
+
+        return executeMethods;
     }
 
 

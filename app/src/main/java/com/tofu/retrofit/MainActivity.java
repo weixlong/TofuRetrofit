@@ -43,7 +43,7 @@ public class MainActivity extends TofuSupportActivity {
 //                        .put("user_id", "23")
 //                        .put("sex", "0")
 //                        .execute();
-                Tofu.tio().io().to("789");
+//                Tofu.tio().io().to("789");
 //                Tofu.go().pierceTo("a", "ccc");
 //                Tofu.anim().playOn().setAnimRunBack(new AnimBuilder.AnimRunAdapter() {
 //                    @Override
@@ -124,8 +124,8 @@ public class MainActivity extends TofuSupportActivity {
     }
 
     @pierce("a")
-    private void a() {
-        Tofu.log().d("a()");
+    private void b(String b) {
+        Tofu.log().d("b()");
     }
 
 

@@ -97,6 +97,7 @@ public class SimpleBuilder implements UnBind {
      * <p>
      * 使用该方法时请注意results参数必须一一对应，参数不对应则继续寻找参数符合的方法
      * <p>
+     * 执行顺序为注册的先后顺序
      *
      * @param label
      * @param results 参数

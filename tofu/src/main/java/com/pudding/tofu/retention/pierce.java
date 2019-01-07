@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
  * <p>
  *     执行该注解且参数符合一一对应的所有注册方法
  * </p>
+ * 执行顺序为注册的先后顺序
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
