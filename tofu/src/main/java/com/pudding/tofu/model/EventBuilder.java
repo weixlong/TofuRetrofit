@@ -93,8 +93,6 @@ public class EventBuilder<Result> implements UnBind {
                 public void onClick(View v) {
                     if (clickCallBack != null && !clickCallBack.isDistinctClick()) {
                         Tofu.go().to(label, results);
-                    } else {
-                        Tofu.go().to(label, results);
                     }
                 }
             });
